@@ -14,14 +14,14 @@ import lombok.Data;
 
 @Data
 @Entity
-@Table(name = "Meassage")
+@Table(name = "Message")
 @Component
 public class MessageBean {
 
     @Id
     @Column(name = "messageID", columnDefinition = "int")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int messageID;
+    private Integer messageID;
 
     @Column(name = "senderID", nullable = false, columnDefinition = "varchar(100)")
     private String senderID;
