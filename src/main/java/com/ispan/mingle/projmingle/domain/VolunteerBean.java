@@ -1,5 +1,7 @@
 package com.ispan.mingle.projmingle.domain;
 
+import java.util.Date;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

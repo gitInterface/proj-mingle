@@ -1,6 +1,7 @@
 package com.ispan.mingle.projmingle.repository;
 
-public interface VolunteerSpringDataJpaDAO {
+import com.ispan.mingle.projmingle.domain.VolunteerBean;
 
-    
+public interface VolunteerSpringDataJpaDAO {
+    public abstract VolunteerBean select(String custid);
 }
