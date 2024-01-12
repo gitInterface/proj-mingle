@@ -120,4 +120,7 @@ public class WorkBean {
     @Column(name="isOnShelf", columnDefinition = "bit")
     private Boolean isOnShelf;
 
+    /** 瀏覽量 */
+   @Column(name="views", columnDefinition = "int")
+    private Integer views;
 }
