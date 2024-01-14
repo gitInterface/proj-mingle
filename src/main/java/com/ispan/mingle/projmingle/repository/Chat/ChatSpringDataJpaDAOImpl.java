@@ -1,4 +1,4 @@
-package com.ispan.mingle.projmingle.repository;
+package com.ispan.mingle.projmingle.repository.Chat;
 
 import org.springframework.stereotype.Repository;
 

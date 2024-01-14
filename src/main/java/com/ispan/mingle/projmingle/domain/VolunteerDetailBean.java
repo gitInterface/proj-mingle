@@ -14,7 +14,7 @@ import lombok.Data;
 public class VolunteerDetailBean {
 	@Id
 	@Column(name = "fk_userID", columnDefinition = "varchar", length = 100)
-	private String userId;
+	private String userid;
 
 	@Column(name = "name", columnDefinition = "nvarchar", length = 20)
 	private String name;
@@ -64,4 +64,9 @@ public class VolunteerDetailBean {
 	@Column(name = "isDeleted", columnDefinition = "bit")
 	private Character isDeleted;
 
+	@Column(name = "lastLogin", columnDefinition = "datetime")
+	private Date lastLogin;
+
+	@Column(name = "status", columnDefinition = "bit")
+	private Character status;
 }
