@@ -38,6 +38,8 @@ public class ChatRoomService {
                 .senderid(recieverid)
                 .recieverid(senderid)
                 .build();
-        return null;
+        repository.save(senderReciever);
+        repository.save(recieverSender);
+        return roomid;
     }
 }

@@ -4,6 +4,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.ispan.mingle.projmingle.domain.MessageBean;
 
-public interface ChatRepository extends JpaRepository<MessageBean, Integer>, ChatSpringDataJpaDAO {
+public interface ChatMessageRepository extends JpaRepository<MessageBean, Integer>, ChatMessageSpringDataJpaDAO {
 
 }

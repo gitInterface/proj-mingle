@@ -3,6 +3,6 @@ package com.ispan.mingle.projmingle.repository.Chat;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public class ChatSpringDataJpaDAOImpl implements ChatSpringDataJpaDAO {
+public class ChatMessageSpringDataJpaDAOImpl implements ChatMessageSpringDataJpaDAO {
 
 }
