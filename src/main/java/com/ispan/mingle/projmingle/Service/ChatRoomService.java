@@ -15,31 +15,32 @@ public class ChatRoomService {
 
     private final ChatRoomRepository repository;
 
-    public Optional<String> getChatRoomId(String senderid, String recieverid, boolean createNewRoomIfNotExists) {
+    public Optional<String> getChatId(String senderid, String recieverid, boolean createNewRoomIfNotExists) {
         return repository.findBySenderidAndRecieverid(senderid, recieverid)
-                .map(ChatRoomBean::getRoomid)
+                .map(ChatRoomBean::getChatid)
                 .or(() -> {
                     if (createNewRoomIfNotExists) {
-                        var roomid = createChat(senderid, recieverid);
+                        var chatid = createChat(senderid, recieverid);
+                        return Optional.of(chatid);
                     }
                     return Optional.empty();
                 });
     }
 
     private String createChat(String senderid, String recieverid) {
-        var roomid = String.format("%s_%s", senderid, recieverid);
+        var chatid = String.format("%s_%s", senderid, recieverid);
         ChatRoomBean senderReciever = ChatRoomBean.builder()
-                .roomid(roomid)
+                .chatid(chatid)
                 .senderid(senderid)
                 .recieverid(recieverid)
                 .build();
         ChatRoomBean recieverSender = ChatRoomBean.builder()
-                .roomid(roomid)
+                .chatid(chatid)
                 .senderid(recieverid)
                 .recieverid(senderid)
                 .build();
         repository.save(senderReciever);
         repository.save(recieverSender);
-        return roomid;
+        return chatid;
     }
 }

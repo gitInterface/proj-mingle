@@ -10,12 +10,18 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
 @Entity
 @Table(name = "Message")
 @Component
+@AllArgsConstructor
+@NoArgsConstructor
+@Builder
 public class MessageBean {
 
     @Id
@@ -44,4 +50,6 @@ public class MessageBean {
     @Column(name = "isDeleted", nullable = false, columnDefinition = "bit")
     private boolean isDeleted;
 
+    @Column(name = "chatID", columnDefinition = "varchar(100)")
+    private String chatid;
 }

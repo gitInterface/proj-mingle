@@ -1,5 +1,5 @@
 package com.ispan.mingle.projmingle.repository.Chat;
 
-public interface ChatRoomSpringDataJpaDAO {
+public interface ChatRoomJpaDAO {
 
 }

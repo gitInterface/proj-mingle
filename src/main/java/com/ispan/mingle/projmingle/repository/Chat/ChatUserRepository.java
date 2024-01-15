@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.ispan.mingle.projmingle.domain.VolunteerDetailBean;
 
-public interface ChatUserRepository extends JpaRepository<VolunteerDetailBean, String>, ChatUserSpringDataJpaDAO {
+public interface ChatUserRepository extends JpaRepository<VolunteerDetailBean, String>, ChatUserJpaDAO {
 
     List<VolunteerDetailBean> findAllByStatus(Character online);
 
