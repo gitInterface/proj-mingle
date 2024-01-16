@@ -1,9 +1,10 @@
 package com.ispan.mingle.projmingle.controller;
 
-import java.net.URI;
+import java.util.UUID;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -23,7 +24,7 @@ public class LoginController {
 	@Autowired
 	private VolunteerService volunteerService;
 
-	@PostMapping("/secure/ajax/login")
+	@PostMapping("/login.controller")
 	@ResponseBody
 	public String login(HttpSession session, @RequestBody String json) {
 		JSONObject responseJson = new JSONObject();
@@ -37,10 +38,18 @@ public class LoginController {
 			responseJson.put("message", "登入失敗");
 			responseJson.put("success", false);
 		} else {
+			String sessionToken = generateSessionToken();
+			session.setAttribute("sessionToken", sessionToken);
+
 			session.setAttribute("user", bean);
 			responseJson.put("message", "登入成功");
 			responseJson.put("success", true);
+			responseJson.put("sessionToken", sessionToken);
 		}
 		return responseJson.toString();
+	}
+
+	public String generateSessionToken() {
+		return UUID.randomUUID().toString().replace("-", "");
 	}
 }
