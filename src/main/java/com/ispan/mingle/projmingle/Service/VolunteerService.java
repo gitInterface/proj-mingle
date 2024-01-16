@@ -1,27 +1,37 @@
 package com.ispan.mingle.projmingle.Service;
 
-import java.util.Arrays;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import com.ispan.mingle.projmingle.domain.VolunteerBean;
 import com.ispan.mingle.projmingle.repository.VolunteerRepository;
 
+import jakarta.transaction.Transactional;
+
+@Service
+@Transactional
 public class VolunteerService {
-    @Autowired
-	private VolunteerRepository volunteerRepository = null;	
-    
-    public VolunteerBean login(String username, String password) {
-		VolunteerBean select = volunteerRepository.select(username);
-		if(select!=null) {
-			if(password!=null) {
-				String pass = select.getPassword();		//資料庫取出
-				byte[] temp = password.getBytes();		//使用者輸入
-				if(pass.equals(temp.toString()))     {
+	@Autowired
+	private VolunteerRepository volunteerRepository = null;
+
+	public VolunteerBean login(String userid, String password) {
+		VolunteerBean select = volunteerRepository.select(userid);
+		if (select != null) {
+			if (password != null) {
+				String pass = select.getPassword(); // 資料庫取出
+				// 使用者輸入(password)
+				if (pass.equals(password)) {
 					return select;
 				}
 			}
 		}
 		return null;
+	}
+
+	public boolean exists(String userid) {
+		if(userid!=null) {
+			return volunteerRepository.existsById(userid);
+		}
+		return false;
 	}
 }

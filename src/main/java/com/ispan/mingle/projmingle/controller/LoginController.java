@@ -1,56 +1,46 @@
 package com.ispan.mingle.projmingle.controller;
 
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
+import java.net.URI;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
-import org.springframework.ui.Model;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.ispan.mingle.projmingle.Service.VolunteerService;
 import com.ispan.mingle.projmingle.domain.VolunteerBean;
 
 import jakarta.servlet.http.HttpSession;
 
+@RestController
+@CrossOrigin
 public class LoginController {
-    @Autowired
-	private MessageSource messageSource;
 	
 	@Autowired
 	private VolunteerService volunteerService;
 
-	@PostMapping(path = {"/api/login.controller"})
-	public String handlerMethod(Locale locale, Model model,
-			String username, String password, HttpSession session) {
-        //接收使用者輸入的資料
-        //驗證使用者輸入的資料
-		Map<String, String> errorMsgs = new HashMap<>();
-		model.addAttribute("errors", errorMsgs);
-		
-		if(username==null || username.length()==0) {
-			errorMsgs.put("xxx1", messageSource.getMessage("login.required.id", null, locale));
-		}
-		if(password==null || password.length()==0) {
-			errorMsgs.put("xxx2", messageSource.getMessage("login.required.pwd", null, locale));
-		}
-		
-		if(errorMsgs!=null && !errorMsgs.isEmpty()) {
-			return "/secure/login";
-		}
-		
+	@PostMapping("/secure/ajax/login")
+	@ResponseBody
+	public String login(HttpSession session, @RequestBody String json) {
+		JSONObject responseJson = new JSONObject();
 
-//呼叫企業邏輯程式
-		VolunteerBean bean = volunteerService.login(username, password);
-		
-//根據執行結果呼叫View
+		JSONObject obj = new JSONObject(json);
+		String userid = obj.isNull("userid") ? null : obj.getString("userid");
+		String password = obj.isNull("password") ? null : obj.getString("password");
+
+		VolunteerBean bean = volunteerService.login(userid, password);
 		if(bean==null) {
-			errorMsgs.put("xxx2", messageSource.getMessage("login.failed", null, locale));
-			return "/secure/login";
+			responseJson.put("message", "登入失敗");
+			responseJson.put("success", false);
 		} else {
 			session.setAttribute("user", bean);
-			return "redirect:/";
+			responseJson.put("message", "登入成功");
+			responseJson.put("success", true);
 		}
+		return responseJson.toString();
 	}
 }
