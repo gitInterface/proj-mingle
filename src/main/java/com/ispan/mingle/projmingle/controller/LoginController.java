@@ -38,7 +38,7 @@ public class LoginController {
 			responseJson.put("message", "登入失敗");
 			responseJson.put("success", false);
 		} else {
-			String sessionToken = generateSessionToken();
+			String sessionToken = generateSessionToken(userid);
 			session.setAttribute("sessionToken", sessionToken);
 
 			session.setAttribute("user", bean);
@@ -49,7 +49,8 @@ public class LoginController {
 		return responseJson.toString();
 	}
 
-	public String generateSessionToken() {
-		return UUID.randomUUID().toString().replace("-", "");
+	public String generateSessionToken(String userid) {
+		// UUID.randomUUID() 產生32個字的亂數字碼
+		return UUID.randomUUID().toString().replace("-", "")+userid;
 	}
 }
