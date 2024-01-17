@@ -25,8 +25,8 @@ public class WorkBean {
     private Integer workid;
 
     /** 房東ID */
-    @Column(name = "fk_lordID", columnDefinition = "int")
-    private Integer lordid;
+    @Column(name = "fk_landlordID", columnDefinition = "int")
+    private Integer landlordid;
 
     /** 工作類型 */
     @Column(name = "fk_workType", columnDefinition = "nvarchar(10)")
@@ -45,8 +45,8 @@ public class WorkBean {
     private String notes;
 
     /** 地區 */
-    @Column(name = "fk_district", columnDefinition = "nvarchar(5)")
-    private String district;
+    @Column(name = "fk_city", columnDefinition = "nvarchar(5)")
+    private String city;
     
     /** 工作地址 */
     @Column(name="address", columnDefinition = "nvarchar(200)")
