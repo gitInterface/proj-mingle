@@ -116,9 +116,6 @@ public class WorkBean {
     @Column(name="isDeleted", columnDefinition = "bit")
     private Boolean isDeleted;
     
-    /** 是否可預訂 */
-    @Column(name="isOnShelf", columnDefinition = "bit")
-    private Boolean isOnShelf;
 
     /** 瀏覽量 */
    @Column(name="views", columnDefinition = "int")
