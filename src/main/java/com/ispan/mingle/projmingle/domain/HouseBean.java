@@ -22,7 +22,7 @@ public class HouseBean {
     @Column(name = "fk_houseType", columnDefinition = "nvarchar", length = 20)
     private String houseType;
 
-    @Column(name = "fk_city", columnDefinition = "nvarchar", length = 5)
+    @Column(name = "fk_city", columnDefinition = "nvarchar", length = 3)
     private String city;
 
     @Column(name = "name", columnDefinition = "nvarchar", length = 50)

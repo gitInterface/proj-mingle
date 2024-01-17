@@ -19,7 +19,7 @@ public class LandlordBean {
     @Column(name = "fk_userID", columnDefinition = "varchar", length = 100)
     private String userid;
 
-    @Column(name = "fk_city", columnDefinition = "nvarchar", length = 5)
+    @Column(name = "fk_city", columnDefinition = "nvarchar", length = 3)
     private String city;
 
     @Column(name = "address", columnDefinition = "nvarchar", length = 50)
