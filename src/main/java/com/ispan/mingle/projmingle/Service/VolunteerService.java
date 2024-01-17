@@ -15,10 +15,7 @@ import jakarta.transaction.Transactional;
 @Transactional
 public class VolunteerService {
 	@Autowired
-	private VolunteerRepository volunteerRepository = null;
-
-	@Autowired
-    private JavaMailSender javaMailSender;
+	private VolunteerRepository volunteerRepository = null;s
 
 	public VolunteerBean login(String userid, String password) {
 		VolunteerBean select = volunteerRepository.select(userid);
@@ -40,5 +37,5 @@ public class VolunteerService {
 		}
 		return false;
 	}
-	
+
 }
