@@ -51,6 +51,7 @@ public class LoginController {
 
 	public String generateSessionToken(String userid) {
 		// UUID.randomUUID() 產生32個字的亂數字碼
+		// 再加上userid
 		return UUID.randomUUID().toString().replace("-", "")+userid;
 	}
 }

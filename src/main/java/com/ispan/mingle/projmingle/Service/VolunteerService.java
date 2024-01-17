@@ -1,6 +1,9 @@
 package com.ispan.mingle.projmingle.Service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import com.ispan.mingle.projmingle.domain.VolunteerBean;
@@ -13,6 +16,9 @@ import jakarta.transaction.Transactional;
 public class VolunteerService {
 	@Autowired
 	private VolunteerRepository volunteerRepository = null;
+
+	@Autowired
+    private JavaMailSender javaMailSender;
 
 	public VolunteerBean login(String userid, String password) {
 		VolunteerBean select = volunteerRepository.select(userid);
@@ -34,4 +40,5 @@ public class VolunteerService {
 		}
 		return false;
 	}
+	
 }
