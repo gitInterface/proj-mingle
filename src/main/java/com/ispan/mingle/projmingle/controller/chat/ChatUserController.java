@@ -1,4 +1,4 @@
-package com.ispan.mingle.projmingle.controller;
+package com.ispan.mingle.projmingle.controller.chat;
 
 import java.util.List;
 
@@ -9,7 +9,7 @@ import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
-import com.ispan.mingle.projmingle.Service.ChatUserService;
+import com.ispan.mingle.projmingle.Service.chat.ChatUserService;
 import com.ispan.mingle.projmingle.domain.VolunteerDetailBean;
 
 import lombok.RequiredArgsConstructor;

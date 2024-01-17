@@ -1,4 +1,4 @@
-package com.ispan.mingle.projmingle.Service;
+package com.ispan.mingle.projmingle.Service.chat;
 
 import java.util.ArrayList;
 import java.util.List;
