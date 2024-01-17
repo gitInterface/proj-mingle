@@ -6,21 +6,21 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+@Data
 @Entity
 @Table(name = "ChatRoom")
-@Getter
-@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
 public class ChatRoomBean {
     @Id
-    @Column(name = "roomID", columnDefinition = "varchar", length = 100)
-    private String roomid;
+    @Column(name = "roomID", columnDefinition = "int")
+    private Integer roomid;
     @Column(name = "chatID", columnDefinition = "varchar", length = 100)
     private String chatid;
     @Column(name = "senderID", columnDefinition = "varchar", length = 100)
