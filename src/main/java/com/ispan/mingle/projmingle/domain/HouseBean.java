@@ -16,14 +16,14 @@ public class HouseBean {
     @Column(name = "houseID")
     private Integer houseid;
 
-    @Column(name = "fk_lordID", columnDefinition = "int")
+    @Column(name = "fk_landlordID", columnDefinition = "int")
     private Integer lordid;
 
     @Column(name = "fk_houseType", columnDefinition = "nvarchar", length = 20)
     private String houseType;
 
-    @Column(name = "fk_district", columnDefinition = "nvarchar", length = 5)
-    private String district;
+    @Column(name = "fk_city", columnDefinition = "nvarchar", length = 3)
+    private String city;
 
     @Column(name = "name", columnDefinition = "nvarchar", length = 50)
     private String name;
