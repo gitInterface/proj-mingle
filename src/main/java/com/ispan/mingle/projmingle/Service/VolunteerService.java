@@ -17,9 +17,6 @@ public class VolunteerService {
 	@Autowired
 	private VolunteerRepository volunteerRepository = null;
 
-	@Autowired
-    private JavaMailSender javaMailSender;
-
 	public VolunteerBean login(String userid, String password) {
 		VolunteerBean select = volunteerRepository.select(userid);
 		if (select != null) {
@@ -40,5 +37,5 @@ public class VolunteerService {
 		}
 		return false;
 	}
-	
+
 }
