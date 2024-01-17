@@ -29,7 +29,6 @@ public class ChatMessageService {
 
     public List<MessageBean> findChatMessages(String senderid, String recieverid) {
         var chatid = chatRoomService.getChatId(senderid, recieverid, false);
-        System.out.println("chatid=" + chatid.map(repository::findByChatid));
         return chatid.map(repository::findByChatid).orElse(new ArrayList<>());
     }
 }
