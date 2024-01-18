@@ -12,7 +12,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RestController;
 
 import com.ispan.mingle.projmingle.Service.chat.ChatMessageService;
 import com.ispan.mingle.projmingle.domain.MessageBean;
@@ -31,7 +30,7 @@ public class ChatController {
     public void processMessage(@Payload MessageBean message) {
         MessageBean saveMsg = service.save(message);
         messagingTemplate.convertAndSendToUser(
-                message.getRecieverID(), "/quene/messages",
+                message.getRecieverID(), "/queue/messages",
                 ChatNotification.builder()
                         .chatid(saveMsg.getChatid())
                         .senderID(saveMsg.getSenderID())
