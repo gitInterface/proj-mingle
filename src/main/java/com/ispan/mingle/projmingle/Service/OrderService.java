@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import com.ispan.mingle.projmingle.domain.VolunteerDetailBean;
 import com.ispan.mingle.projmingle.domain.WorkBean;
 import com.ispan.mingle.projmingle.repository.VolunteerDetailRepository;
-import com.ispan.mingle.projmingle.repository.Work.WorkRepository;
+import com.ispan.mingle.projmingle.repository.WorkRepository;
 
 import jakarta.transaction.Transactional;
 
