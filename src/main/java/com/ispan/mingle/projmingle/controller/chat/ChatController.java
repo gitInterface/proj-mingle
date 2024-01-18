@@ -1,4 +1,4 @@
-package com.ispan.mingle.projmingle.controller;
+package com.ispan.mingle.projmingle.controller.chat;
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.ispan.mingle.projmingle.Service.ChatMessageService;
+import com.ispan.mingle.projmingle.Service.chat.ChatMessageService;
 import com.ispan.mingle.projmingle.domain.MessageBean;
 import com.ispan.mingle.projmingle.repository.Chat.ChatNotification;
 
