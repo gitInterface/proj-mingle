@@ -1,9 +1,7 @@
 package com.ispan.mingle.projmingle.Service;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.SecurityProperties.User;
-import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 import com.ispan.mingle.projmingle.domain.VolunteerBean;
@@ -38,4 +36,24 @@ public class VolunteerService {
 		return false;
 	}
 
-}
+	public VolunteerBean create(String json) {
+		try {
+			JSONObject obj = new JSONObject(json);
+			String userid = obj.isNull("userid") ? null : obj.getString("userid");
+			String password = obj.isNull("password") ? null : obj.getString("password");
+			
+			if(userid!=null) {
+				VolunteerBean insert = new VolunteerBean();
+				insert.setUserid(userid);
+				insert.setPassword(password);
+				
+				return volunteerRepository.save(insert);
+			}
+
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+}	
