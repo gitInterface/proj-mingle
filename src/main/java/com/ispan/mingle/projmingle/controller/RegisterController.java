@@ -21,10 +21,8 @@ public class RegisterController {
         JSONObject responseJson = new JSONObject();
 
         JSONObject obj = new JSONObject(body);
-        System.out.println(obj);
         String userid = obj.isNull("userid") ? null : obj.getString("userid");
         String password = obj.isNull("password") ? null : obj.getString("password");
-        System.out.println(userid + "," + password);
         if(userid.equals(null) || userid.equals("")) {
             responseJson.put("message", "Id是必要欄位");
             responseJson.put("success", false);
