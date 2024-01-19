@@ -23,7 +23,6 @@ public class GoogleMapsGeocodingService {
 
     public String getFormattedAddress(WorkBean work) {
         String fullAddress = work.getCity()+work.getAddress();
-        System.out.println(fullAddress);
         String apiUrl = "https://maps.googleapis.com/maps/api/geocode/json?address="+fullAddress+"&key={AIzaSyChYl423JJyZHyoVgPhUWBgi7bLCH3pGNA}";
 
         // Create a RestTemplate instance
