@@ -26,12 +26,13 @@ public class LoginController {
 	@ResponseBody
 	public String login(HttpSession session, @RequestBody String json) {
 		JSONObject responseJson = new JSONObject();
-
+		// 接收及驗證使用者資料
 		JSONObject obj = new JSONObject(json);
 		String userid = obj.isNull("userid") ? null : obj.getString("userid");
 		String password = obj.isNull("password") ? null : obj.getString("password");
-
+		// 呼叫企業邏輯
 		VolunteerBean bean = volunteerService.login(userid, password);
+		// 根據結果呼叫View
 		if(bean==null) {
 			responseJson.put("message", "登入失敗");
 			responseJson.put("success", false);
