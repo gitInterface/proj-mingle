@@ -1,10 +1,14 @@
 package com.ispan.mingle.projmingle.domain;
 
+import java.util.Set;
+
 import org.springframework.stereotype.Component;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -20,5 +24,9 @@ public class WorkTypeBean {
     @Column(name = "workType",
     columnDefinition = "nvarchar(10)")
     private String workType;
+
+    // @OneToMany(mappedBy = "workType",cascade = CascadeType.ALL)
+    // private Set<WorkBean> allworks;
+
 
 }
