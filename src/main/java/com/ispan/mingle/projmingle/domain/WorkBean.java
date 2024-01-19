@@ -119,4 +119,5 @@ public class WorkBean {
     /** 瀏覽量 */
    @Column(name="views", columnDefinition = "int")
     private Integer views;
+
 }
