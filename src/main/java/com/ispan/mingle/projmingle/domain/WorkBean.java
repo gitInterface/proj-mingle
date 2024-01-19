@@ -133,5 +133,4 @@ public class WorkBean {
     // @ManyToOne
     // @JoinColumn(name = "fk_workType",insertable = false, updatable = false)
     // private WorkTypeBean workType;
-
 }
