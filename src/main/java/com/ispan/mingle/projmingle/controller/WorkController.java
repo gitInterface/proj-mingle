@@ -23,20 +23,44 @@ public class WorkController {
     @Autowired
     private WorkRepository workRepository;
 
-    @GetMapping("/all")
-    public ResponseEntity<List<WorkBean>> getAllWorkBeans() {
-        List<WorkBean> workBeans = workService.getAllWorkBeans();
-        return ResponseEntity.ok(workBeans);
+    @GetMapping("/getAllWorks")
+    public List<WorkBean> getAllWorks() {
+        return workRepository.findAll();
+    }
+
+    @GetMapping("/getHotWorks")
+    public List<WorkBean> getHotWorks() {
+        return workService.getHotWorks();
+    }
+
+    @GetMapping("/getLatestWorks")
+    public List<WorkBean> getLatestWorks() {
+        return workService.getLatestWorks();
+    }
+
+    @GetMapping("/getOldestWorks")
+    public List<WorkBean> getOldestWorks() {
+        return workService.getOldestWorks();
+    }
+
+    @GetMapping("/getDeadlineWorks")
+    public List<WorkBean> getDeadlineWorks() {
+        return workService.getDeadlineWorks();
+    }
+
+    @GetMapping("/getWorksByRemainingSpotsAsc")
+    public List<WorkBean> getWorksByRemainingSpotsAsc() {
+        return workService.getWorksByRemainingSpotsAsc();
+    }
+
+    @GetMapping("/getWorksByRemainingSpotsDesc")
+    public List<WorkBean> getWorksByRemainingSpotsDesc() {
+        return workService.getWorksByRemainingSpotsDesc();
     }
 
     @GetMapping("/formattedAddresses")
     public ResponseEntity<List<String>> getFormattedAddresses() {
         List<String> formattedAddresses = workService.getFormattedAddresses();
         return ResponseEntity.ok(formattedAddresses);
-    }
-
-    @GetMapping("/getAllWorks")
-    public List<WorkBean> getAllWorks() {
-        return workRepository.findAll();
     }
 }
