@@ -63,8 +63,8 @@ public class WorkBean {
     private Date endDate;
 
     /** 最小報名天數 */
-    @Column(name = "minPeriod", columnDefinition = "int")
-    private Integer minPeriod;
+    @Column(name = "maxPeriod", columnDefinition = "int")
+    private Integer maxPeriod;
 
     /** 最高招募人數 */
     @Column(name = "maxAttendance", columnDefinition = "int")
