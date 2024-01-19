@@ -62,7 +62,7 @@ public class WorkBean {
     @Column(name = "endDate", columnDefinition = "datetime")
     private Date endDate;
 
-    /** 最小報名天數 */
+    /** 最大報名天數 */
     @Column(name = "maxPeriod", columnDefinition = "int")
     private Integer maxPeriod;
 
