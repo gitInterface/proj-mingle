@@ -35,7 +35,7 @@ public class WorkController {
         return ResponseEntity.ok(formattedAddresses);
     }
 
-    @GetMapping("/works")
+    @GetMapping("/getAllWorks")
     public List<WorkBean> getAllWorks() {
         return workRepository.findAll();
     }
