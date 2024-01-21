@@ -43,15 +43,8 @@ public class ChatController {
     public ResponseEntity<List<MessageBean>> findChatMessages(@PathVariable String senderid,
             @PathVariable String recieverid) {
 
-        // 分別拿雙方發送給對方的對話紀錄
-        List<MessageBean> sentMessages = service.findChatMessages(senderid, recieverid);
-        List<MessageBean> recievedMessages = service.findChatMessages(recieverid, senderid);
-
-        // 合併
-        List<MessageBean> allMessages = new ArrayList<MessageBean>();
-        allMessages.addAll(sentMessages);
-        allMessages.addAll(recievedMessages);
-
+        // 拿雙方發送給對方的對話紀錄
+        List<MessageBean> allMessages = service.findChatMessages(senderid, recieverid);
         // 排序
         allMessages.sort(Comparator.comparing(MessageBean::getCreatedTime));
         return ResponseEntity.ok(allMessages);
