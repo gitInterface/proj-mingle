@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import com.ispan.mingle.projmingle.Service.chat.ChatMessageService;
 import com.ispan.mingle.projmingle.domain.MessageBean;
+import com.ispan.mingle.projmingle.dto.ChatPreviewDTO;
 import com.ispan.mingle.projmingle.repository.Chat.ChatNotification;
 
 import lombok.RequiredArgsConstructor;
@@ -50,4 +51,9 @@ public class ChatController {
         return ResponseEntity.ok(allMessages);
     }
 
+    @GetMapping("/messages/{senderid}/preview")
+    public ResponseEntity<List<ChatPreviewDTO>> initPreview(@PathVariable String senderid) {
+        List<ChatPreviewDTO> allChatPreviews = service.findAllChatPreviews(senderid);
+        return ResponseEntity.ok(allChatPreviews);
+    }
 }
