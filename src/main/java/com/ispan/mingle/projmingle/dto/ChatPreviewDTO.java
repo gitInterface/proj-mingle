@@ -15,8 +15,10 @@ import lombok.NoArgsConstructor;
 @Builder
 @Component
 public class ChatPreviewDTO {
-    private String userid;
-    private String username;
+    private String senderid;
+    private String recieverid;
+    private String sendername;
+    private String recievername;
     private String photo;
     private String contents;
     private Date createdTime;
