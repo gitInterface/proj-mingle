@@ -1,5 +1,6 @@
 package com.ispan.mingle.projmingle.Service;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,27 +14,24 @@ import jakarta.transaction.Transactional;
 @Service
 @Transactional
 public class OrderService {
-    
+
     @Autowired
     private VolunteerDetailRepository volunteerDetailRepository;
 
     @Autowired
     private WorkRepository workRepository;
 
-
     /** 透過會員id查詢會員資料 */
-    public VolunteerDetailBean selectVolunteerDetail (String id) {
-       VolunteerDetailBean  detail = volunteerDetailRepository.findById(id).orElse(null);
+    public VolunteerDetailBean selectVolunteerDetail(String id) {
+        VolunteerDetailBean detail = volunteerDetailRepository.findById(id).orElse(null);
         return detail;
     }
 
     /** 透過工作id查詢工作資料 */
-    public WorkBean selectWorkDetail (Integer id) {
-        WorkBean  detail = workRepository.findById(id).orElse(null);
+    public WorkBean selectWorkDetail(Integer workid) {
+        WorkBean detail = workRepository.findById(workid).orElse(null);
         return detail;
     }
-
-
 
 
 }
