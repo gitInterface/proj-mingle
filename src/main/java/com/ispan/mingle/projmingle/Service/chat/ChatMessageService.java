@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ispan.mingle.projmingle.domain.MessageBean;
 import com.ispan.mingle.projmingle.dto.ChatPreviewDTO;
+import com.ispan.mingle.projmingle.repository.VolunteerDetailRepository;
 import com.ispan.mingle.projmingle.repository.Chat.ChatMessageRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ChatMessageService {
     private final ChatMessageRepository repository;
+    private final VolunteerDetailRepository detailRepository;
     private final ChatRoomService chatRoomService;
     private final ChatPreviewDTO dto;
 
@@ -41,15 +43,20 @@ public class ChatMessageService {
 
     public List<ChatPreviewDTO> findAllChatPreviews(String senderid) {
         List<Object[]> result = repository.findLatestMessagesForUser(senderid);
-
         return result.stream()
-                .map((Object[] row) -> ChatPreviewDTO.builder()
-                        .userid((String) row[0])
-                        .username((String) row[1])
-                        .photo(Base64.getEncoder().encodeToString((byte[]) row[2]))
-                        .contents((String) row[3])
-                        .createdTime((Date) row[4])
-                        .build())
+                .map((Object[] row) -> {
+                    ChatPreviewDTO.ChatPreviewDTOBuilder builder = ChatPreviewDTO.builder()
+                            .senderid((String) row[0])
+                            .recieverid((String) row[1])
+                            .sendername((String) row[2])
+                            .recievername(detailRepository.findById((String) row[1]).get().getName())
+                            .contents((String) row[4])
+                            .createdTime((Date) row[5]);
+                    if (row[3] != null) {
+                        builder.photo(Base64.getEncoder().encodeToString((byte[]) row[3]));
+                    }
+                    return builder.build();
+                })
                 .collect(Collectors.toList());
     }
 }
