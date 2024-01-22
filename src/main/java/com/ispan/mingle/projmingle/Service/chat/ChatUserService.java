@@ -11,8 +11,8 @@ import com.ispan.mingle.projmingle.repository.Chat.ChatUserRepository;
 import lombok.RequiredArgsConstructor;
 
 @Service
-@RequiredArgsConstructor
 @Transactional
+@RequiredArgsConstructor
 public class ChatUserService {
     private final ChatUserRepository repository;
 

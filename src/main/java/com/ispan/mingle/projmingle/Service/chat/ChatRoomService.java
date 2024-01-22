@@ -3,6 +3,7 @@ package com.ispan.mingle.projmingle.Service.chat;
 import java.util.Optional;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.ispan.mingle.projmingle.domain.ChatRoomBean;
 import com.ispan.mingle.projmingle.repository.Chat.ChatRoomRepository;
@@ -10,6 +11,7 @@ import com.ispan.mingle.projmingle.repository.Chat.ChatRoomRepository;
 import lombok.RequiredArgsConstructor;
 
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class ChatRoomService {
 
