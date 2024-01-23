@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ispan.mingle.projmingle.domain.MessageBean;
+import com.ispan.mingle.projmingle.domain.VolunteerDetailBean;
 import com.ispan.mingle.projmingle.dto.ChatPreviewDTO;
 import com.ispan.mingle.projmingle.repository.VolunteerDetailRepository;
 import com.ispan.mingle.projmingle.repository.Chat.ChatMessageRepository;
@@ -58,5 +59,10 @@ public class ChatMessageService {
                     return builder.build();
                 })
                 .collect(Collectors.toList());
+    }
+
+    public List<VolunteerDetailBean> findAllUser(String senderid) {
+        return detailRepository.findAllByUseridIsNot(senderid);
+
     }
 }

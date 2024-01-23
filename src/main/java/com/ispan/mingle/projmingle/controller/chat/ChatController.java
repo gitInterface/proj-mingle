@@ -15,10 +15,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import com.ispan.mingle.projmingle.Service.chat.ChatMessageService;
 import com.ispan.mingle.projmingle.domain.MessageBean;
+import com.ispan.mingle.projmingle.domain.VolunteerDetailBean;
 import com.ispan.mingle.projmingle.dto.ChatPreviewDTO;
 import com.ispan.mingle.projmingle.repository.Chat.ChatNotification;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @CrossOrigin
@@ -56,4 +58,11 @@ public class ChatController {
         List<ChatPreviewDTO> allChatPreviews = service.findAllChatPreviews(senderid);
         return ResponseEntity.ok(allChatPreviews);
     }
+
+    @GetMapping("/messages/{senderid}/findAllUser")
+    public ResponseEntity<List<VolunteerDetailBean>> findAllUser(@PathVariable String senderid) {
+        List<VolunteerDetailBean> allUser = service.findAllUser(senderid);
+        return ResponseEntity.ok(allUser);
+    }
+
 }
