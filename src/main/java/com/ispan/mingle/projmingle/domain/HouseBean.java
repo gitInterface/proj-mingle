@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.hibernate.annotations.Fetch;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
@@ -94,6 +95,7 @@ public class HouseBean {
     private Character isDeleted;
 
     @ManyToMany(fetch = FetchType.EAGER)
+    @JsonBackReference
     @JoinTable(name = "Work_House", joinColumns = @JoinColumn(name = "fk_houseID"), inverseJoinColumns = @JoinColumn(name = "fk_workID"))
     private List<WorkBean> works;
 

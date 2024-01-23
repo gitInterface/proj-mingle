@@ -6,6 +6,7 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import jakarta.persistence.Column;
@@ -142,6 +143,7 @@ public class WorkBean {
     // private WorkTypeBean workType;
 
     @ManyToMany(fetch = FetchType.EAGER)
+    @JsonManagedReference
     @JoinTable(name = "Work_House", joinColumns = @JoinColumn(name = "fk_workID"), inverseJoinColumns = @JoinColumn(name = "fk_houseID"))
     private List<HouseBean> houses;
 
