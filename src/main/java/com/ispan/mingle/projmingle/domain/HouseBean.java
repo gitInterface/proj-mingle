@@ -1,16 +1,27 @@
 package com.ispan.mingle.projmingle.domain;
 
 import java.util.Date;
+import java.util.List;
+
+import org.hibernate.annotations.Fetch;
+
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import jakarta.persistence.Table;
 import lombok.Data;
 
 @Data
 @Entity
 @Table(name = "House")
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "houseid")
 public class HouseBean {
     @Id
     @Column(name = "houseID")
@@ -81,5 +92,17 @@ public class HouseBean {
 
     @Column(name = "isDeleted", columnDefinition = "bit")
     private Character isDeleted;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "Work_House", joinColumns = @JoinColumn(name = "fk_houseID"), inverseJoinColumns = @JoinColumn(name = "fk_workID"))
+    private List<WorkBean> works;
+
+    @Override
+    public String toString() {
+        
+        return "HouseBean [houseid=" + houseid + ", lordid=" + lordid + ", houseType=" + houseType + ", city=" + city + ", name=" + 
+                name + ", description=" + description + ", address=" + address + ", postCode=" + postCode + ", beds=" + beds + ", status=" + status + ", notes=" + notes + ", hasWifi=" + hasWifi + ", hasTV=" + hasTV + ", hasKitchen=" + hasKitchen + ", hasLaundry=" + hasLaundry + ", hasParkingLot=" + hasParkingLot + ", hasAirconditioner=" + hasAirconditioner + ", hasPersonalSpace=" + hasPersonalSpace + ", hasPool=" + hasPool + ", hasGym=" + hasGym + 
+                ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + ", isDeleted=" + isDeleted + "]";
+    }
 
 }
