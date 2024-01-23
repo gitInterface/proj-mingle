@@ -22,7 +22,7 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "House")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "houseid")
+
 public class HouseBean {
     @Id
     @Column(name = "houseID")
