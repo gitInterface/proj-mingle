@@ -156,7 +156,7 @@ public class WorkBean {
                 + genderRestriction + ", educationRestriction=" + educationRestriction + ", experienceRestriction="
                 + experienceRestriction + ", languageRestriction=" + languageRestriction + ", licenseRestriction="
                 + licenseRestriction + ", benefits=" + benefits + ", createdAt=" + createdAt + ", updatedAt="
-                + updatedAt + ", isDeleted=" + isDeleted + ", views=" + views +  "]";
+                + updatedAt + ", isDeleted=" + isDeleted + ", views=" + views + ", houses=" + houses + "]";
     }
 
 }
