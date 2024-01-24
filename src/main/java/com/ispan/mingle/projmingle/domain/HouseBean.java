@@ -3,8 +3,6 @@ package com.ispan.mingle.projmingle.domain;
 import java.util.Date;
 import java.util.List;
 
-import org.hibernate.annotations.Fetch;
-
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
