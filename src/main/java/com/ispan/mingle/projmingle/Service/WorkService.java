@@ -98,7 +98,9 @@ public class WorkService {
                 List<Predicate> predicates = new ArrayList<>();
                 if (filterMap.containsKey("worktype")) {
                     List<String> worktypeFilter = filterMap.get("worktype");
-                    predicates.add(root.get("worktype").in(worktypeFilter));
+                    if(worktypeFilter != null && worktypeFilter.size() > 0){
+                        predicates.add(root.get("worktype").in(worktypeFilter));
+                    }
                 }
                 if (filterMap.containsKey("city")) {
                     List<String> cityFilter = filterMap.get("city");
