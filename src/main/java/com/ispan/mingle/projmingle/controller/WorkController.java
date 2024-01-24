@@ -25,42 +25,16 @@ public class WorkController {
     @Autowired
     private WorkService workService;
 
-    // 工作排序(DEPRECATED)
     // @GetMapping("/getAllWorks")
     // public List<WorkBean> getAllWorks() {
     // return workRepository.findAll();
-    // }
-    // @GetMapping("/getHotWorks")
-    // public List<WorkBean> getHotWorks() {
-    // return workService.getHotWorks();
-    // }
-    // @GetMapping("/getLatestWorks")
-    // public List<WorkBean> getLatestWorks() {
-    // return workService.getLatestWorks();
-    // }
-    // @GetMapping("/getOldestWorks")
-    // public List<WorkBean> getOldestWorks() {
-    // return workService.getOldestWorks();
-    // }
-    // @GetMapping("/getDeadlineWorks")
-    // public List<WorkBean> getDeadlineWorks() {
-    // return workService.getDeadlineWorks();
-    // }
-    // @GetMapping("/getWorksByRemainingSpotsAsc")
-    // public List<WorkBean> getWorksByRemainingSpotsAsc() {
-    // return workService.getWorksByRemainingSpotsAsc();
-    // }
-    // @GetMapping("/getWorksByRemainingSpotsDesc")
-    // public List<WorkBean> getWorksByRemainingSpotsDesc() {
-    // return workService.getWorksByRemainingSpotsDesc();
-    // }
 
     // Pageable神器
     @PostMapping("/getWorks")
-    public Page<WorkBean> getWorks(Pageable pageable, @RequestParam(required = false) String sort,
+    public Page<WorkBean> getWorks(Pageable pageable, @RequestParam String direction, @RequestParam String property,
             @RequestBody Map<String, List<String>> filterMap) {
 
-        return workService.getWorks(pageable, sort, filterMap);
+        return workService.getWorks(pageable, direction, property, filterMap);
     }
 
     @GetMapping("/formattedAddresses")

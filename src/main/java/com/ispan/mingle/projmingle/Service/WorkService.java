@@ -62,28 +62,31 @@ public class WorkService {
     // }
 
     // Pageable神器
-    public Page<WorkBean> getWorks(Pageable pageable, String sort, Map<String, List<String>> filterMap) {
+    public Page<WorkBean> getWorks(Pageable pageable, String direction, String property, Map<String, List<String>> filterMap) {
         // 定義排序規則
-        Sort sortSpecification;
-        switch (sort) {
-            case "hot":
-                sortSpecification = Sort.by(Sort.Direction.DESC, "views");
-                break;
-            case "latest":
-                sortSpecification = Sort.by(Sort.Direction.DESC, "createdAt");
-                break;
-            case "deadline":
-                sortSpecification = Sort.by(Sort.Direction.ASC, "EndDate");
-                break;
-            case "attendanceAsc":
-                sortSpecification = Sort.by(Sort.Direction.ASC, "attendance", "maxAttendance");
-                break;
-            case "attendanceDesc":
-                sortSpecification = Sort.by(Sort.Direction.DESC, "attendance", "maxAttendance");
-                break;
-            default:
-                sortSpecification = Sort.unsorted();
-        }
+        Sort.Direction sortDirection = Sort.Direction.fromString(direction);
+        Sort sortSpecification = Sort.by(sortDirection, property);
+        // 定義排序規則
+        // Sort sortSpecification;
+        // switch (sort) {
+        //     case "hot":
+        //         sortSpecification = Sort.by(Sort.Direction.DESC, "views");
+        //         break;
+        //     case "latest":
+        //         sortSpecification = Sort.by(Sort.Direction.DESC, "createdAt");
+        //         break;
+        //     case "deadline":
+        //         sortSpecification = Sort.by(Sort.Direction.ASC, "EndDate");
+        //         break;
+        //     case "attendanceAsc":
+        //         sortSpecification = Sort.by(Sort.Direction.ASC, "attendance", "maxAttendance");
+        //         break;
+        //     case "attendanceDesc":
+        //         sortSpecification = Sort.by(Sort.Direction.DESC, "attendance", "maxAttendance");
+        //         break;
+        //     default:
+        //         sortSpecification = Sort.unsorted();
+        // }
 
         // 將排序規則套用到分頁請求
         Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sortSpecification);
@@ -109,14 +112,6 @@ public class WorkService {
         // 將 Specification 和 Pageable 套用到查詢[DEPRECATED]
         Page<WorkBean> worksPage = workRepository.findAll(spec, sortedPageable);
 
-        // 定義篩選規則(DEPRECATED)
-        // Page<WorkBean> worksPage;
-        // if (filter != null) {
-        //     // 如果有 filter 參數，則依照自定義方法來實現篩選
-        //     worksPage = workRepository.findByWorktype(filter, sortedPageable);
-        // } else {
-        //     worksPage = workRepository.findAll(sortedPageable);
-        // }
 
         // 根據帶入的 sort 參數來排序 (必須在資料庫查詢後才能排序的值)[DEPRECATED]
         // switch (sort) {

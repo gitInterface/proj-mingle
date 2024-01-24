@@ -9,6 +9,5 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import com.ispan.mingle.projmingle.domain.WorkBean;
 
 public interface WorkRepository extends JpaRepository<WorkBean, Integer>, JpaSpecificationExecutor<WorkBean> , WorkSpringDataJpaDAO{
-    // Page<WorkBean> findByWorktype(String worktype, Pageable pageable);
     Page<WorkBean> findAll(Specification<WorkBean> spec, Pageable pageable);
 }
