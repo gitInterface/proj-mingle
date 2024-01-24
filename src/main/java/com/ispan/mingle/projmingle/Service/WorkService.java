@@ -31,42 +31,13 @@ public class WorkService {
     @Autowired
     private GoogleMapsGeocodingService geocodingService;
 
-    // 工作排序[DEPRECATED]
-    // public List<WorkBean> getHotWorks() {
-    // Sort sort = Sort.by(Sort.Direction.DESC, "views");
-    // return workRepository.findAll(sort);
-    // }
-    // public List<WorkBean> getLatestWorks() {
-    // Sort sort = Sort.by(Sort.Direction.DESC, "createdAt");
-    // return workRepository.findAll(sort);
-    // }
-    // public List<WorkBean> getOldestWorks() {
-    // Sort sort = Sort.by(Sort.Direction.ASC, "createdAt");
-    // return workRepository.findAll(sort);
-    // }
-    // public List<WorkBean> getDeadlineWorks() {
-    // Sort sort = Sort.by(Sort.Direction.ASC, "EndDate");
-    // return workRepository.findAll(sort);
-    // }
-    // public List<WorkBean> getWorksByRemainingSpotsAsc() {
-    // List<WorkBean> works = workRepository.findAll();
-    // works.sort(Comparator.comparingInt((WorkBean w) -> w.getMaxAttendance() -
-    // w.getAttendance()));
-    // return works;
-    // }
-    // public List<WorkBean> getWorksByRemainingSpotsDesc() {
-    // List<WorkBean> works = workRepository.findAll();
-    // works.sort(Comparator.comparingInt((WorkBean w) -> w.getMaxAttendance() -
-    // w.getAttendance()).reversed());
-    // return works;
-    // }
 
     // Pageable神器
     public Page<WorkBean> getWorks(Pageable pageable, String direction, String property, Map<String, List<String>> filterMap) {
         // 定義排序規則
         Sort.Direction sortDirection = Sort.Direction.fromString(direction);
         Sort sortSpecification = Sort.by(sortDirection, property);
-        // 定義排序規則
+        // 排序規則[DEPRECATED]
         // Sort sortSpecification;
         // switch (sort) {
         //     case "hot":

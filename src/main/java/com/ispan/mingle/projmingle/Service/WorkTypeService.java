@@ -4,17 +4,17 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.List;
-import com.ispan.mingle.projmingle.domain.WorkTypeBean;
-import com.ispan.mingle.projmingle.repository.WorkTypeRepository;
+import com.ispan.mingle.projmingle.domain.WorktypeBean;
+import com.ispan.mingle.projmingle.repository.WorktypeRepository;
 
 @Service
 @Transactional
-public class WorkTypeService {
+public class WorktypeService {
 
     @Autowired
-    private WorkTypeRepository workTypeRepository;
+    private WorktypeRepository worktypeRepository;
 
-    public List<WorkTypeBean> getAllWorkTypes() {
-        return workTypeRepository.findAll();
+    public List<WorktypeBean> getAllWorktypes() {
+        return worktypeRepository.findAll();
     }
 }
