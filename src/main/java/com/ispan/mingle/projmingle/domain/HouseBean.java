@@ -3,8 +3,7 @@ package com.ispan.mingle.projmingle.domain;
 import java.util.Date;
 import java.util.List;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -19,7 +18,7 @@ import lombok.Data;
 @Data
 @Entity
 @Table(name = "House")
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "houseid")
+
 public class HouseBean {
     @Id
     @Column(name = "houseID")
@@ -92,6 +91,7 @@ public class HouseBean {
     private Character isDeleted;
 
     @ManyToMany(fetch = FetchType.EAGER)
+    @JsonBackReference
     @JoinTable(name = "Work_House", joinColumns = @JoinColumn(name = "fk_houseID"), inverseJoinColumns = @JoinColumn(name = "fk_workID"))
     private List<WorkBean> works;
 
