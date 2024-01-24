@@ -1,6 +1,7 @@
 package com.ispan.mingle.projmingle.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -55,8 +56,8 @@ public class WorkController {
     // Pageable神器
     @GetMapping("/getWorks")
     public Page<WorkBean> getWorks(Pageable pageable, @RequestParam(required = false) String sort,
-            @RequestParam(required = false) String filter) {
-        return workService.getWorks(pageable, sort, filter);
+            @RequestParam(required = false) Map<String, List<String>> filterMap) {
+        return workService.getWorks(pageable, sort, filterMap);
     }
 
     @GetMapping("/formattedAddresses")
