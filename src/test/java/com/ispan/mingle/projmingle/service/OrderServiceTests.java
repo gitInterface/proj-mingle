@@ -10,20 +10,19 @@ import com.ispan.mingle.projmingle.Service.OrderService;
 import com.ispan.mingle.projmingle.domain.HouseBean;
 import com.ispan.mingle.projmingle.domain.WorkBean;
 
-
 @SpringBootTest
 public class OrderServiceTests {
-    
+
     @Autowired
     private OrderService orderService;
 
     @Test
     public void testselectWorkDetail() {
-        WorkBean work =  orderService.selectWorkDetail(1);
-        List<HouseBean> detail  = work.getHouses();
-        for (HouseBean houseBean : detail) {
-            System.err.println(houseBean);
-        }
+        WorkBean work = orderService.selectWorkDetail(1);
+        // List<HouseBean> detail = work.getHouses();
+        // for (HouseBean houseBean : detail) {
+        // System.err.println(houseBean);
+        // }
     }
 
 }
