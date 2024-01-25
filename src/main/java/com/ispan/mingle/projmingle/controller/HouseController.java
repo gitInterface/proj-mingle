@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ispan.mingle.projmingle.Service.HouseService;
 import com.ispan.mingle.projmingle.domain.HouseBean;
 
+
 @RestController
 @RequestMapping("/api/house")
 @CrossOrigin

@@ -1,6 +1,7 @@
 package com.ispan.mingle.projmingle.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -8,6 +9,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,41 +25,16 @@ public class WorkController {
     @Autowired
     private WorkService workService;
 
-    // 工作排序(DEPRECATED)
     // @GetMapping("/getAllWorks")
     // public List<WorkBean> getAllWorks() {
-    //     return workRepository.findAll();
-    // }
-    // @GetMapping("/getHotWorks")
-    // public List<WorkBean> getHotWorks() {
-    //     return workService.getHotWorks();
-    // }
-    // @GetMapping("/getLatestWorks")
-    // public List<WorkBean> getLatestWorks() {
-    //     return workService.getLatestWorks();
-    // }
-    // @GetMapping("/getOldestWorks")
-    // public List<WorkBean> getOldestWorks() {
-    //     return workService.getOldestWorks();
-    // }
-    // @GetMapping("/getDeadlineWorks")
-    // public List<WorkBean> getDeadlineWorks() {
-    //     return workService.getDeadlineWorks();
-    // }
-    // @GetMapping("/getWorksByRemainingSpotsAsc")
-    // public List<WorkBean> getWorksByRemainingSpotsAsc() {
-    //     return workService.getWorksByRemainingSpotsAsc();
-    // }
-    // @GetMapping("/getWorksByRemainingSpotsDesc")
-    // public List<WorkBean> getWorksByRemainingSpotsDesc() {
-    //     return workService.getWorksByRemainingSpotsDesc();
-    // }
+    // return workRepository.findAll();
 
     // Pageable神器
-    @GetMapping("/getWorks")
-    public Page<WorkBean> getWorks(Pageable pageable, @RequestParam(required = false) String sort,
-            @RequestParam(required = false) String filter) {
-        return workService.getWorks(pageable, sort, filter);
+    @PostMapping("/getWorks")
+    public Page<WorkBean> getWorks(Pageable pageable, @RequestParam String direction, @RequestParam String property,
+            @RequestBody Map<String, List<String>> filterMap) {
+
+        return workService.getWorks(pageable, direction, property, filterMap);
     }
 
     @GetMapping("/formattedAddresses")
