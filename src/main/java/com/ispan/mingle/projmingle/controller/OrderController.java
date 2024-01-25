@@ -38,9 +38,9 @@ public class OrderController {
         return orderService.selectWorkDetail(workid);
     }
     
-    @GetMapping("/photo/{photoid}")
-    public List<HousePhotoBean> selectHouseImages(@PathVariable Integer photoid) {
-        List<HousePhotoBean> list  =  orderService.selectHouseImages(photoid);
+    @PostMapping("/photo/{photoid}")
+    public List<String> selectHouseImages(@PathVariable Integer photoid) {
+        List<String> list  =  orderService.selectHouseImages(photoid);
         return list;
     }
 

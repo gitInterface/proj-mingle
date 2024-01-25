@@ -1,6 +1,7 @@
 package com.ispan.mingle.projmingle.Service;
 
-
+import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,22 +41,29 @@ public class OrderService {
         WorkBean detail = workRepository.findById(workid).orElse(null);
         return detail;
     }
-    
+
     /** 透過工作id查詢關聯房間 */
 
     public List<HouseBean> selectWorkHouse(Integer workid) {
-       List<HouseBean> list  =  workRepository.findHousesByWorkId(workid);    
-       return list;
+        List<HouseBean> list = workRepository.findHousesByWorkId(workid);
+        return list;
     }
 
     /** 透過房屋id查詢房屋圖片 */
-    public List<HousePhotoBean> selectHouseImages(Integer photoid) {
-        if(photoid != null) {
-        
-         return housePhotoRepository.findAllById(photoid);
+    public List<String> selectHouseImages(Integer photoid) {
+        if (photoid != null) {
+
+            // 使用 housePhotoRepository 找到對應的 HousePhotoBean 列表
+            List<HousePhotoBean> housePhotoList = housePhotoRepository.findAllById(photoid);
+
+            // 提取每個 HousePhotoBean 的圖片 URL 並存儲在一個列表中
+            List<String> imageList = new ArrayList<>();
+            for (HousePhotoBean housePhoto : housePhotoList) {
+                String basePhoto = "data:imgage/jpeg;base64," + Base64.getEncoder().encodeToString(housePhoto.getPhoto());
+                imageList.add(basePhoto);
+            }
+            return imageList;
         }
         return null;
     }
-
-
 }
