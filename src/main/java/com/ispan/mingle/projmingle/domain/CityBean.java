@@ -13,7 +13,6 @@ import lombok.Data;
 @Table(name="City")
 @Component
 public class CityBean {
-    /**  打工類型 */
     @Id
     @Column(name = "city",
     columnDefinition = "nvarchar(3)")

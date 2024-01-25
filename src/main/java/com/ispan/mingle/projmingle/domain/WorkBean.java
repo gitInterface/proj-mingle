@@ -54,7 +54,7 @@ public class WorkBean {
     @Column(name = "notes", columnDefinition = "nvarchar(100)")
     private String notes;
 
-    /** 地區 */
+    /** 城市 */
     @Column(name = "fk_city", columnDefinition = "nvarchar(3)")
     private String city;
 
