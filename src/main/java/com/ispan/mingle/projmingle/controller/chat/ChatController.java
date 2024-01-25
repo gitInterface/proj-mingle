@@ -1,6 +1,5 @@
 package com.ispan.mingle.projmingle.controller.chat;
 
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -20,7 +19,6 @@ import com.ispan.mingle.projmingle.dto.ChatPreviewDTO;
 import com.ispan.mingle.projmingle.repository.Chat.ChatNotification;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 @CrossOrigin
