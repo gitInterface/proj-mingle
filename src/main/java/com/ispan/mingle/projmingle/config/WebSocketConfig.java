@@ -1,4 +1,4 @@
-package com.ispan.mingle.projmingle;
+package com.ispan.mingle.projmingle.config;
 
 import java.util.List;
 

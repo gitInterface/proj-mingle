@@ -1,23 +1,17 @@
 package com.ispan.mingle.projmingle.domain;
 
 import java.util.Date;
-import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
+
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.JoinTable;
-import jakarta.persistence.ManyToMany;
+
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -25,7 +19,6 @@ import lombok.Data;
 @Entity
 @Table(name = "Work")
 @Component
-@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "workid")
 public class WorkBean {
 
     /** 打工ID */
@@ -138,28 +131,8 @@ public class WorkBean {
     @Column(name = "views", columnDefinition = "int")
     private Integer views;
 
-    // @ManyToOne
-    // @JoinColumn(name = "fk_workType",insertable = false, updatable = false)
-    // private WorkTypeBean workType;
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JsonManagedReference
-    @JoinTable(name = "Work_House", joinColumns = @JoinColumn(name = "fk_workID"), inverseJoinColumns = @JoinColumn(name = "fk_houseID"))
-    private List<HouseBean> houses;
 
-    @Override
-    public String toString() {
-        
-        return "WorkBean [workid=" + workid + ", worktype=" + worktype + ", name=" + name + ", status=" + status
-                + ", notes=" + notes + ", city=" + city + ", address=" + address + ", startDate=" + startDate
-                + ", endDate=" + endDate + ", minPeriod=" + minPeriod + ", maxAttendance=" + maxAttendance
-                + ", attendance=" + attendance + ", description=" + description + ", workTime=" + workTime
-                + ", vacation=" + vacation + ", ageRestriction=" + ageRestriction + ", genderRestriction="
-                + genderRestriction + ", educationRestriction=" + educationRestriction + ", experienceRestriction="
-                + experienceRestriction + ", languageRestriction=" + languageRestriction + ", licenseRestriction="
-                + licenseRestriction + ", benefits=" + benefits + ", createdAt=" + createdAt + ", updatedAt="
-                + updatedAt + ", isDeleted=" + isDeleted + ", views=" + views + ", houses=" + houses + "]";
-    }
 
 }
 
