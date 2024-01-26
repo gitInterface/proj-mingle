@@ -5,6 +5,8 @@ import java.util.Date;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -16,7 +18,7 @@ public class HousePhotoBean {
 	@Column(name = "photoID")
 	private Integer photoid;
 
-    @Column(name = "photo", columnDefinition = "varbinary", length = 3000)
+    @Column(name = "photo", columnDefinition = "varbinary")
 	private byte[] photo;
 
     @Column(name = "photoSize", columnDefinition = "int")

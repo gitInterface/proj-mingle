@@ -12,14 +12,26 @@ import com.ispan.mingle.projmingle.domain.HouseBean;
 import com.ispan.mingle.projmingle.repository.HouseRepository;
 import com.ispan.mingle.projmingle.util.DatetimeConverter;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+
 @Service
 @Transactional
 public class HouseService {
     @Autowired
     private HouseRepository houseRepository;
 
+    @PersistenceContext
+    private EntityManager entityManager;
+
     public List<HouseBean> findAllHouses() {
         return houseRepository.findAll();
+    }
+
+    public List<HouseBean> findAllHousesWithPhotos() {
+        String jpql = "SELECT DISTINCT h FROM HouseBean h JOIN FETCH h.housePhotos";
+        List<HouseBean> houses = entityManager.createQuery(jpql, HouseBean.class).getResultList();
+        return houses;
     }
 
     public Optional<HouseBean> findById(Integer houseId) {
@@ -41,15 +53,15 @@ public class HouseService {
             String status = obj.isNull("status") ? null : obj.getString("status");
             String notes = obj.isNull("notes") ? null : obj.getString("notes");
             Character hasWifi = obj.isNull("hasWifi") ? null : obj.getString("hasWifi").charAt(0);
-            Character  hasTV = obj.isNull("hasTV") ? null : obj.getString("hasTV").charAt(0);
-            Character  hasKitchen = obj.isNull("hasKitchen") ? null : obj.getString("hasKitchen").charAt(0);
-            Character  hasLaundry = obj.isNull("hasLaundry") ? null : obj.getString("hasLaundry").charAt(0);
-            Character  hasParkingLot = obj.isNull("hasParkingLot") ? null : obj.getString("hasParkingLot").charAt(0);
-            Character  hasAirconditioner = obj.isNull("hasAirconditioner") ? null
+            Character hasTV = obj.isNull("hasTV") ? null : obj.getString("hasTV").charAt(0);
+            Character hasKitchen = obj.isNull("hasKitchen") ? null : obj.getString("hasKitchen").charAt(0);
+            Character hasLaundry = obj.isNull("hasLaundry") ? null : obj.getString("hasLaundry").charAt(0);
+            Character hasParkingLot = obj.isNull("hasParkingLot") ? null : obj.getString("hasParkingLot").charAt(0);
+            Character hasAirconditioner = obj.isNull("hasAirconditioner") ? null
                     : obj.getString("hasAirconditioner").charAt(0);
-            Character  hasPersonalSpace = obj.isNull("hasPersonalSpace") ? null
+            Character hasPersonalSpace = obj.isNull("hasPersonalSpace") ? null
                     : obj.getString("hasPersonalSpace").charAt(0);
-            Character  hasPool = obj.isNull("hasPool") ? null : obj.getString("hasPool").charAt(0);
+            Character hasPool = obj.isNull("hasPool") ? null : obj.getString("hasPool").charAt(0);
             Character hasGym = obj.isNull("hasGym") ? null : obj.getString("hasGym").charAt(0);
             String tempcreatedAt = obj.isNull("tempcreatedAt") ? null : obj.getString("tempcreatedAt");
             String tempupdatedAt = obj.isNull("tempupdatedAt") ? null : obj.getString("tempupdatedAt");
@@ -61,6 +73,7 @@ public class HouseService {
                     HouseBean update = optional.get();
                     update.setHouseid(houseid);
                     update.setLordid(lordid);
+                    // Check if there is a new photo in the JSON
                     update.setHouseType(houseType);
                     update.setCity(city);
                     update.setName(name);
@@ -74,11 +87,11 @@ public class HouseService {
                     update.setHasTV(hasTV);
                     update.setHasKitchen(hasKitchen);
                     update.setHasLaundry(hasLaundry);
-                    update.setHasParkingLot(hasParkingLot);  
+                    update.setHasParkingLot(hasParkingLot);
                     update.setHasAirconditioner(hasAirconditioner);
                     update.setHasPersonalSpace(hasPersonalSpace);
                     update.setHasPool(hasPool);
-                    update.setHasGym(hasGym);                  
+                    update.setHasGym(hasGym);
                     update.setCreatedAt(DatetimeConverter.parse(tempcreatedAt, "yyyy-MM-dd"));
                     update.setUpdatedAt(DatetimeConverter.parse(tempupdatedAt, "yyyy-MM-dd"));
                     update.setIsDeleted(isDeleted);

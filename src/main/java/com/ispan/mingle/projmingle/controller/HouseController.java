@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ispan.mingle.projmingle.Service.HouseService;
 import com.ispan.mingle.projmingle.domain.HouseBean;
 
-
 @RestController
 @RequestMapping("/api/house")
 @CrossOrigin
@@ -33,21 +32,27 @@ public class HouseController {
         return ResponseEntity.ok(houses);
     }
 
+    @GetMapping("/findAllHousesWithPhotos")
+    public ResponseEntity<List<HouseBean>> findAllHousesWithPhotos() {
+        List<HouseBean> houses = houseService.findAllHousesWithPhotos();
+        return ResponseEntity.ok(houses);
+    }
+
     @GetMapping("/find")
     public ResponseEntity<HouseBean> findById(@RequestParam Integer houseId) {
         Optional<HouseBean> house = houseService.findById(houseId);
         return house.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
-   @PutMapping("/modify/{houseid}")
+    @PutMapping("/modify/{houseid}")
     public ResponseEntity<?> modify(
-            @PathVariable(name="houseid") Integer houseid, @RequestBody String entity) {
-        if(houseid==null || !houseService.exists(houseid)) {
+            @PathVariable(name = "houseid") Integer houseid, @RequestBody String entity) {
+        if (houseid == null || !houseService.exists(houseid)) {
             ResponseEntity<Void> response = ResponseEntity.notFound().build();
-            return response;    
+            return response;
         } else {
             HouseBean result = houseService.modify(entity);
-            if(result==null) {
+            if (result == null) {
                 return ResponseEntity.notFound().build();
             } else {
                 ResponseEntity<HouseBean> response = ResponseEntity.ok().body(result);
@@ -55,7 +60,6 @@ public class HouseController {
             }
         }
     }
-
 
     @DeleteMapping("/delete/{houseId}")
     public ResponseEntity<Void> deleteById(@PathVariable Integer houseId) {
