@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -39,11 +39,23 @@ public class HouseController {
         return house.map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
-    @PostMapping("/save")
-    public ResponseEntity<HouseBean> save(@RequestBody HouseBean house) {
-        HouseBean savedHouse = houseService.save(house);
-        return ResponseEntity.ok(savedHouse);
+   @PutMapping("/modify/{houseid}")
+    public ResponseEntity<?> modify(
+            @PathVariable(name="houseid") Integer houseid, @RequestBody String entity) {
+        if(houseid==null || !houseService.exists(houseid)) {
+            ResponseEntity<Void> response = ResponseEntity.notFound().build();
+            return response;    
+        } else {
+            HouseBean result = houseService.modify(entity);
+            if(result==null) {
+                return ResponseEntity.notFound().build();
+            } else {
+                ResponseEntity<HouseBean> response = ResponseEntity.ok().body(result);
+                return response;
+            }
+        }
     }
+
 
     @DeleteMapping("/delete/{houseId}")
     public ResponseEntity<Void> deleteById(@PathVariable Integer houseId) {
