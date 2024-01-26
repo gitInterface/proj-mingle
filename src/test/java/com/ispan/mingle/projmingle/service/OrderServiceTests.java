@@ -25,4 +25,13 @@ public class OrderServiceTests {
         // }
     }
 
+    @Test
+    public void testselectHouseImages() 
+    {
+       List<String>  list = orderService.selectHouseImages(5);
+         System.err.println(list);
+    }
+
 }
+
+

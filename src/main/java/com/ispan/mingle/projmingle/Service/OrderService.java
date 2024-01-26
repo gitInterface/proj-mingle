@@ -1,6 +1,7 @@
 package com.ispan.mingle.projmingle.Service;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 
@@ -9,9 +10,14 @@ import org.springframework.stereotype.Service;
 
 import com.ispan.mingle.projmingle.domain.HouseBean;
 import com.ispan.mingle.projmingle.domain.HousePhotoBean;
+import com.ispan.mingle.projmingle.domain.OrderBean;
+import com.ispan.mingle.projmingle.domain.OrderWorkHouseBean;
 import com.ispan.mingle.projmingle.domain.VolunteerDetailBean;
 import com.ispan.mingle.projmingle.domain.WorkBean;
+import com.ispan.mingle.projmingle.domain.WorkHouseBean;
 import com.ispan.mingle.projmingle.repository.HousePhotoRepository;
+import com.ispan.mingle.projmingle.repository.OrderRepository;
+import com.ispan.mingle.projmingle.repository.OrderWorkHouseRepository;
 import com.ispan.mingle.projmingle.repository.VolunteerDetailRepository;
 import com.ispan.mingle.projmingle.repository.WorkRepository;
 
@@ -29,6 +35,12 @@ public class OrderService {
 
     @Autowired
     private HousePhotoRepository housePhotoRepository;
+
+    @Autowired
+    private OrderRepository orderRepository;
+
+    @Autowired
+    private OrderWorkHouseRepository orderWorkHouseRepository;
 
     /** 透過會員id查詢會員資料 */
     public VolunteerDetailBean selectVolunteerDetail(String id) {
@@ -50,20 +62,32 @@ public class OrderService {
     }
 
     /** 透過房屋id查詢房屋圖片 */
-    public List<String> selectHouseImages(Integer photoid) {
-        if (photoid != null) {
+    public List<String> selectHouseImages(Integer houseid) {
+        if (houseid != null) {
 
             // 使用 housePhotoRepository 找到對應的 HousePhotoBean 列表
-            List<HousePhotoBean> housePhotoList = housePhotoRepository.findAllById(photoid);
-
+            List<HousePhotoBean> housePhotoList = housePhotoRepository.findAllByHouseId(houseid);
             // 提取每個 HousePhotoBean 的圖片 URL 並存儲在一個列表中
             List<String> imageList = new ArrayList<>();
             for (HousePhotoBean housePhoto : housePhotoList) {
-                String basePhoto = "data:imgage/jpeg;base64," + Base64.getEncoder().encodeToString(housePhoto.getPhoto());
+                String basePhoto = "data:image/"+housePhoto.getContentType() + ";base64," + Base64.getEncoder().encodeToString(housePhoto.getPhoto());
                 imageList.add(basePhoto);
             }
             return imageList;
         }
         return null;
     }
+
+    /** 創建Order */
+    public OrderBean createOrder(OrderBean bean) {
+       OrderBean order  =  orderRepository.save(bean);
+       return order;
+    }
+    
+    /** 創建 Order與 WorkHouse 關聯 */
+    public OrderWorkHouseBean createOrderWorkHouse(OrderWorkHouseBean bean) {
+     OrderWorkHouseBean order  =  orderWorkHouseRepository.save(bean);
+        return order;
+    }
+
 }
