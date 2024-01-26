@@ -9,7 +9,7 @@ import com.ispan.mingle.projmingle.domain.HousePhotoBean;
 
 public interface HousePhotoRepository  extends JpaRepository<HousePhotoBean, Integer> {
 
-    @Query("SELECT h FROM HousePhotoBean h WHERE h.photoid = :photoid")
-    List<HousePhotoBean> findAllById(Integer photoid);
+    @Query("SELECT h FROM HousePhotoBean h WHERE h.houseid = :houseid")
+    List<HousePhotoBean> findAllByHouseId(Integer houseid);
     
 } 

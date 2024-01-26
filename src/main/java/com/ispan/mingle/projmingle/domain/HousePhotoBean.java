@@ -5,6 +5,7 @@ import java.util.Date;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -16,7 +17,8 @@ public class HousePhotoBean {
 	@Column(name = "photoID")
 	private Integer photoid;
 
-    @Column(name = "photo", columnDefinition = "varbinary", length = 3000)
+	@Lob
+	@Column(name = "photo")
 	private byte[] photo;
 
     @Column(name = "photoSize", columnDefinition = "int")
