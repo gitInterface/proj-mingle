@@ -100,10 +100,28 @@ public class WorkService {
                         }
                     }
                 }
-                // // 可不選、可複選的縣市
-                // if (filterMap.containsKey("city")) {
-                // List<String> cityFilter = filterMap.get("city");
-                // predicates.add(root.get("city").in(cityFilter));
+
+                // 工作名稱：關鍵字模糊搜尋 (以空白鍵作為分隔，只要任一關鍵字符合就會顯示)
+                if (filterMap.containsKey("keyword")) {
+                    String keywordString = filterMap.get("keyword").get(0);
+                    if (keywordString != null && !keywordString.isEmpty()) {
+                        String[] keywords = keywordString.split("\\s+");
+                        List<Predicate> keywordPredicates = new ArrayList<>();
+                        for (String keyword : keywords) {
+                            keywordPredicates.add(criteriaBuilder.like(root.get("name"), "%" + keyword + "%"));
+                        }
+                        predicates.add(criteriaBuilder.or(keywordPredicates.toArray(new Predicate[0])));
+                    }
+                }
+                // 備選方案(所有關鍵字都需符合才會顯示)
+                // if (filterMap.containsKey("keyword")) {
+                //     String keywordString = filterMap.get("keyword").get(0);
+                //     if (keywordString != null && !keywordString.isEmpty()) {
+                //         String[] keywords = keywordString.split("\\s+");
+                //         for (String keyword : keywords) {
+                //             predicates.add(criteriaBuilder.like(root.get("name"), "%" + keyword + "%"));
+                //         }
+                //     }
                 // }
                 return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
             }
