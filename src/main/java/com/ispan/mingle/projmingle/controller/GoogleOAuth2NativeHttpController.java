@@ -8,11 +8,12 @@
 // import org.springframework.http.HttpMethod;
 // import org.springframework.http.MediaType;
 // import org.springframework.http.ResponseEntity;
-// import org.springframework.stereotype.Controller;
 // import org.springframework.util.LinkedMultiValueMap;
 // import org.springframework.util.MultiValueMap;
+// import org.springframework.web.bind.annotation.CrossOrigin;
 // import org.springframework.web.bind.annotation.GetMapping;
 // import org.springframework.web.bind.annotation.RequestParam;
+// import org.springframework.web.bind.annotation.RestController;
 // import org.springframework.web.client.RestTemplate;
 
 // import com.fasterxml.jackson.databind.JsonNode;
@@ -23,7 +24,8 @@
 // import jakarta.servlet.http.HttpServletResponse;
 // import jakarta.servlet.http.HttpSession;
 
-// @Controller
+// @RestController
+// @CrossOrigin
 // public class GoogleOAuth2NativeHttpController {
 
 //     // 原生使用(okhttp) http request, response 執行 OAuth2 的寫法

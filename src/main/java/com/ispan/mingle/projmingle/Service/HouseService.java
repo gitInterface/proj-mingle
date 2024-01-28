@@ -73,7 +73,6 @@ public class HouseService {
                     HouseBean update = optional.get();
                     update.setHouseid(houseid);
                     update.setLordid(lordid);
-                    // Check if there is a new photo in the JSON
                     update.setHouseType(houseType);
                     update.setCity(city);
                     update.setName(name);
