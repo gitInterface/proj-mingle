@@ -29,7 +29,7 @@ public class WorkPhotoBean {
     private Integer workid;
 
     /** 照片 */
-    @Column(name = "photo", columnDefinition = "varbinary(3000)")
+    @Column(name = "photo", columnDefinition = "varbinary")
     private byte[] photo;
 
     /** 照片大小 */
