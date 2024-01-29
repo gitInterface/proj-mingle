@@ -85,19 +85,20 @@ public class WorkService {
                 // 縣市：可選所有縣市、整個區域、單個縣市
                 if (filterMap.containsKey("city")) {
                     String cityFilter = filterMap.get("city").get(0);
-                    if (cityFilter != "" && cityFilter.length() == 3) {
+                    if (cityFilter.length() == 3) {
                         predicates.add(criteriaBuilder.equal(root.get("city"), cityFilter));
-                    } else {
-                        // 從 City 資料表中查詢符合該 area 的所有 city
-                        List<CityBean> cities = cityRepository.findByArea(cityFilter);
-                        // 從 cities 中提取所有的 city
-                        List<String> cityNames = cities.stream()
-                                .map(CityBean::getCity)
-                                .collect(Collectors.toList());
-                        // 使用這些 city 來查詢 Work
-                        if (!cityNames.isEmpty()) {
-                            predicates.add(root.get("city").in(cityNames));
-                        }
+                    } else if(cityFilter.length() == 4){
+                        predicates.add(criteriaBuilder.equal(root.join("cityBean").get("area"), cityFilter));
+                        // // 從 City 資料表中查詢符合該 area 的所有 city
+                        // List<CityBean> cities = cityRepository.findByArea(cityFilter);
+                        // // 從 cities 中提取所有的 city
+                        // List<String> cityNames = cities.stream()
+                        //         .map(CityBean::getCity)
+                        //         .collect(Collectors.toList());
+                        // // 使用這些 city 來查詢 Work
+                        // if (!cityNames.isEmpty()) {
+                        //     predicates.add(root.get("city").in(cityNames));
+                        // }
                     }
                 }
 
