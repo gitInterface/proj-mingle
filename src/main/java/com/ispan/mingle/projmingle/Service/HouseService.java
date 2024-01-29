@@ -1,14 +1,20 @@
 package com.ispan.mingle.projmingle.Service;
 
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ispan.mingle.projmingle.domain.HouseBean;
+import com.ispan.mingle.projmingle.domain.HousePhotoBean;
+import com.ispan.mingle.projmingle.repository.HousePhotoRepository;
 import com.ispan.mingle.projmingle.repository.HouseRepository;
 import com.ispan.mingle.projmingle.util.DatetimeConverter;
 
@@ -20,6 +26,9 @@ import jakarta.persistence.PersistenceContext;
 public class HouseService {
     @Autowired
     private HouseRepository houseRepository;
+
+    @Autowired
+    private HousePhotoRepository housePhotoRepository;
 
     @PersistenceContext
     private EntityManager entityManager;
@@ -94,6 +103,48 @@ public class HouseService {
                     update.setCreatedAt(DatetimeConverter.parse(tempcreatedAt, "yyyy-MM-dd"));
                     update.setUpdatedAt(DatetimeConverter.parse(tempupdatedAt, "yyyy-MM-dd"));
                     update.setIsDeleted(isDeleted);
+
+                    // // Update housePhotos
+                    // JSONArray housePhotosArray = obj.optJSONArray("housePhotos");
+                    // if (housePhotosArray != null) {
+                    //     List<HousePhotoBean> housePhotosList = new ArrayList<>();
+
+                    //     for (int i = 0; i < housePhotosArray.length(); i++) {
+                    //         JSONObject photoObj = housePhotosArray.getJSONObject(i);
+                    //         // Check if the photo is null before setting related fields
+                    //         if (!photoObj.isNull("photo")) {
+                    //             byte[] photo = Base64.getDecoder().decode(photoObj.optString("photo"));
+                    //             String contentType = photoObj.optString("contentType");
+                    //             Integer photoSize = photoObj.optInt("photoSize");
+
+                    //             // Try to find an existing photo with the given byte array
+                    //             Optional<HousePhotoBean> existingPhotoOptional = housePhotoRepository.findByPhoto(photo);
+
+                    //             if (existingPhotoOptional.isPresent()) {
+                    //                 // Update existing photo
+                    //                 HousePhotoBean existingPhoto = existingPhotoOptional.get();
+                    //                 existingPhoto.setContentType(contentType);
+                    //                 existingPhoto.setPhotoSize(photoSize);
+                    //                 existingPhoto.setUpdatedAt(new Date());
+                    //                 housePhotosList.add(existingPhoto);
+                    //             } else {
+                    //                 // Insert new photo
+                    //                 HousePhotoBean housePhoto = new HousePhotoBean();
+                    //                 housePhoto.setPhoto(photo);
+                    //                 housePhoto.setContentType(contentType);
+                    //                 housePhoto.setPhotoSize(photoSize);
+                    //                 housePhoto.setCreatedAt(new Date());
+                    //                 housePhoto.setUpdatedAt(new Date());
+                    //                 housePhoto.setHouseid(houseid);
+                    //                 housePhoto.setIsDeleted(isDeleted);
+                    //                 housePhotosList.add(housePhoto);
+                    //             }
+                    //         }
+                    //     }
+
+                    //     // Set the list of HousePhotoBean in the updated HouseBean
+                    //     update.setHousePhotos(housePhotosList);
+                    // }
 
                     return houseRepository.save(update);
                 }
