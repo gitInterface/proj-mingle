@@ -14,4 +14,9 @@ public class VolunteerDetailService {
     public VolunteerDetailBean findById(String id) {
         return volunteerDetailRepository.findById(id).orElse(null);
     }
+
+    public VolunteerDetailBean update(VolunteerDetailBean volunteerDetailBean) {
+        VolunteerDetailBean newBean = volunteerDetailRepository.save(volunteerDetailBean);
+        return newBean;
+    }
 }
