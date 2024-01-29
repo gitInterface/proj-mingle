@@ -85,25 +85,44 @@ public class WorkService {
                 // 縣市：可選所有縣市、整個區域、單個縣市
                 if (filterMap.containsKey("city")) {
                     String cityFilter = filterMap.get("city").get(0);
-                    if (cityFilter != "" && cityFilter.length() == 3) {
+                    if (cityFilter.length() == 3) {
                         predicates.add(criteriaBuilder.equal(root.get("city"), cityFilter));
-                    } else {
-                        // 從 City 資料表中查詢符合該 area 的所有 city
-                        List<CityBean> cities = cityRepository.findByArea(cityFilter);
-                        // 從 cities 中提取所有的 city
-                        List<String> cityNames = cities.stream()
-                                .map(CityBean::getCity)
-                                .collect(Collectors.toList());
-                        // 使用這些 city 來查詢 Work
-                        if (!cityNames.isEmpty()) {
-                            predicates.add(root.get("city").in(cityNames));
-                        }
+                    } else if(cityFilter.length() == 4){
+                        predicates.add(criteriaBuilder.equal(root.join("cityBean").get("area"), cityFilter));
+                        // // 從 City 資料表中查詢符合該 area 的所有 city
+                        // List<CityBean> cities = cityRepository.findByArea(cityFilter);
+                        // // 從 cities 中提取所有的 city
+                        // List<String> cityNames = cities.stream()
+                        //         .map(CityBean::getCity)
+                        //         .collect(Collectors.toList());
+                        // // 使用這些 city 來查詢 Work
+                        // if (!cityNames.isEmpty()) {
+                        //     predicates.add(root.get("city").in(cityNames));
+                        // }
                     }
                 }
-                // // 可不選、可複選的縣市
-                // if (filterMap.containsKey("city")) {
-                // List<String> cityFilter = filterMap.get("city");
-                // predicates.add(root.get("city").in(cityFilter));
+
+                // 工作名稱：關鍵字模糊搜尋 (以空白鍵作為分隔，只要任一關鍵字符合就會顯示)
+                if (filterMap.containsKey("keyword")) {
+                    String keywordString = filterMap.get("keyword").get(0);
+                    if (keywordString != null && !keywordString.isEmpty()) {
+                        String[] keywords = keywordString.split("\\s+");
+                        List<Predicate> keywordPredicates = new ArrayList<>();
+                        for (String keyword : keywords) {
+                            keywordPredicates.add(criteriaBuilder.like(root.get("name"), "%" + keyword + "%"));
+                        }
+                        predicates.add(criteriaBuilder.or(keywordPredicates.toArray(new Predicate[0])));
+                    }
+                }
+                // 備選方案(所有關鍵字都需符合才會顯示)
+                // if (filterMap.containsKey("keyword")) {
+                //     String keywordString = filterMap.get("keyword").get(0);
+                //     if (keywordString != null && !keywordString.isEmpty()) {
+                //         String[] keywords = keywordString.split("\\s+");
+                //         for (String keyword : keywords) {
+                //             predicates.add(criteriaBuilder.like(root.get("name"), "%" + keyword + "%"));
+                //         }
+                //     }
                 // }
                 return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
             }
