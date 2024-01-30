@@ -97,5 +97,20 @@ public class OrderController {
     }
     
 
+    /** 用orderid找會員資料 */
+    @GetMapping("/findUserDetail")
+    public VolunteerDetailBean selectVolunteerDetailByUserId(@RequestParam("orderid") Integer orderid){
+        return orderService.getVolunteerDetailByOrderId(orderid);
 
+    }   
+
+    /** 用orderid找訂單 */
+    @GetMapping("/findOrder")
+    public OrderBean selectOrderDetailbyOrderId(@RequestParam Integer orderid) {
+        return orderService.getOrderDetailByOrderId(orderid);
+    }
+    
 }
+
+
+
