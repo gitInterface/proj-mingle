@@ -113,4 +113,16 @@ public class OrderService {
         return order;
     }
 
+    /** 用訂單orderid找會員詳細資料 */
+    public VolunteerDetailBean getVolunteerDetailByOrderId(Integer orderid){
+       VolunteerDetailBean volunteerDetail  =  orderRepository.findVolunteerDetailByOrderId(orderid);
+        return volunteerDetail;
+    }
+
+
+    /**透過orderid找訂單 */
+    public OrderBean getOrderDetailByOrderId(Integer orderid){
+        OrderBean order = orderRepository.findById(orderid).orElse(null);
+        return order;
+    }
 }
