@@ -4,11 +4,16 @@ import java.util.Date;
 
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.ispan.mingle.projmingle.util.BaseUtil;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.Data;
 
@@ -51,5 +56,15 @@ public class WorkPhotoBean {
     /** 是否刪除 */
     @Column(name = "isDeleted", columnDefinition = "bit")
     private Boolean isDeleted;
+
+    // public String getPhotoBase64() {
+    //     return BaseUtil.byteToBase64(this.contentType, this.photo);
+    // }
+
+    // 關連到 WorkBean (多對一)
+    @JsonBackReference
+    @ManyToOne
+    @JoinColumn(name = "fk_workID", referencedColumnName = "workID", insertable = false, updatable = false)
+    private WorkBean workBean;
 
 }

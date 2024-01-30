@@ -1,6 +1,7 @@
 package com.ispan.mingle.projmingle.Service;
 
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -16,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import com.ispan.mingle.projmingle.domain.WorkBean;
 import com.ispan.mingle.projmingle.repository.WorkRepository;
+import com.ispan.mingle.projmingle.util.BaseUtil;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -62,17 +64,17 @@ public class WorkService {
                     String cityFilter = filterMap.get("city").get(0);
                     if (cityFilter.length() == 3) {
                         predicates.add(criteriaBuilder.equal(root.get("city"), cityFilter));
-                    } else if(cityFilter.length() == 4){
+                    } else if (cityFilter.length() == 4) {
                         predicates.add(criteriaBuilder.equal(root.join("cityBean").get("area"), cityFilter));
                         // // 從 City 資料表中查詢符合該 area 的所有 city
                         // List<CityBean> cities = cityRepository.findByArea(cityFilter);
                         // // 從 cities 中提取所有的 city
                         // List<String> cityNames = cities.stream()
-                        //         .map(CityBean::getCity)
-                        //         .collect(Collectors.toList());
+                        // .map(CityBean::getCity)
+                        // .collect(Collectors.toList());
                         // // 使用這些 city 來查詢 Work
                         // if (!cityNames.isEmpty()) {
-                        //     predicates.add(root.get("city").in(cityNames));
+                        // predicates.add(root.get("city").in(cityNames));
                         // }
                     }
                 }
@@ -91,13 +93,13 @@ public class WorkService {
                 }
                 // 備選方案(所有關鍵字都需符合才會顯示)
                 // if (filterMap.containsKey("keyword")) {
-                //     String keywordString = filterMap.get("keyword").get(0);
-                //     if (keywordString != null && !keywordString.isEmpty()) {
-                //         String[] keywords = keywordString.split("\\s+");
-                //         for (String keyword : keywords) {
-                //             predicates.add(criteriaBuilder.like(root.get("name"), "%" + keyword + "%"));
-                //         }
-                //     }
+                // String keywordString = filterMap.get("keyword").get(0);
+                // if (keywordString != null && !keywordString.isEmpty()) {
+                // String[] keywords = keywordString.split("\\s+");
+                // for (String keyword : keywords) {
+                // predicates.add(criteriaBuilder.like(root.get("name"), "%" + keyword + "%"));
+                // }
+                // }
                 // }
                 return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
             }
@@ -108,6 +110,17 @@ public class WorkService {
 
         // 回傳處理完成的結果：工作列表(WorkBean 物件)、Pageable 物件(包含分頁資訊及排序規則)、總筆數
         List<WorkBean> works = new ArrayList<>(worksPage.getContent());
+
+        // 工作咖啡豆照片沖洗館
+        for (WorkBean work : works) {
+            List<String> photosBase64 = work.getWorkPhotoBeans().stream()
+            .limit(1)
+            .map(photo -> BaseUtil.byteToBase64(photo.getContentType(),
+            photo.getPhoto()))
+            .collect(Collectors.toList());
+            work.setPhotosBase64(photosBase64);
+        }
+
         return new PageImpl<>(works, sortedPageable, worksPage.getTotalElements());
     }
 

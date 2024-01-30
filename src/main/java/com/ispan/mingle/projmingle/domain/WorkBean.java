@@ -1,19 +1,22 @@
 package com.ispan.mingle.projmingle.domain;
 
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.Data;
 
 @Data
@@ -131,10 +134,24 @@ public class WorkBean {
     /** 瀏覽量 */
     @Column(name = "views", columnDefinition = "int")
     private Integer views;
+    
+    @Transient
+    private List<String> photosBase64;
 
+    // public List<String> getPhotosBase64() {
+    //     return photosBase64;
+    // }
 
+    // public void setPhotosBase64(List<String> photosBase64) {
+    //     this.photosBase64 = photosBase64;
+    // }
 
-    /** city table */
+    // 關連到 WorkPhotoBean (一對多)
+    @JsonManagedReference
+    @OneToMany(mappedBy = "workBean")
+    private List<WorkPhotoBean> workPhotoBeans;
+
+    // 關連到 CityBean (多對一)
     @ManyToOne
     @JoinColumn(name = "fk_city", referencedColumnName = "city", insertable = false, updatable = false)
     private CityBean cityBean;
