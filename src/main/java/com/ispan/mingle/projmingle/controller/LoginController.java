@@ -42,7 +42,6 @@ public class LoginController {
 		} else {
 			String sessionToken = generateSessionToken(userid);
 			session.setAttribute("sessionToken", sessionToken);
-
 			session.setAttribute("user", bean);
 			responseJson.put("message", "登入成功");
 			responseJson.put("success", true);
@@ -50,13 +49,13 @@ public class LoginController {
 			responseJson.put("userID", userid);
 			// put lordID給前端
 			responseJson.put("lordID", landlordService.findByUserIDtoLordID(userid));
+			responseJson.put("adminPermission", bean.getIsAdmin());
 		}
 		return responseJson.toString();
 	}
 
 	public String generateSessionToken(String userid) {
 		// UUID.randomUUID() 產生32個字的亂數字碼
-		// 再加上userid
 		return UUID.randomUUID().toString().replace("-", "") + userid;
 	}
 }
