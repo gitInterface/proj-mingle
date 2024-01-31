@@ -1,11 +1,12 @@
 package com.ispan.mingle.projmingle.Service;
 
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import com.ispan.mingle.projmingle.dto.WorkCreateDTO;
+import com.ispan.mingle.projmingle.util.BaseUtil;
+import com.ispan.mingle.projmingle.util.DatetimeConverter;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -15,9 +16,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import com.ispan.mingle.projmingle.domain.CityBean;
 import com.ispan.mingle.projmingle.domain.WorkBean;
 import com.ispan.mingle.projmingle.repository.WorkRepository;
-import com.ispan.mingle.projmingle.util.BaseUtil;
+import com.ispan.mingle.projmingle.repository.CityRepository;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -31,11 +33,20 @@ public class WorkService {
     @Autowired
     private WorkRepository workRepository;
 
-    // @Autowired
-    // private CityRepository cityRepository;
+    @Autowired
+    private WorkPhotoService workPhotoService;
+
+//    @Autowired
+//    private CityRepository cityRepository;
 
     @Autowired
     private GoogleMapsGeocodingService geocodingService;
+
+    private final ModelMapper modelMapper;
+
+    public WorkService(ModelMapper modelMapper) {
+        this.modelMapper = modelMapper;
+    }
 
     // 依據查詢條件獲取工作
     public Page<WorkBean> getWorks(Pageable pageable, String direction, String property,
@@ -144,4 +155,26 @@ public class WorkService {
         return geocodingService.getFormattedAddresses(workBeans);
     }
 
+    public void setNewWork(WorkCreateDTO workDTO) {
+        Date date = DatetimeConverter.getCurrentDate();
+        Integer workID = 1;
+        workDTO.setStatus("未上架");
+        workDTO.setCreatedAt(date);
+        System.out.println(date);
+        workDTO.setUpdatedAt(date);
+        workDTO.setIsDeleted(false);
+//        workDTO.setWorkID(workID);
+//        workDTO.setMaxAttendance(6);
+        workDTO.setViews(0);
+//        workDTO.setFkLandlordID(2);//沒有land統一先2
+        workDTO.setAttendance(0);//不知道是什麼先0
+        System.out.println(workDTO);
+        String session = workDTO.getSessionToken();
+        WorkBean workEntity = modelMapper.map(workDTO, WorkBean.class);
+        workEntity = workRepository.save(workEntity);
+//        workRepository.save();
+//        System.out.println(workEntity);
+//        System.out.println("拿到的:" + session);
+        workPhotoService.getPhoto(session,workEntity.getWorkid());
+    }
 }

@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ispan.mingle.projmingle.Service.LandlordService;
 import com.ispan.mingle.projmingle.Service.VolunteerService;
 import com.ispan.mingle.projmingle.domain.VolunteerBean;
 
@@ -18,9 +19,11 @@ import jakarta.servlet.http.HttpSession;
 @RestController
 @CrossOrigin
 public class LoginController {
-	
+
 	@Autowired
 	private VolunteerService volunteerService;
+	@Autowired
+	private LandlordService landlordService;
 
 	@PostMapping("/login.controller")
 	@ResponseBody
@@ -33,7 +36,7 @@ public class LoginController {
 		// 呼叫企業邏輯
 		VolunteerBean bean = volunteerService.login(userid, password);
 		// 根據結果呼叫View
-		if(bean==null) {
+		if (bean == null) {
 			responseJson.put("message", "登入失敗");
 			responseJson.put("success", false);
 		} else {
@@ -44,6 +47,9 @@ public class LoginController {
 			responseJson.put("message", "登入成功");
 			responseJson.put("success", true);
 			responseJson.put("sessionToken", sessionToken);
+
+			// put lordID給前端
+			responseJson.put("lordID", landlordService.findByUserIDtoLordID(userid));
 		}
 		return responseJson.toString();
 	}
@@ -51,6 +57,6 @@ public class LoginController {
 	public String generateSessionToken(String userid) {
 		// UUID.randomUUID() 產生32個字的亂數字碼
 		// 再加上userid
-		return UUID.randomUUID().toString().replace("-", "")+userid;
+		return UUID.randomUUID().toString().replace("-", "") + userid;
 	}
 }

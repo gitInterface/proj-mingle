@@ -26,4 +26,8 @@ public class DatetimeConverter {
 		}
 		return result;
 	}
+
+	public static Date getCurrentDate(){
+        return new Date();
+    }
 }
