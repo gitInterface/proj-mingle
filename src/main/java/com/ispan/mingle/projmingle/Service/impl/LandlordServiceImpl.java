@@ -5,7 +5,7 @@ package com.ispan.mingle.projmingle.Service.impl;
 
 import java.lang.Integer;
 import com.ispan.mingle.projmingle.domain.LandlordBean;
-import com.ispan.mingle.projmingle.service.LandlordService;
+import com.ispan.mingle.projmingle.Service.LandlordService;
 import com.ispan.mingle.projmingle.repository.LandlordRepository;
 import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
