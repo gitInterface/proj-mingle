@@ -11,7 +11,7 @@ public class UploadConfig {
     private String path;
 
     public String getPath() {
-        return path;
+        return path + "/";
     }
 
 }

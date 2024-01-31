@@ -4,9 +4,7 @@ package com.ispan.mingle.projmingle.controller;
 import com.ispan.mingle.projmingle.config.UploadConfig;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.PostConstruct;
@@ -14,6 +12,7 @@ import java.io.File;
 import java.io.IOException;
 
 @Controller
+@RequestMapping("/api/upload")
 @CrossOrigin
 public class UploadPhotoController {
 
@@ -22,13 +21,14 @@ public class UploadPhotoController {
 
     @ResponseBody
     @PostMapping("/photoUploadControl")
-    public String upload(MultipartFile file) {
+    public String upload(MultipartFile file ,@RequestHeader("sessionToken") String session) {
+        System.out.println(session);
         String fileName = file.getOriginalFilename();
 //      拿時間打亂檔名
         String newName = System.currentTimeMillis() + fileName.substring(fileName.lastIndexOf("."));
         System.out.println(newName);
 //      抓properties的path
-        String path = uploadConfig.getPath();
+        String path = uploadConfig.getPath() + session;
         File newPath = new File(path);
 //      開資料夾
         if (!newPath.exists()) newPath.mkdir();
@@ -39,6 +39,17 @@ public class UploadPhotoController {
             throw new RuntimeException(e);
         }
         System.out.println(path+"/"+newName);
-        return path+newName;
+        return path+"/"+newName;
+    }
+    @ResponseBody
+    @PostMapping("/photoDeleteController")
+    public void delete(@RequestBody String url) {
+        System.out.println(url);
+        try{
+            File f = new File(url);
+            f.delete();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }

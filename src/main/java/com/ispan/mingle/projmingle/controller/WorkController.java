@@ -3,6 +3,7 @@ package com.ispan.mingle.projmingle.controller;
 import java.util.List;
 import java.util.Map;
 
+import com.ispan.mingle.projmingle.dto.WorkCreateDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -41,5 +42,10 @@ public class WorkController {
     public ResponseEntity<List<String>> getFormattedAddresses() {
         List<String> formattedAddresses = workService.getFormattedAddresses();
         return ResponseEntity.ok(formattedAddresses);
+    }
+
+    @PostMapping("/addWork")
+    public void getWorks(@RequestBody WorkCreateDTO workDTO )  {
+        workService.setNewWork(workDTO);
     }
 }
