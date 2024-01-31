@@ -5,7 +5,10 @@ import org.springframework.stereotype.Service;
 import com.ispan.mingle.projmingle.domain.VolunteerDetailBean;
 import com.ispan.mingle.projmingle.repository.VolunteerDetailRepository;
 
+import jakarta.transaction.Transactional;
+
 @Service
+@Transactional
 public class VolunteerDetailService {
 
     @Autowired
