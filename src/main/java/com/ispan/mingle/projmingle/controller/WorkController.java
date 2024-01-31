@@ -9,6 +9,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,12 +30,18 @@ public class WorkController {
     // public List<WorkBean> getAllWorks() {
     // return workRepository.findAll();
 
-    // Pageable神器
+    // 依據查詢條件獲取工作
     @PostMapping("/getWorks")
     public Page<WorkBean> getWorks(Pageable pageable, @RequestParam String direction, @RequestParam String property,
             @RequestBody Map<String, List<String>> filterMap) {
 
         return workService.getWorks(pageable, direction, property, filterMap);
+    }
+
+    // 依據workid獲取工作
+    @GetMapping("/getWork/{workid}")
+    public WorkBean getWork(@PathVariable Integer workid) {
+        return workService.getWork(workid);
     }
 
     @GetMapping("/formattedAddresses")

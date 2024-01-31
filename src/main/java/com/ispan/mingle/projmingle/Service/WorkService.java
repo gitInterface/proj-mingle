@@ -37,7 +37,7 @@ public class WorkService {
     @Autowired
     private GoogleMapsGeocodingService geocodingService;
 
-    // Pageable神器
+    // 依據查詢條件獲取工作
     public Page<WorkBean> getWorks(Pageable pageable, String direction, String property,
             Map<String, List<String>> filterMap) {
         // 定義排序規則
@@ -122,6 +122,20 @@ public class WorkService {
         }
 
         return new PageImpl<>(works, sortedPageable, worksPage.getTotalElements());
+    }
+
+    // 依據workid獲取工作
+    public WorkBean getWork(Integer workid) {
+        WorkBean work = workRepository.findById(workid).orElse(null);
+        if (work != null) {
+            List<String> photosBase64 = work.getWorkPhotoBeans().stream()
+            .limit(1)
+            .map(photo -> BaseUtil.byteToBase64(photo.getContentType(),
+            photo.getPhoto()))
+            .collect(Collectors.toList());
+            work.setPhotosBase64(photosBase64);
+        }
+        return work;
     }
 
     // 地址格式化
