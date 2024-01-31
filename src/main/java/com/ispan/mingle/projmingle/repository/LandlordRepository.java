@@ -1,6 +1,6 @@
 package com.ispan.mingle.projmingle.repository;
-
-import java.util.List;
+    
+    
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -11,9 +11,10 @@ import com.ispan.mingle.projmingle.domain.LandlordBean;
 import com.ispan.mingle.projmingle.domain.OrderBean;
 import com.ispan.mingle.projmingle.domain.ReviewBean;
 
+import java.util.List;
+
 @Repository
 public interface LandlordRepository extends JpaRepository<LandlordBean, Integer> {
-
     /** 透過房東id查詢報名訂單 */
     @Query("SELECT o FROM OrderBean o " +
             "JOIN OrderWorkHouseBean owh ON o.orderid = owh.orderid " +
@@ -33,6 +34,7 @@ public interface LandlordRepository extends JpaRepository<LandlordBean, Integer>
             "WHERE l.landlordid = :landlordId")
     public List<ReviewBean> findReviewByLandlordId(@Param("landlordId") Integer landlordId);
 
-
-    
+    @Query("SELECT lb.landlordid FROM LandlordBean lb WHERE lb.userid = :id")
+    Integer findByUserIDtoLordID(String id);
 }
+
