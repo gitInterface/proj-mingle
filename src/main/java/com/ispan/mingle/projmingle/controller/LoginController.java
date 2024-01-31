@@ -47,7 +47,7 @@ public class LoginController {
 			responseJson.put("message", "登入成功");
 			responseJson.put("success", true);
 			responseJson.put("sessionToken", sessionToken);
-
+			responseJson.put("userID", userid);
 			// put lordID給前端
 			responseJson.put("lordID", landlordService.findByUserIDtoLordID(userid));
 		}
