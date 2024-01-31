@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.Column;
@@ -147,14 +148,17 @@ public class WorkBean {
     // }
 
     // 關連到 WorkPhotoBean (一對多)
+    @JsonIgnore
     @JsonManagedReference
     @OneToMany(mappedBy = "workBean")
     private List<WorkPhotoBean> workPhotoBeans;
 
     // 關連到 CityBean (多對一)
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "fk_city", referencedColumnName = "city", insertable = false, updatable = false)
     private CityBean cityBean;
+    
 
 }
 
