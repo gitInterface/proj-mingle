@@ -125,4 +125,16 @@ public class OrderService {
         OrderBean order = orderRepository.findById(orderid).orElse(null);
         return order;
     }
+
+    /** 用訂單id找工作 */
+    public WorkBean findWorkBeanByOrderId(Integer orderid){
+        WorkBean work = orderRepository.findWorkBeanByOrderId(orderid);
+        return work;
+    }
+
+    /** 用訂單id找房間 */
+    public List<HouseBean> findHouseBeanByOrderId(Integer orderid){
+        List<HouseBean> house = orderRepository.findHouseBeanByOrderId(orderid);
+        return house;
+    }
 }

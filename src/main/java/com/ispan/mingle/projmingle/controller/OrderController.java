@@ -106,10 +106,22 @@ public class OrderController {
 
     /** 用orderid找訂單 */
     @GetMapping("/findOrder")
-    public OrderBean selectOrderDetailbyOrderId(@RequestParam Integer orderid) {
+    public OrderBean selectOrderDetailbyOrderId(@RequestParam("orderid") Integer orderid) {
         return orderService.getOrderDetailByOrderId(orderid);
     }
     
+    /** 用orderid查工作 */
+    @GetMapping("/findWork")
+    public WorkBean selectWorkDetailByOrderId(@RequestParam("orderid") Integer orderid) {
+        return orderService.findWorkBeanByOrderId(orderid);
+    }
+
+    /** 用orderid查房子 */
+    @GetMapping("/findHouse")
+    public List<HouseBean> selectHouseDetailByOrderId(@RequestParam("orderid") Integer orderid) {
+        return orderService.findHouseBeanByOrderId(orderid);
+    }
+
 }
 
 
