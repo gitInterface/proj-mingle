@@ -150,7 +150,7 @@ public class OrderService {
         ReviewDTO review = new ReviewDTO();
 
         review.setUserid(volunteerDetail.getUserid());
-        review.setName(volunteerDetail.getName());
+        review.setUsername(volunteerDetail.getName());
         review.setImage(volunteerDetail.getImage());
         review.setPhotoType(volunteerDetail.getPhotoType());
         review.setCountry(volunteerDetail.getCountry());

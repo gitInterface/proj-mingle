@@ -17,7 +17,7 @@ public class ReviewDTO {
     private  String  userid;
 
     /**評論的幫助者姓名 */
-    private String name;
+    private String username;
 
     /**評論的幫助者大頭照 */
     private byte[] image;
