@@ -39,7 +39,7 @@ public class WorkController {
         return workService.getWorks(pageable, direction, property, filterMap);
     }
 
-    // 依據workid獲取工作
+    // 依據某個workid獲取工作
     @GetMapping("/getWork/{workid}")
     public WorkBean getWork(@PathVariable Integer workid) {
         return workService.getWork(workid);
@@ -50,6 +50,13 @@ public class WorkController {
     public ResponseEntity<Void> increaseViewCount(@PathVariable Integer workid) {
         workService.increaseViewCount(workid);
         return ResponseEntity.ok().build();
+    }
+
+    // 查詢某個地址的所有work
+    @GetMapping("/getWorksByAddress/{address}")
+    public ResponseEntity<List<WorkBean>> getWorksByAddress(@PathVariable String address) {
+        List<WorkBean> works = workService.getWorksByAddress(address);
+        return ResponseEntity.ok(works);
     }
 
     @GetMapping("/formattedAddresses")

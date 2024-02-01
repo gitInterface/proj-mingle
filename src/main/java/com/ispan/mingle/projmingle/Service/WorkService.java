@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
@@ -37,8 +38,8 @@ public class WorkService {
     @Autowired
     private WorkPhotoService workPhotoService;
 
-//    @Autowired
-//    private CityRepository cityRepository;
+    // @Autowired
+    // private CityRepository cityRepository;
 
     @Autowired
     private GoogleMapsGeocodingService geocodingService;
@@ -126,25 +127,24 @@ public class WorkService {
         // 工作咖啡豆照片沖洗館
         for (WorkBean work : works) {
             List<String> photosBase64 = work.getWorkPhotoBeans().stream()
-            .limit(1)
-            .map(photo -> BaseUtil.byteToBase64(photo.getContentType(),
-            photo.getPhoto()))
-            .collect(Collectors.toList());
+                    .limit(1)
+                    .map(photo -> BaseUtil.byteToBase64(photo.getContentType(),
+                            photo.getPhoto()))
+                    .collect(Collectors.toList());
             work.setPhotosBase64(photosBase64);
         }
 
         return new PageImpl<>(works, sortedPageable, worksPage.getTotalElements());
     }
 
-    // 依據workid獲取工作
+    // 依據某個workid獲取工作
     public WorkBean getWork(Integer workid) {
         WorkBean work = workRepository.findById(workid).orElse(null);
         if (work != null) {
             List<String> photosBase64 = work.getWorkPhotoBeans().stream()
-            .limit(1)
-            .map(photo -> BaseUtil.byteToBase64(photo.getContentType(),
-            photo.getPhoto()))
-            .collect(Collectors.toList());
+                    .map(photo -> BaseUtil.byteToBase64(photo.getContentType(),
+                            photo.getPhoto()))
+                    .collect(Collectors.toList());
             work.setPhotosBase64(photosBase64);
         }
         return work;
@@ -158,10 +158,31 @@ public class WorkService {
             work.setViews(work.getViews() + 1);
             workRepository.save(work);
         } else {
-            
+
         }
     }
 
+    // 查詢某個地址的所有work
+    public List<WorkBean> getWorksByAddress(String address) {
+        // 定義 Specification
+        Specification<WorkBean> spec = new Specification<WorkBean>() {
+            @Override
+            public Predicate toPredicate(Root<WorkBean> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+                // 檢查 WorkBean 的地址是否在提供的地址列表中
+                return criteriaBuilder.equal(root.get("address"), address);
+            }
+        };
+
+        // 使用 Specification 來查詢所有匹配的 WorkBean
+        List<WorkBean> works = workRepository.findAll(spec);
+
+        // 轉換 WorkBean 列表為 workid 列表
+        // List<Integer> workIds = works.stream()
+        // .map(WorkBean::getWorkid)
+        // .collect(Collectors.toList());
+
+        return works;
+    }
 
     // 地址格式化
     public List<String> getFormattedAddresses() {
@@ -177,18 +198,18 @@ public class WorkService {
         System.out.println(date);
         workDTO.setUpdatedAt(date);
         workDTO.setIsDeleted(false);
-//        workDTO.setWorkID(workID);
-//        workDTO.setMaxAttendance(6);
+        // workDTO.setWorkID(workID);
+        // workDTO.setMaxAttendance(6);
         workDTO.setViews(0);
-//        workDTO.setFkLandlordID(2);//沒有land統一先2
-        workDTO.setAttendance(0);//不知道是什麼先0
+        // workDTO.setFkLandlordID(2);//沒有land統一先2
+        workDTO.setAttendance(0);// 不知道是什麼先0
         System.out.println(workDTO);
         String session = workDTO.getSessionToken();
         WorkBean workEntity = modelMapper.map(workDTO, WorkBean.class);
         workEntity = workRepository.save(workEntity);
-//        workRepository.save();
-//        System.out.println(workEntity);
-//        System.out.println("拿到的:" + session);
-        workPhotoService.getPhoto(session,workEntity.getWorkid());
+        // workRepository.save();
+        // System.out.println(workEntity);
+        // System.out.println("拿到的:" + session);
+        workPhotoService.getPhoto(session, workEntity.getWorkid());
     }
 }
