@@ -10,10 +10,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ispan.mingle.projmingle.Service.OrderService;
 import com.ispan.mingle.projmingle.Service.ReviewService;
 import com.ispan.mingle.projmingle.domain.LandlordBean;
 import com.ispan.mingle.projmingle.domain.OrderBean;
 import com.ispan.mingle.projmingle.domain.ReviewBean;
+import com.ispan.mingle.projmingle.dto.ReviewDTO;
 
 
 @RestController
@@ -23,6 +25,9 @@ public class ReviewController {
 
     @Autowired
     private ReviewService reviewService;
+
+    @Autowired
+    private OrderService orderService;
 
     /** 用房東id找出訂單 */
     @GetMapping("/findorder")
@@ -42,6 +47,13 @@ public class ReviewController {
     public LandlordBean getLandlord(@RequestParam String userid) {
         return  reviewService.getLandlordByUserid(userid);
     }
+
+    @GetMapping("/findOrderDetail")
+    public ReviewDTO getOrderDetail(@RequestParam Integer orderid) {
+        return orderService.findReviewDTOByOrderId(orderid);
+    }
     
+    
+
 
 }
