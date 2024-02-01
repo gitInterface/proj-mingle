@@ -5,7 +5,6 @@ import java.util.Date;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.ispan.mingle.projmingle.util.BaseUtil;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

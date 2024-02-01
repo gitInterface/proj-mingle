@@ -36,6 +36,12 @@ public class VolunteerService {
 		return false;
 	}
 
+	// 檢查用戶有無管理員權限
+	public Boolean isAdmin(String userid) {
+        VolunteerBean volunteer = volunteerRepository.findByUserid(userid);
+        return volunteer != null && Boolean.TRUE.equals(volunteer.getIsAdmin());
+    }
+
 	public VolunteerBean create(String json) {
 		try {
 			JSONObject obj = new JSONObject(json);
@@ -46,6 +52,7 @@ public class VolunteerService {
 				VolunteerBean insert = new VolunteerBean();
 				insert.setUserid(userid);
 				insert.setPassword(password);
+				insert.setIsAdmin(false);
 				
 				return volunteerRepository.save(insert);
 			}
