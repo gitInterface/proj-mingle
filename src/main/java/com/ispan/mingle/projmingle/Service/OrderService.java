@@ -1,13 +1,13 @@
 package com.ispan.mingle.projmingle.Service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Base64;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.ispan.mingle.projmingle.domain.AccommodatorBean;
 import com.ispan.mingle.projmingle.domain.HouseBean;
 import com.ispan.mingle.projmingle.domain.HousePhotoBean;
 import com.ispan.mingle.projmingle.domain.OrderBean;
@@ -15,10 +15,12 @@ import com.ispan.mingle.projmingle.domain.OrderWorkHouseBean;
 import com.ispan.mingle.projmingle.domain.VolunteerDetailBean;
 import com.ispan.mingle.projmingle.domain.WorkBean;
 import com.ispan.mingle.projmingle.domain.WorkHouseBean;
+import com.ispan.mingle.projmingle.repository.AccommodatorRepository;
 import com.ispan.mingle.projmingle.repository.HousePhotoRepository;
 import com.ispan.mingle.projmingle.repository.OrderRepository;
 import com.ispan.mingle.projmingle.repository.OrderWorkHouseRepository;
 import com.ispan.mingle.projmingle.repository.VolunteerDetailRepository;
+import com.ispan.mingle.projmingle.repository.WorkHouseRepository;
 import com.ispan.mingle.projmingle.repository.WorkRepository;
 
 import jakarta.transaction.Transactional;
@@ -41,6 +43,14 @@ public class OrderService {
 
     @Autowired
     private OrderWorkHouseRepository orderWorkHouseRepository;
+
+    @Autowired
+    private WorkHouseRepository 
+    workHouseRepository;
+
+    @Autowired
+    private AccommodatorRepository accommodatorRepository;
+
 
     /** 透過會員id查詢會員資料 */
     public VolunteerDetailBean selectVolunteerDetail(String id) {
@@ -90,4 +100,41 @@ public class OrderService {
         return order;
     }
 
+    /** 透過房間id查詢關聯工作房間的詳細資料 */
+    public List<WorkHouseBean> selectWorkHouseDetail(Integer houseid) {
+        List<WorkHouseBean> list = workHouseRepository.findAllByHouseId(houseid);
+        return list;
+        
+    }
+
+    /** 創建住宿者資料 */
+    public AccommodatorBean createAccommodator(AccommodatorBean bean) {
+        AccommodatorBean order  =  accommodatorRepository.save(bean);
+        return order;
+    }
+
+    /** 用訂單orderid找會員詳細資料 */
+    public VolunteerDetailBean getVolunteerDetailByOrderId(Integer orderid){
+       VolunteerDetailBean volunteerDetail  =  orderRepository.findVolunteerDetailByOrderId(orderid);
+        return volunteerDetail;
+    }
+
+
+    /**透過orderid找訂單 */
+    public OrderBean getOrderDetailByOrderId(Integer orderid){
+        OrderBean order = orderRepository.findById(orderid).orElse(null);
+        return order;
+    }
+
+    /** 用訂單id找工作 */
+    public WorkBean findWorkBeanByOrderId(Integer orderid){
+        WorkBean work = orderRepository.findWorkBeanByOrderId(orderid);
+        return work;
+    }
+
+    /** 用訂單id找房間 */
+    public List<HouseBean> findHouseBeanByOrderId(Integer orderid){
+        List<HouseBean> house = orderRepository.findHouseBeanByOrderId(orderid);
+        return house;
+    }
 }

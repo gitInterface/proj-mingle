@@ -1,10 +1,12 @@
 package com.ispan.mingle.projmingle.Service;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import com.ispan.mingle.projmingle.dto.WorkCreateDTO;
+import com.ispan.mingle.projmingle.util.BaseUtil;
+import com.ispan.mingle.projmingle.util.DatetimeConverter;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -32,40 +34,26 @@ public class WorkService {
     private WorkRepository workRepository;
 
     @Autowired
-    private CityRepository cityRepository;
+    private WorkPhotoService workPhotoService;
+
+//    @Autowired
+//    private CityRepository cityRepository;
 
     @Autowired
     private GoogleMapsGeocodingService geocodingService;
 
-    // Pageable神器
+    private final ModelMapper modelMapper;
+
+    public WorkService(ModelMapper modelMapper) {
+        this.modelMapper = modelMapper;
+    }
+
+    // 依據查詢條件獲取工作
     public Page<WorkBean> getWorks(Pageable pageable, String direction, String property,
             Map<String, List<String>> filterMap) {
         // 定義排序規則
         Sort.Direction sortDirection = Sort.Direction.fromString(direction);
         Sort sortSpecification = Sort.by(sortDirection, property);
-        // 排序規則[DEPRECATED]
-        // Sort sortSpecification;
-        // switch (sort) {
-        // case "hot":
-        // sortSpecification = Sort.by(Sort.Direction.DESC, "views");
-        // break;
-        // case "latest":
-        // sortSpecification = Sort.by(Sort.Direction.DESC, "createdAt");
-        // break;
-        // case "deadline":
-        // sortSpecification = Sort.by(Sort.Direction.ASC, "EndDate");
-        // break;
-        // case "attendanceAsc":
-        // sortSpecification = Sort.by(Sort.Direction.ASC, "attendance",
-        // "maxAttendance");
-        // break;
-        // case "attendanceDesc":
-        // sortSpecification = Sort.by(Sort.Direction.DESC, "attendance",
-        // "maxAttendance");
-        // break;
-        // default:
-        // sortSpecification = Sort.unsorted();
-        // }
 
         // 將排序規則套用到分頁請求
         Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sortSpecification);
@@ -87,17 +75,17 @@ public class WorkService {
                     String cityFilter = filterMap.get("city").get(0);
                     if (cityFilter.length() == 3) {
                         predicates.add(criteriaBuilder.equal(root.get("city"), cityFilter));
-                    } else if(cityFilter.length() == 4){
+                    } else if (cityFilter.length() == 4) {
                         predicates.add(criteriaBuilder.equal(root.join("cityBean").get("area"), cityFilter));
                         // // 從 City 資料表中查詢符合該 area 的所有 city
                         // List<CityBean> cities = cityRepository.findByArea(cityFilter);
                         // // 從 cities 中提取所有的 city
                         // List<String> cityNames = cities.stream()
-                        //         .map(CityBean::getCity)
-                        //         .collect(Collectors.toList());
+                        // .map(CityBean::getCity)
+                        // .collect(Collectors.toList());
                         // // 使用這些 city 來查詢 Work
                         // if (!cityNames.isEmpty()) {
-                        //     predicates.add(root.get("city").in(cityNames));
+                        // predicates.add(root.get("city").in(cityNames));
                         // }
                     }
                 }
@@ -116,39 +104,49 @@ public class WorkService {
                 }
                 // 備選方案(所有關鍵字都需符合才會顯示)
                 // if (filterMap.containsKey("keyword")) {
-                //     String keywordString = filterMap.get("keyword").get(0);
-                //     if (keywordString != null && !keywordString.isEmpty()) {
-                //         String[] keywords = keywordString.split("\\s+");
-                //         for (String keyword : keywords) {
-                //             predicates.add(criteriaBuilder.like(root.get("name"), "%" + keyword + "%"));
-                //         }
-                //     }
+                // String keywordString = filterMap.get("keyword").get(0);
+                // if (keywordString != null && !keywordString.isEmpty()) {
+                // String[] keywords = keywordString.split("\\s+");
+                // for (String keyword : keywords) {
+                // predicates.add(criteriaBuilder.like(root.get("name"), "%" + keyword + "%"));
+                // }
+                // }
                 // }
                 return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
             }
         };
 
-        // 將 Specification 和 Pageable 套用到查詢[DEPRECATED]
+        // 將 Specification 和 Pageable 套用到查詢
         Page<WorkBean> worksPage = workRepository.findAll(spec, sortedPageable);
-
-        // 根據帶入的 sort 參數來排序 (必須在資料庫查詢後才能排序的值)[DEPRECATED]
-        // switch (sort) {
-        // case "spotsAsc":
-        // works.sort(Comparator.comparingInt((WorkBean w) -> w.getMaxAttendance() -
-        // w.getAttendance()));
-        // break;
-        // case "spotsDesc":
-        // works.sort(
-        // Comparator.comparingInt((WorkBean w) -> w.getMaxAttendance() -
-        // w.getAttendance()).reversed());
-        // break;
-        // default:
-        // // 不需要進行排序
-        // }
 
         // 回傳處理完成的結果：工作列表(WorkBean 物件)、Pageable 物件(包含分頁資訊及排序規則)、總筆數
         List<WorkBean> works = new ArrayList<>(worksPage.getContent());
+
+        // 工作咖啡豆照片沖洗館
+        for (WorkBean work : works) {
+            List<String> photosBase64 = work.getWorkPhotoBeans().stream()
+            .limit(1)
+            .map(photo -> BaseUtil.byteToBase64(photo.getContentType(),
+            photo.getPhoto()))
+            .collect(Collectors.toList());
+            work.setPhotosBase64(photosBase64);
+        }
+
         return new PageImpl<>(works, sortedPageable, worksPage.getTotalElements());
+    }
+
+    // 依據workid獲取工作
+    public WorkBean getWork(Integer workid) {
+        WorkBean work = workRepository.findById(workid).orElse(null);
+        if (work != null) {
+            List<String> photosBase64 = work.getWorkPhotoBeans().stream()
+            .limit(1)
+            .map(photo -> BaseUtil.byteToBase64(photo.getContentType(),
+            photo.getPhoto()))
+            .collect(Collectors.toList());
+            work.setPhotosBase64(photosBase64);
+        }
+        return work;
     }
 
     // 地址格式化
@@ -157,4 +155,26 @@ public class WorkService {
         return geocodingService.getFormattedAddresses(workBeans);
     }
 
+    public void setNewWork(WorkCreateDTO workDTO) {
+        Date date = DatetimeConverter.getCurrentDate();
+        Integer workID = 1;
+        workDTO.setStatus("未上架");
+        workDTO.setCreatedAt(date);
+        System.out.println(date);
+        workDTO.setUpdatedAt(date);
+        workDTO.setIsDeleted(false);
+//        workDTO.setWorkID(workID);
+//        workDTO.setMaxAttendance(6);
+        workDTO.setViews(0);
+//        workDTO.setFkLandlordID(2);//沒有land統一先2
+        workDTO.setAttendance(0);//不知道是什麼先0
+        System.out.println(workDTO);
+        String session = workDTO.getSessionToken();
+        WorkBean workEntity = modelMapper.map(workDTO, WorkBean.class);
+        workEntity = workRepository.save(workEntity);
+//        workRepository.save();
+//        System.out.println(workEntity);
+//        System.out.println("拿到的:" + session);
+        workPhotoService.getPhoto(session,workEntity.getWorkid());
+    }
 }
