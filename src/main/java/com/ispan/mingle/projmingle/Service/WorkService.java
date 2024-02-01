@@ -149,6 +149,19 @@ public class WorkService {
         return work;
     }
 
+    // 增加某workid的瀏覽量
+    public void increaseViewCount(Integer workid) {
+        Optional<WorkBean> optionalWork = workRepository.findById(workid);
+        if (optionalWork.isPresent()) {
+            WorkBean work = optionalWork.get();
+            work.setViews(work.getViews() + 1);
+            workRepository.save(work);
+        } else {
+            
+        }
+    }
+
+
     // 地址格式化
     public List<String> getFormattedAddresses() {
         List<WorkBean> workBeans = workRepository.findAll();

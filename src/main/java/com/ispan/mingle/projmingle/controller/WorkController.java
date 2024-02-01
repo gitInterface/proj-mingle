@@ -45,6 +45,13 @@ public class WorkController {
         return workService.getWork(workid);
     }
 
+    // 增加某workid的瀏覽量
+    @PostMapping("/increaseViewCount/{workid}")
+    public ResponseEntity<Void> increaseViewCount(@PathVariable Integer workid) {
+        workService.increaseViewCount(workid);
+        return ResponseEntity.ok().build();
+    }
+
     @GetMapping("/formattedAddresses")
     public ResponseEntity<List<String>> getFormattedAddresses() {
         List<String> formattedAddresses = workService.getFormattedAddresses();
@@ -52,7 +59,7 @@ public class WorkController {
     }
 
     @PostMapping("/addWork")
-    public void getWorks(@RequestBody WorkCreateDTO workDTO )  {
+    public void getWorks(@RequestBody WorkCreateDTO workDTO) {
         workService.setNewWork(workDTO);
     }
 }
