@@ -42,6 +42,8 @@ public class VolunteerDetailController {
         JSONObject responseJson = new JSONObject();
         // 驗證使用者資料
         if (userid == null || userid.length() == 0) {
+              System.err.println("執行到這裡了嗎??????????");
+
             responseJson.put("error", "沒有userid");
             return responseJson.toString();
         }
@@ -63,6 +65,8 @@ public class VolunteerDetailController {
         volunteerDetailBean.setBackground(background);
         volunteerDetailBean.setLanguage(language);
         volunteerDetailBean.setHobby(hobby);
+          System.err.println("執行到這裡了嗎?");
+
 
         // 更新使用者資料
         VolunteerDetailBean update = volunteerDetailService.update(volunteerDetailBean);

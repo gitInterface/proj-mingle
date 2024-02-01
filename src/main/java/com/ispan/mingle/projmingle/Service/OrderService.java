@@ -1,8 +1,11 @@
 package com.ispan.mingle.projmingle.Service;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Date;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +18,7 @@ import com.ispan.mingle.projmingle.domain.OrderWorkHouseBean;
 import com.ispan.mingle.projmingle.domain.VolunteerDetailBean;
 import com.ispan.mingle.projmingle.domain.WorkBean;
 import com.ispan.mingle.projmingle.domain.WorkHouseBean;
+import com.ispan.mingle.projmingle.dto.ReviewDTO;
 import com.ispan.mingle.projmingle.repository.AccommodatorRepository;
 import com.ispan.mingle.projmingle.repository.HousePhotoRepository;
 import com.ispan.mingle.projmingle.repository.OrderRepository;
@@ -45,12 +49,10 @@ public class OrderService {
     private OrderWorkHouseRepository orderWorkHouseRepository;
 
     @Autowired
-    private WorkHouseRepository 
-    workHouseRepository;
+    private WorkHouseRepository workHouseRepository;
 
     @Autowired
     private AccommodatorRepository accommodatorRepository;
-
 
     /** 透過會員id查詢會員資料 */
     public VolunteerDetailBean selectVolunteerDetail(String id) {
@@ -80,7 +82,8 @@ public class OrderService {
             // 提取每個 HousePhotoBean 的圖片 URL 並存儲在一個列表中
             List<String> imageList = new ArrayList<>();
             for (HousePhotoBean housePhoto : housePhotoList) {
-                String basePhoto = "data:image/"+housePhoto.getContentType() + ";base64," + Base64.getEncoder().encodeToString(housePhoto.getPhoto());
+                String basePhoto = "data:image/" + housePhoto.getContentType() + ";base64,"
+                        + Base64.getEncoder().encodeToString(housePhoto.getPhoto());
                 imageList.add(basePhoto);
             }
             return imageList;
@@ -90,13 +93,13 @@ public class OrderService {
 
     /** 創建Order */
     public OrderBean createOrder(OrderBean bean) {
-       OrderBean order  =  orderRepository.save(bean);
-       return order;
+        OrderBean order = orderRepository.save(bean);
+        return order;
     }
-    
+
     /** 創建 Order與 WorkHouse 關聯 */
     public OrderWorkHouseBean createOrderWorkHouse(OrderWorkHouseBean bean) {
-     OrderWorkHouseBean order  =  orderWorkHouseRepository.save(bean);
+        OrderWorkHouseBean order = orderWorkHouseRepository.save(bean);
         return order;
     }
 
@@ -104,37 +107,89 @@ public class OrderService {
     public List<WorkHouseBean> selectWorkHouseDetail(Integer houseid) {
         List<WorkHouseBean> list = workHouseRepository.findAllByHouseId(houseid);
         return list;
-        
+
     }
 
     /** 創建住宿者資料 */
     public AccommodatorBean createAccommodator(AccommodatorBean bean) {
-        AccommodatorBean order  =  accommodatorRepository.save(bean);
+        AccommodatorBean order = accommodatorRepository.save(bean);
         return order;
     }
 
     /** 用訂單orderid找會員詳細資料 */
-    public VolunteerDetailBean getVolunteerDetailByOrderId(Integer orderid){
-       VolunteerDetailBean volunteerDetail  =  orderRepository.findVolunteerDetailByOrderId(orderid);
+    public VolunteerDetailBean getVolunteerDetailByOrderId(Integer orderid) {
+        VolunteerDetailBean volunteerDetail = orderRepository.findVolunteerDetailByOrderId(orderid);
         return volunteerDetail;
     }
 
-
-    /**透過orderid找訂單 */
-    public OrderBean getOrderDetailByOrderId(Integer orderid){
+    /** 透過orderid找訂單 */
+    public OrderBean getOrderDetailByOrderId(Integer orderid) {
         OrderBean order = orderRepository.findById(orderid).orElse(null);
         return order;
     }
 
     /** 用訂單id找工作 */
-    public WorkBean findWorkBeanByOrderId(Integer orderid){
+    public WorkBean findWorkBeanByOrderId(Integer orderid) {
         WorkBean work = orderRepository.findWorkBeanByOrderId(orderid);
         return work;
     }
 
     /** 用訂單id找房間 */
-    public List<HouseBean> findHouseBeanByOrderId(Integer orderid){
+    public List<HouseBean> findHouseBeanByOrderId(Integer orderid) {
         List<HouseBean> house = orderRepository.findHouseBeanByOrderId(orderid);
         return house;
     }
+
+    /** 用訂單id找ReviewDTO */
+    public ReviewDTO findReviewDTOByOrderId(Integer orderid) {
+        VolunteerDetailBean volunteerDetail = orderRepository.findVolunteerDetailByOrderId(orderid);
+        OrderBean order = orderRepository.findById(orderid).orElse(null);
+        WorkBean work = orderRepository.findWorkBeanByOrderId(orderid);
+        List<HouseBean> house = orderRepository.findHouseBeanByOrderId(orderid);
+
+        ReviewDTO review = new ReviewDTO();
+
+        review.setUserid(volunteerDetail.getUserid());
+        review.setUsername(volunteerDetail.getName());
+        review.setImage(volunteerDetail.getImage());
+        review.setPhotoType(volunteerDetail.getPhotoType());
+        review.setCountry(volunteerDetail.getCountry());
+        review.setWorkid(work.getWorkid());
+        review.setWorktype(work.getWorktype());
+        review.setWorkName(work.getName());
+        review.setCity(work.getCity());
+
+        Date endDate = work.getEndDate();
+        Date startDate = work.getStartDate();
+
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        review.setStartDate(dateFormat.format(startDate));
+        review.setEndDate(dateFormat.format(endDate));
+
+        long differenceInMillis = endDate.getTime() - startDate.getTime();
+        long daysDifference = TimeUnit.MILLISECONDS.toDays(differenceInMillis);
+        review.setDays(daysDifference);
+
+        for (HouseBean houseBean : house) {
+            
+            List<Integer> houseidList = new ArrayList<>();
+            houseidList.add(houseBean.getHouseid());
+            review.setHouseid(houseidList);
+
+            List<String> houseNameList = new ArrayList<>();
+            houseNameList.add(houseBean.getName());
+            review.setHouseName(houseNameList);
+
+            List<String> houseTypeList = new ArrayList<>();
+            houseTypeList.add(houseBean.getHouseType());
+            review.setHouseType(houseTypeList);
+        }
+
+        review.setOrderid(order.getOrderid());
+        review.setNumbers(order.getNumbers());
+
+        return review;
+
+    }
+
 }
