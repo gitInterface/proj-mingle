@@ -52,4 +52,6 @@ public class MessageBean {
 
     @Column(name = "chatID", columnDefinition = "varchar(100)")
     private String chatid;
+    @Column(name = "type", columnDefinition = "int")
+    private Integer type;
 }
