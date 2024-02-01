@@ -1,11 +1,11 @@
 package com.ispan.mingle.projmingle.Service;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
-import com.ispan.mingle.projmingle.dto.WorkCreateDTO;
-import com.ispan.mingle.projmingle.util.BaseUtil;
-import com.ispan.mingle.projmingle.util.DatetimeConverter;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -16,10 +16,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
-import com.ispan.mingle.projmingle.domain.CityBean;
 import com.ispan.mingle.projmingle.domain.WorkBean;
+import com.ispan.mingle.projmingle.dto.WorkCreateDTO;
 import com.ispan.mingle.projmingle.repository.WorkRepository;
-import com.ispan.mingle.projmingle.repository.CityRepository;
+import com.ispan.mingle.projmingle.util.BaseUtil;
+import com.ispan.mingle.projmingle.util.DatetimeConverter;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;

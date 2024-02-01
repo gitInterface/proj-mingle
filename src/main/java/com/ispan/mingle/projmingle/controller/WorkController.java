@@ -44,7 +44,7 @@ public class WorkController {
     public WorkBean getWork(@PathVariable Integer workid) {
         return workService.getWork(workid);
     }
-
+    
     @GetMapping("/formattedAddresses")
     public ResponseEntity<List<String>> getFormattedAddresses() {
         List<String> formattedAddresses = workService.getFormattedAddresses();
