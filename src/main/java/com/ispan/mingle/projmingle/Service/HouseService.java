@@ -1,5 +1,6 @@
 package com.ispan.mingle.projmingle.Service;
 
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
@@ -106,12 +107,21 @@ public class HouseService {
                     update.setUpdatedAt(DatetimeConverter.parse(tempupdatedAt, "yyyy-MM-dd"));
                     update.setIsDeleted(isDeleted);
 
+                    // Detach the HouseBean from the EntityManager
+                    entityManager.detach(update);
+
                     // Update housePhotos
-                    List<HousePhotoBean> updatedPhotos = update.getHousePhotos();
+                    // Create a new list to store the update photos
+                    List<HousePhotoBean> updatedPhotos = new ArrayList<>();
                     JSONArray photosArray = obj.getJSONArray("housePhotos");
+
+                    // Remove existing HousePhotoBean entries associated with the selected houseid
+                    housePhotoRepository.deleteByHouseid(update.getHouseid());
+
                     for (int i = 0; i < photosArray.length(); i++) {
                         JSONObject photoObject = photosArray.getJSONObject(i);
                         HousePhotoBean updatedPhoto = new HousePhotoBean();
+
                         // Set photo properties from the photoObject
                         String photoData = photoObject.getString("photo");
                         // Convert Base64-encoded string to byte array
@@ -134,7 +144,7 @@ public class HouseService {
                     // Set the updated photos for the house
                     update.setHousePhotos(updatedPhotos);
 
-                    // // Save the changes to the house
+                    // Save the changes to the house
                     HouseBean savedHouse = houseRepository.save(update);
 
                     // Update house references for the new photos (if any)
@@ -143,11 +153,8 @@ public class HouseService {
                         housePhotoRepository.save(newPhoto);
                     }
 
-                    // // Set the updated photos for the house
+                    // Set the updated photos for the house
                     update.setHousePhotos(updatedPhotos);
-
-                    // Debug print statements
-                    
 
                     return houseRepository.save(update);
                 }

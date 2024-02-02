@@ -14,4 +14,6 @@ public interface HousePhotoRepository  extends JpaRepository<HousePhotoBean, Int
     List<HousePhotoBean> findAllByHouseId(Integer houseid);
     
     Optional<HousePhotoBean> findByPhoto(byte[] photo);
+
+    void deleteByHouseid(Integer houseid);
 } 
