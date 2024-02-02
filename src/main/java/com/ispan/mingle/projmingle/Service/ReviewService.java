@@ -63,4 +63,14 @@ public class ReviewService {
     }
 
 
+    /** 送出房東回應 */
+    public ReviewBean createReview(ReviewBean bean){
+        return reviewRepository.save(bean);
+    }
+
+    /** 透過評價id查詢評論 */
+    public ReviewBean findById(Integer reviewId){
+        ReviewBean review = reviewRepository.findById(reviewId).orElse(null);
+        return review;
+    }
 }
