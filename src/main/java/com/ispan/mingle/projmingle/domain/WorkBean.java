@@ -2,6 +2,7 @@ package com.ispan.mingle.projmingle.domain;
 
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
@@ -135,16 +136,16 @@ public class WorkBean {
     /** 瀏覽量 */
     @Column(name = "views", columnDefinition = "int")
     private Integer views;
-    
+
     @Transient
     private List<String> photosBase64;
 
     // public List<String> getPhotosBase64() {
-    //     return photosBase64;
+    // return photosBase64;
     // }
 
     // public void setPhotosBase64(List<String> photosBase64) {
-    //     this.photosBase64 = photosBase64;
+    // this.photosBase64 = photosBase64;
     // }
 
     // 關連到 WorkPhotoBean (一對多)
@@ -158,7 +159,12 @@ public class WorkBean {
     @ManyToOne
     @JoinColumn(name = "fk_city", referencedColumnName = "city", insertable = false, updatable = false)
     private CityBean cityBean;
-    
+
+    // 獲取所有未被刪除的 WorkPhotoBeans
+    public List<WorkPhotoBean> getUndeletedWorkPhotoBeans() {
+        return workPhotoBeans.stream()
+                .filter(photo -> !photo.getIsDeleted())
+                .collect(Collectors.toList());
+    }
 
 }
-

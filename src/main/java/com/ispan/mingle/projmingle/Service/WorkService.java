@@ -65,6 +65,8 @@ public class WorkService {
             @Override
             public Predicate toPredicate(Root<WorkBean> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
                 List<Predicate> predicates = new ArrayList<>();
+                // 檢查 WorkBean 是否為isDeleted
+                predicates.add(criteriaBuilder.equal(root.get("isDeleted"), false));
                 // 工作類型：可不選、可複選
                 if (filterMap.containsKey("worktype")) {
                     List<String> worktypeFilter = filterMap.get("worktype");
@@ -124,9 +126,9 @@ public class WorkService {
         // 回傳處理完成的結果：工作列表(WorkBean 物件)、Pageable 物件(包含分頁資訊及排序規則)、總筆數
         List<WorkBean> works = new ArrayList<>(worksPage.getContent());
 
-        // 工作咖啡豆照片沖洗館
+        // 工作咖啡豆照片沖洗館：一人限一張照片
         for (WorkBean work : works) {
-            List<String> photosBase64 = work.getWorkPhotoBeans().stream()
+            List<String> photosBase64 = work.getUndeletedWorkPhotoBeans().stream()
                     .limit(1)
                     .map(photo -> BaseUtil.byteToBase64(photo.getContentType(),
                             photo.getPhoto()))
@@ -140,26 +142,15 @@ public class WorkService {
     // 依據某個workid獲取工作
     public WorkBean getWork(Integer workid) {
         WorkBean work = workRepository.findById(workid).orElse(null);
-        if (work != null) {
-            List<String> photosBase64 = work.getWorkPhotoBeans().stream()
-                    .map(photo -> BaseUtil.byteToBase64(photo.getContentType(),
-                            photo.getPhoto()))
-                    .collect(Collectors.toList());
+        // 檢查 WorkBean 是否為isDeleted
+        if (work != null && !work.getIsDeleted()) {
+            List<String> photosBase64 = work.getUndeletedWorkPhotoBeans().stream()
+                .map(photo -> BaseUtil.byteToBase64(photo.getContentType(),
+                        photo.getPhoto()))
+                .collect(Collectors.toList());
             work.setPhotosBase64(photosBase64);
         }
         return work;
-    }
-
-    // 增加某workid的瀏覽量
-    public void increaseViewCount(Integer workid) {
-        Optional<WorkBean> optionalWork = workRepository.findById(workid);
-        if (optionalWork.isPresent()) {
-            WorkBean work = optionalWork.get();
-            work.setViews(work.getViews() + 1);
-            workRepository.save(work);
-        } else {
-
-        }
     }
 
     // 查詢某個地址的所有work
@@ -169,11 +160,14 @@ public class WorkService {
             @Override
             public Predicate toPredicate(Root<WorkBean> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
                 // 檢查 WorkBean 的地址是否在提供的地址列表中
-                return criteriaBuilder.equal(root.get("address"), address);
+                Predicate addressPredicate = criteriaBuilder.equal(root.get("address"), address);
+                // 檢查 WorkBean 是否為isDeleted
+                Predicate notDeletedPredicate = criteriaBuilder.equal(root.get("isDeleted"), false);
+                return criteriaBuilder.and(addressPredicate, notDeletedPredicate);
             }
         };
 
-        // 使用 Specification 來查詢所有匹配的 WorkBean
+        // 使用 Specification 來查詢所有相符的 WorkBean
         List<WorkBean> works = workRepository.findAll(spec);
 
         // 轉換 WorkBean 列表為 workid 列表
@@ -211,5 +205,19 @@ public class WorkService {
         // System.out.println(workEntity);
         // System.out.println("拿到的:" + session);
         workPhotoService.getPhoto(session, workEntity.getWorkid());
+    }
+
+    //// Update
+
+    // 增加某workid的瀏覽量
+    public void increaseViewCount(Integer workid) {
+        Optional<WorkBean> optionalWork = workRepository.findById(workid);
+        if (optionalWork.isPresent()) {
+            WorkBean work = optionalWork.get();
+            work.setViews(work.getViews() + 1);
+            workRepository.save(work);
+        } else {
+
+        }
     }
 }
