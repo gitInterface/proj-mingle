@@ -33,6 +33,9 @@ public class HouseService {
     @PersistenceContext
     private EntityManager entityManager;
 
+    @Autowired
+    private HousePhotoService housePhotoService;
+
     public List<HouseBean> findAllHouses() {
         return houseRepository.findAll();
     }
@@ -167,4 +170,16 @@ public class HouseService {
         houseRepository.deleteById(houseId);
     }
 
+    public void setNewHouse(HouseBean bean, String session) {
+        Date date = DatetimeConverter.getCurrentDate();
+        bean.setIsDeleted('0');
+        bean.setUpdatedAt(date);
+        bean.setCreatedAt(date);
+        bean.setStatus("未綁定");
+        bean.setNotes(null);
+        System.out.println(bean);
+        bean = houseRepository.save(bean);
+
+        housePhotoService.getPhoto(session, bean.getHouseid());
+    }
 }

@@ -2,19 +2,17 @@ package com.ispan.mingle.projmingle.config;
 
 import java.io.IOException;
 
+import jakarta.servlet.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
-import jakarta.servlet.Filter;
-import jakarta.servlet.FilterChain;
-import jakarta.servlet.ServletException;
-import jakarta.servlet.ServletRequest;
-import jakarta.servlet.ServletResponse;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.stereotype.Component;
 
 @WebFilter(filterName = "CorsFilter",urlPatterns = "/*")
 @Configuration
+@Component
 public class CorsConfigFilter implements Filter {
 
     @Value("${front.end.host}")
@@ -28,7 +26,7 @@ public class CorsConfigFilter implements Filter {
         response.setHeader("Access-Control-Allow-Credentials", "true");
         response.setHeader("Access-Control-Allow-Methods", "POST, GET, PATCH, DELETE, PUT");
         response.setHeader("Access-Control-Max-Age", "3600");
-        response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+        response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, sessionToken");
         chain.doFilter(req, res);
     }
 }
