@@ -31,7 +31,7 @@ public class UploadPhotoController {
         String path = uploadConfig.getPath() + session ;
         File newPath = new File(path);
 //      開資料夾
-        if (!newPath.exists()) newPath.mkdir();
+        if (!newPath.exists()) newPath.mkdirs();
         try {
             File newFile = new File(newPath, newName);
             file.transferTo(newFile);
