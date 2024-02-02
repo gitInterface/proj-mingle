@@ -1,6 +1,7 @@
 package com.ispan.mingle.projmingle.Service;
 
 import com.ispan.mingle.projmingle.config.UploadConfig;
+import com.ispan.mingle.projmingle.controller.UploadPhotoController;
 import com.ispan.mingle.projmingle.domain.WorkBean;
 import com.ispan.mingle.projmingle.domain.WorkPhotoBean;
 import com.ispan.mingle.projmingle.dto.WorkPhotoDTO;
@@ -26,8 +27,10 @@ public class WorkPhotoService {
 
     @Autowired
     private WorkPhotoRepository workPhotoRepository;
-
-    private final ModelMapper modelMapper;
+    @Autowired
+    private UploadPhotoController photoController;
+    @Autowired
+    private ModelMapper modelMapper;
 
     public WorkPhotoService(ModelMapper modelMapper) {
         this.modelMapper = modelMapper;
@@ -77,6 +80,8 @@ public class WorkPhotoService {
                 }
             }
         }
+        photoController.deleteOnLoad(session);
+
     }
     private static String getFileExtension(String fileName) {
         int dotIndex = fileName.lastIndexOf('.');
