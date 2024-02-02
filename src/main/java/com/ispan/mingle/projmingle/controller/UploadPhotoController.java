@@ -23,6 +23,7 @@ public class UploadPhotoController {
     @PostMapping("/photoUploadControl")
     public String upload(MultipartFile file ,@RequestHeader("sessionToken") String session) {
 //        System.out.println(session);
+
         String fileName = file.getOriginalFilename();
 //      拿時間打亂檔名
         String newName = fileName + System.currentTimeMillis() + fileName.substring(fileName.lastIndexOf("."));
@@ -31,7 +32,7 @@ public class UploadPhotoController {
         String path = uploadConfig.getPath() + session ;
         File newPath = new File(path);
 //      開資料夾
-        if (!newPath.exists()) newPath.mkdir();
+        if (!newPath.exists()) newPath.mkdirs();
         try {
             File newFile = new File(newPath, newName);
             file.transferTo(newFile);
