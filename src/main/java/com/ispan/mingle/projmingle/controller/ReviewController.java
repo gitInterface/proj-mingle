@@ -15,7 +15,6 @@ import com.ispan.mingle.projmingle.domain.LandlordBean;
 import com.ispan.mingle.projmingle.domain.OrderBean;
 import com.ispan.mingle.projmingle.domain.ReviewBean;
 import com.ispan.mingle.projmingle.dto.ReviewDTO;
-import com.ispan.mingle.projmingle.dto.ReviewReply;
 import com.ispan.mingle.projmingle.dto.ReviewReplyDTO;
 
 import org.springframework.web.bind.annotation.PostMapping;
