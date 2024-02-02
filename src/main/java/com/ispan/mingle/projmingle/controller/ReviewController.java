@@ -15,6 +15,12 @@ import com.ispan.mingle.projmingle.domain.LandlordBean;
 import com.ispan.mingle.projmingle.domain.OrderBean;
 import com.ispan.mingle.projmingle.domain.ReviewBean;
 import com.ispan.mingle.projmingle.dto.ReviewDTO;
+import com.ispan.mingle.projmingle.dto.ReviewReply;
+import com.ispan.mingle.projmingle.dto.ReviewReplyDTO;
+
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+
 
 
 @RestController
@@ -50,6 +56,19 @@ public class ReviewController {
     @GetMapping("/findOrderDetail")
     public ReviewDTO getOrderDetail(@RequestParam Integer orderid) {
         return orderService.findReviewDTOByOrderId(orderid);
+    }
+    
+    
+    // 房東回應創建
+    @PostMapping("/create/reply")
+    public ReviewBean createReply(
+            @RequestBody ReviewReplyDTO reply
+        ) {
+            ReviewBean temp  = reviewService.findById(reply.getReviewid());
+            temp.setReply(reply.getReply());
+            temp.setReplyCreatedAt(reply.getReplyCreatedAt());
+            temp.setReplyUpdatedAt(reply.getReplyUpdatedAt());
+        return reviewService.createReview(temp);
     }
     
     
