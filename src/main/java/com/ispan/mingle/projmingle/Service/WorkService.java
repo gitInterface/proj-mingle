@@ -1,6 +1,8 @@
 package com.ispan.mingle.projmingle.Service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +11,7 @@ import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.core.Local;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -52,7 +55,7 @@ public class WorkService {
 
     // 依據查詢條件獲取工作
     public Page<WorkBean> getWorks(Pageable pageable, String direction, String property,
-            Map<String, List<String>> filterMap) {
+            Map<String, ?> filterMap) {
         // 定義排序規則
         Sort.Direction sortDirection = Sort.Direction.fromString(direction);
         Sort sortSpecification = Sort.by(sortDirection, property);
@@ -65,39 +68,55 @@ public class WorkService {
             @Override
             public Predicate toPredicate(Root<WorkBean> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
                 List<Predicate> predicates = new ArrayList<>();
-                // 檢查 WorkBean 是否為isDeleted
+                // 排除 isDeleted 的工作
                 predicates.add(criteriaBuilder.equal(root.get("isDeleted"), false));
+                // 僅拿取已上架的工作
+                predicates.add(criteriaBuilder.equal(root.get("status"), "已上架"));
+                // 排除已過期的工作(失敗，暫緩)
+                // predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("endDate"), new Date()));
+                
+                
+                System.err.println(filterMap.containsKey("hideFull"));
+                // 參與人數：排除名額已滿的工作
+                if (filterMap.containsKey("hideFull")) {
+                    Boolean attendanceFilter = (Boolean) filterMap.get("hideFull");
+                    System.err.println(attendanceFilter);
+                    if (attendanceFilter != null && attendanceFilter == true) {
+                        predicates.add(criteriaBuilder.lessThan(root.get("attendance"), root.get("maxAttendance")));
+                    }
+                }
+
                 // 工作類型：可不選、可複選
                 if (filterMap.containsKey("worktype")) {
-                    List<String> worktypeFilter = filterMap.get("worktype");
+                    List<String> worktypeFilter = (List<String>) filterMap.get("worktype");
                     if (worktypeFilter != null && worktypeFilter.size() > 0) {
                         predicates.add(root.get("worktype").in(worktypeFilter));
                     }
                 }
                 // 縣市：可選所有縣市、整個區域、單個縣市
                 if (filterMap.containsKey("city")) {
-                    String cityFilter = filterMap.get("city").get(0);
+                    String cityFilter = (String) filterMap.get("city");
                     if (cityFilter.length() == 3) {
                         predicates.add(criteriaBuilder.equal(root.get("city"), cityFilter));
                     } else if (cityFilter.length() == 4) {
                         predicates.add(criteriaBuilder.equal(root.join("cityBean").get("area"), cityFilter));
-                        // // 從 City 資料表中查詢符合該 area 的所有 city
-                        // List<CityBean> cities = cityRepository.findByArea(cityFilter);
-                        // // 從 cities 中提取所有的 city
-                        // List<String> cityNames = cities.stream()
-                        // .map(CityBean::getCity)
-                        // .collect(Collectors.toList());
-                        // // 使用這些 city 來查詢 Work
-                        // if (!cityNames.isEmpty()) {
-                        // predicates.add(root.get("city").in(cityNames));
-                        // }
+                    }
+                }
+
+                // 工作日期：可選日期區間
+                if (filterMap.containsKey("startDate") && filterMap.containsKey("endDate")) {
+                    Date startDate = (Date) filterMap.get("startDate");
+                    Date endDate = (Date) filterMap.get("endDate");
+                    if (startDate != null && endDate != null) {
+                        predicates.add(criteriaBuilder.between(root.get("startDate"), startDate, endDate));
+                        predicates.add(criteriaBuilder.between(root.get("endDate"), startDate, endDate));
                     }
                 }
 
                 // 工作名稱：關鍵字模糊搜尋 (以空白鍵作為分隔，只要任一關鍵字符合就會顯示)
                 if (filterMap.containsKey("keyword")) {
-                    String keywordString = filterMap.get("keyword").get(0);
-                    if (keywordString != null && !keywordString.isEmpty()) {
+                    String keywordString = (String) filterMap.get("keyword");
+                    if (keywordString != null) {
                         String[] keywords = keywordString.split("\\s+");
                         List<Predicate> keywordPredicates = new ArrayList<>();
                         for (String keyword : keywords) {
@@ -145,9 +164,9 @@ public class WorkService {
         // 檢查 WorkBean 是否為isDeleted
         if (work != null && !work.getIsDeleted()) {
             List<String> photosBase64 = work.getUndeletedWorkPhotoBeans().stream()
-                .map(photo -> BaseUtil.byteToBase64(photo.getContentType(),
-                        photo.getPhoto()))
-                .collect(Collectors.toList());
+                    .map(photo -> BaseUtil.byteToBase64(photo.getContentType(),
+                            photo.getPhoto()))
+                    .collect(Collectors.toList());
             work.setPhotosBase64(photosBase64);
         }
         return work;
@@ -189,7 +208,7 @@ public class WorkService {
         Integer workID = 1;
         workDTO.setStatus("未上架");
         workDTO.setCreatedAt(date);
-        System.out.println(date);
+        // System.out.println(date);
         workDTO.setUpdatedAt(date);
         workDTO.setIsDeleted(false);
         // workDTO.setWorkID(workID);
@@ -197,7 +216,7 @@ public class WorkService {
         workDTO.setViews(0);
         // workDTO.setFkLandlordID(2);//沒有land統一先2
         workDTO.setAttendance(0);// 不知道是什麼先0
-        System.out.println(workDTO);
+        // System.out.println(workDTO);
         String session = workDTO.getSessionToken();
         WorkBean workEntity = modelMapper.map(workDTO, WorkBean.class);
         workEntity = workRepository.save(workEntity);

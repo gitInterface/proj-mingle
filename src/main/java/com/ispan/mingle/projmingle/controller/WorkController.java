@@ -34,7 +34,7 @@ public class WorkController {
     // 依據查詢條件獲取工作
     @PostMapping("/getWorks")
     public Page<WorkBean> getWorks(Pageable pageable, @RequestParam String direction, @RequestParam String property,
-            @RequestBody Map<String, List<String>> filterMap) {
+            @RequestBody Map<String, ?> filterMap) {
 
         return workService.getWorks(pageable, direction, property, filterMap);
     }
