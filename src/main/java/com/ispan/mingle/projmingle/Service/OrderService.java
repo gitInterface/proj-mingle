@@ -170,20 +170,20 @@ public class OrderService {
         long daysDifference = TimeUnit.MILLISECONDS.toDays(differenceInMillis);
         review.setDays(daysDifference);
 
+        List<Integer> houseidList = new ArrayList<>();
+        List<String> houseNameList = new ArrayList<>();
+        List<String> houseTypeList = new ArrayList<>();
+
         for (HouseBean houseBean : house) {
             
-            List<Integer> houseidList = new ArrayList<>();
             houseidList.add(houseBean.getHouseid());
-            review.setHouseid(houseidList);
-
-            List<String> houseNameList = new ArrayList<>();
             houseNameList.add(houseBean.getName());
-            review.setHouseName(houseNameList);
-
-            List<String> houseTypeList = new ArrayList<>();
             houseTypeList.add(houseBean.getHouseType());
-            review.setHouseType(houseTypeList);
+     
         }
+        review.setHouseid(houseidList);
+        review.setHouseName(houseNameList);
+        review.setHouseType(houseTypeList);
 
         review.setOrderid(order.getOrderid());
         review.setNumbers(order.getNumbers());

@@ -1,15 +1,18 @@
 package com.ispan.mingle.projmingle.Service;
 
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.ispan.mingle.projmingle.domain.HouseBean;
+import com.ispan.mingle.projmingle.domain.HousePhotoBean;
 import com.ispan.mingle.projmingle.repository.HousePhotoRepository;
 import com.ispan.mingle.projmingle.repository.HouseRepository;
 import com.ispan.mingle.projmingle.util.DatetimeConverter;
@@ -103,7 +106,47 @@ public class HouseService {
                     update.setUpdatedAt(DatetimeConverter.parse(tempupdatedAt, "yyyy-MM-dd"));
                     update.setIsDeleted(isDeleted);
 
-                    // // Update housePhotos
+                    // Update housePhotos
+                    List<HousePhotoBean> updatedPhotos = update.getHousePhotos();
+                    JSONArray photosArray = obj.getJSONArray("housePhotos");
+                    for (int i = 0; i < photosArray.length(); i++) {
+                        JSONObject photoObject = photosArray.getJSONObject(i);
+                        HousePhotoBean updatedPhoto = new HousePhotoBean();
+                        // Set photo properties from the photoObject
+                        String photoData = photoObject.getString("photo");
+                        // Convert Base64-encoded string to byte array
+                        byte[] decodedPhotoData = Base64.getDecoder().decode(photoData);
+                        updatedPhoto.setPhoto(decodedPhotoData);
+                        updatedPhoto.setContentType(photoObject.getString("contentType"));
+                        updatedPhoto.setPhotoSize(photoObject.getInt("photoSize"));
+                        updatedPhoto.setCreatedAt(
+                                DatetimeConverter.parse(photoObject.getString("createdAt"), "yyyy-MM-dd"));
+                        updatedPhoto.setUpdatedAt(
+                                DatetimeConverter.parse(photoObject.getString("updatedAt"), "yyyy-MM-dd"));
+                        updatedPhoto.setIsDeleted(photoObject.getString("isDeleted").charAt(0));
+
+                        // Set the house reference for the new photo
+                        updatedPhoto.setHouseid(update.getHouseid());
+
+                        updatedPhotos.add(updatedPhoto);
+                    }
+
+                    // Set the updated photos for the house
+                    update.setHousePhotos(updatedPhotos);
+
+                    // // Save the changes to the house
+                    HouseBean savedHouse = houseRepository.save(update);
+
+                    // Update house references for the new photos (if any)
+                    for (HousePhotoBean newPhoto : updatedPhotos) {
+                        newPhoto.setHouseid(savedHouse.getHouseid());
+                        housePhotoRepository.save(newPhoto);
+                    }
+
+                    // // Set the updated photos for the house
+                    update.setHousePhotos(updatedPhotos);
+
+                    // Debug print statements
                     
 
                     return houseRepository.save(update);

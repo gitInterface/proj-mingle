@@ -31,7 +31,7 @@ public interface LandlordRepository extends JpaRepository<LandlordBean, Integer>
             "JOIN WorkBean w ON w.workid = wh.workid " +
             "JOIN LandlordBean l ON w.landlordid = l.landlordid " +
             "JOIN ReviewBean r ON r.orderid = o.orderid " +
-            "WHERE l.landlordid = :landlordId")
+            "WHERE l.landlordid = :landlordId order by r.reviewid desc")
     public List<ReviewBean> findReviewByLandlordId(@Param("landlordId") Integer landlordId);
 
     @Query("SELECT lb.landlordid FROM LandlordBean lb WHERE lb.userid = :id")
