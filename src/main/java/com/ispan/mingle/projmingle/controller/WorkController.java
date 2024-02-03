@@ -33,10 +33,11 @@ public class WorkController {
 
     // 依據查詢條件獲取工作
     @PostMapping("/getWorks")
-    public Page<WorkBean> getWorks(Pageable pageable, @RequestParam String direction, @RequestParam String property,
+    public Page<WorkBean> getWorks(Pageable pageable, @RequestParam(required = false) String direction,
+            @RequestParam(required = false) String property, @RequestParam(required = false) String userID,
             @RequestBody Map<String, ?> filterMap) {
 
-        return workService.getWorks(pageable, direction, property, filterMap);
+        return workService.getWorks(pageable, direction, property, filterMap, userID);
     }
 
     // 依據某個workid獲取工作

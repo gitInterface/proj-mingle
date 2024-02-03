@@ -1,18 +1,16 @@
 package com.ispan.mingle.projmingle.Service;
 
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -21,9 +19,12 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import com.ispan.mingle.projmingle.domain.KeepWorkBean;
+import com.ispan.mingle.projmingle.domain.VolunteerBean;
 import com.ispan.mingle.projmingle.domain.WorkBean;
 import com.ispan.mingle.projmingle.dto.WorkCreateDTO;
 import com.ispan.mingle.projmingle.repository.KeepWorkRepository;
+import com.ispan.mingle.projmingle.repository.VolunteerRepository;
 import com.ispan.mingle.projmingle.repository.WorkRepository;
 import com.ispan.mingle.projmingle.util.BaseUtil;
 import com.ispan.mingle.projmingle.util.DatetimeConverter;
@@ -47,6 +48,9 @@ public class WorkService {
     private KeepWorkRepository keepWorkRepository;
 
     @Autowired
+    private VolunteerRepository volunteerRepository;
+
+    @Autowired
     private GoogleMapsGeocodingService geocodingService;
 
     private final ModelMapper modelMapper;
@@ -57,8 +61,11 @@ public class WorkService {
 
     // 依據查詢條件獲取工作
     public Page<WorkBean> getWorks(Pageable pageable, String direction, String property,
-            Map<String, ?> filterMap) {
+            Map<String, ?> filterMap, String userID) {
         // 定義排序規則
+
+        if (direction == null) {direction = "asc";}
+        if (property == null) {property = "workID";}
         Sort.Direction sortDirection = Sort.Direction.fromString(direction);
         Sort sortSpecification = Sort.by(sortDirection, property);
 
@@ -155,6 +162,7 @@ public class WorkService {
                 // }
                 // }
                 // }
+
                 return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
             }
         };
@@ -164,6 +172,22 @@ public class WorkService {
 
         // 回傳處理完成的結果：工作列表(WorkBean 物件)、Pageable 物件(包含分頁資訊及排序規則)、總筆數
         List<WorkBean> works = new ArrayList<>(worksPage.getContent());
+
+        // 若有回傳userID，查詢KeepWork中user已收藏的工作
+        if (userID != null) {
+            VolunteerBean volunteer = volunteerRepository.findById(userID).orElse(null);
+            if (volunteer != null) {
+                List<KeepWorkBean> keptWorks = keepWorkRepository.findByVolunteer(volunteer);
+                Set<WorkBean> keptWorkBeans = keptWorks.stream()
+                        .map(KeepWorkBean::getWork)
+                        .collect(Collectors.toSet());
+                for (WorkBean work : works) {
+                    if (keptWorkBeans.contains(work)) {
+                        work.setKept(true);
+                    }
+                }
+            }
+        }
 
         // 工作咖啡豆照片沖洗館：一人限一張照片
         for (WorkBean work : works) {

@@ -1,5 +1,6 @@
 package com.ispan.mingle.projmingle.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,4 +15,5 @@ import com.ispan.mingle.projmingle.domain.WorkBean;
 public interface KeepWorkRepository extends JpaRepository<KeepWorkBean, KeepWorkId> {
     Optional<KeepWorkBean> findByVolunteerAndWork(VolunteerBean volunteer, WorkBean work);
     boolean existsByVolunteer_UseridAndWork_Workid(String volunteerId, Integer workId);
+    List<KeepWorkBean> findByVolunteer(VolunteerBean volunteer);
 }

@@ -141,7 +141,9 @@ public class WorkBean {
     private List<String> photosBase64;
 
     @Transient
-    private boolean isKept;
+    private boolean Kept;
+
+    
 
     // 關連到 WorkPhotoBean (一對多)
     @JsonIgnore
