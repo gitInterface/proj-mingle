@@ -1,5 +1,6 @@
 package com.ispan.mingle.projmingle.Service;
 
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -63,7 +64,7 @@ public class WorkService {
         // 將排序規則套用到分頁請求
         Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sortSpecification);
 
-        // 定義 Specification
+        // 定義 Specification 篩選器
         Specification<WorkBean> spec = new Specification<WorkBean>() {
             @Override
             public Predicate toPredicate(Root<WorkBean> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
@@ -72,15 +73,13 @@ public class WorkService {
                 predicates.add(criteriaBuilder.equal(root.get("isDeleted"), false));
                 // 僅拿取已上架的工作
                 predicates.add(criteriaBuilder.equal(root.get("status"), "已上架"));
-                // 排除已過期的工作(失敗，暫緩)
-                // predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("endDate"), new Date()));
+                // 排除已過期的工作
+                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("endDate"), new Date()));
+
                 
-                
-                System.err.println(filterMap.containsKey("hideFull"));
-                // 參與人數：排除名額已滿的工作
+                // 參與人數：可排除名額已滿的工作
                 if (filterMap.containsKey("hideFull")) {
                     Boolean attendanceFilter = (Boolean) filterMap.get("hideFull");
-                    System.err.println(attendanceFilter);
                     if (attendanceFilter != null && attendanceFilter == true) {
                         predicates.add(criteriaBuilder.lessThan(root.get("attendance"), root.get("maxAttendance")));
                     }
@@ -104,12 +103,18 @@ public class WorkService {
                 }
 
                 // 工作日期：可選日期區間
-                if (filterMap.containsKey("startDate") && filterMap.containsKey("endDate")) {
-                    Date startDate = (Date) filterMap.get("startDate");
-                    Date endDate = (Date) filterMap.get("endDate");
-                    if (startDate != null && endDate != null) {
-                        predicates.add(criteriaBuilder.between(root.get("startDate"), startDate, endDate));
-                        predicates.add(criteriaBuilder.between(root.get("endDate"), startDate, endDate));
+                if (filterMap.containsKey("workperiod")) {
+                    List<String> workperiod = (List<String>) filterMap.get("workperiod");
+                    if (workperiod != null && workperiod.size() > 0) {
+                        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                        try {
+                            Date startDate = formatter.parse(workperiod.get(0));
+                            Date endDate = formatter.parse(workperiod.get(1));
+                            predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("startDate"), startDate));
+                        predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("endDate"), endDate));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
 
