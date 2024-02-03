@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
@@ -22,7 +23,9 @@ import org.springframework.stereotype.Service;
 import com.ispan.mingle.projmingle.domain.KeepWorkBean;
 import com.ispan.mingle.projmingle.domain.VolunteerBean;
 import com.ispan.mingle.projmingle.domain.WorkBean;
+import com.ispan.mingle.projmingle.domain.WorkPhotoBean;
 import com.ispan.mingle.projmingle.dto.WorkCreateDTO;
+import com.ispan.mingle.projmingle.dto.WorkModifyDTO;
 import com.ispan.mingle.projmingle.repository.KeepWorkRepository;
 import com.ispan.mingle.projmingle.repository.VolunteerRepository;
 import com.ispan.mingle.projmingle.repository.WorkRepository;
@@ -52,6 +55,9 @@ public class WorkService {
 
     @Autowired
     private GoogleMapsGeocodingService geocodingService;
+
+    @Autowired
+    private WorkModifyDTO workModifyDTO;
 
     private final ModelMapper modelMapper;
 
@@ -292,5 +298,23 @@ public class WorkService {
         } else {
 
         }
+    }
+
+    // workid查詢work, workPhoto, work_house, house_photo
+    public WorkModifyDTO showModify(Integer workid) {
+        if (workid != null && workRepository.existsById(workid)) {
+            WorkBean work = workRepository.findById(workid).get();
+            // 找未被刪除的
+            List<WorkPhotoBean> undeletedWorkPhotoBeans = work.getUndeletedWorkPhotoBeans();
+            work.setWorkPhotoBeans(work.getUndeletedWorkPhotoBeans());
+            BeanUtils.copyProperties(work, workModifyDTO);
+            workModifyDTO.setPhotosBase64(undeletedWorkPhotoBeans.stream()
+                    .map(bean -> BaseUtil.byteToBase64(bean.getContentType(), bean.getPhoto()))
+                    .collect(Collectors.toList()));
+            workModifyDTO.setPhotoID(
+                    undeletedWorkPhotoBeans.stream().map(bean -> bean.getPhotoid()).collect(Collectors.toList()));
+            return workModifyDTO;
+        }
+        return null;
     }
 }

@@ -4,6 +4,8 @@ import java.util.List;
 import java.util.Map;
 
 import com.ispan.mingle.projmingle.dto.WorkCreateDTO;
+import com.ispan.mingle.projmingle.dto.WorkModifyDTO;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -69,5 +71,12 @@ public class WorkController {
     @PostMapping("/addWork")
     public void getWorks(@RequestBody WorkCreateDTO workDTO) {
         workService.setNewWork(workDTO);
+    }
+
+    // (工作管理渲染)workid查詢work, workPhoto, work_house, house, housePhoto
+    @GetMapping("/modifyWork/show/{workid}")
+    public ResponseEntity<WorkModifyDTO> getWorkAllInfo(@PathVariable Integer workid) {
+        return ResponseEntity.ok(workService.showModify(workid));
+
     }
 }
