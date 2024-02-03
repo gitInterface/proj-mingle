@@ -140,13 +140,8 @@ public class WorkBean {
     @Transient
     private List<String> photosBase64;
 
-    // public List<String> getPhotosBase64() {
-    // return photosBase64;
-    // }
-
-    // public void setPhotosBase64(List<String> photosBase64) {
-    // this.photosBase64 = photosBase64;
-    // }
+    @Transient
+    private boolean isKept;
 
     // 關連到 WorkPhotoBean (一對多)
     @JsonIgnore

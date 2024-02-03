@@ -23,6 +23,7 @@ import org.springframework.stereotype.Service;
 
 import com.ispan.mingle.projmingle.domain.WorkBean;
 import com.ispan.mingle.projmingle.dto.WorkCreateDTO;
+import com.ispan.mingle.projmingle.repository.KeepWorkRepository;
 import com.ispan.mingle.projmingle.repository.WorkRepository;
 import com.ispan.mingle.projmingle.util.BaseUtil;
 import com.ispan.mingle.projmingle.util.DatetimeConverter;
@@ -42,8 +43,8 @@ public class WorkService {
     @Autowired
     private WorkPhotoService workPhotoService;
 
-    // @Autowired
-    // private CityRepository cityRepository;
+    @Autowired
+    private KeepWorkRepository keepWorkRepository;
 
     @Autowired
     private GoogleMapsGeocodingService geocodingService;
@@ -70,17 +71,31 @@ public class WorkService {
             public Predicate toPredicate(Root<WorkBean> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
                 List<Predicate> predicates = new ArrayList<>();
                 // 排除 isDeleted 的工作
-                predicates.add(criteriaBuilder.equal(root.get("isDeleted"), false));
+                if (filterMap.containsKey("hideDeleted")) {
+                    Boolean hideDeleted = (Boolean) filterMap.get("hideFull");
+                    if (hideDeleted != null && hideDeleted == true) {
+                        predicates.add(criteriaBuilder.equal(root.get("isDeleted"), false));
+                    }
+                }
                 // 僅拿取已上架的工作
-                predicates.add(criteriaBuilder.equal(root.get("status"), "已上架"));
+                if (filterMap.containsKey("showOnShelfOnly")) {
+                    Boolean showOnShelfOnly = (Boolean) filterMap.get("showOnShelfOnly");
+                    if (showOnShelfOnly != null && showOnShelfOnly == true) {
+                        predicates.add(criteriaBuilder.equal(root.get("status"), "已上架"));
+                    }
+                }
                 // 排除已過期的工作
-                predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("endDate"), new Date()));
+                if (filterMap.containsKey("hideExpired")) {
+                    Boolean hideExpired = (Boolean) filterMap.get("hideExpired");
+                    if (hideExpired != null && hideExpired == true) {
+                        predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("endDate"), new Date()));
+                    }
+                }
 
-                
                 // 參與人數：可排除名額已滿的工作
                 if (filterMap.containsKey("hideFull")) {
-                    Boolean attendanceFilter = (Boolean) filterMap.get("hideFull");
-                    if (attendanceFilter != null && attendanceFilter == true) {
+                    Boolean hideFull = (Boolean) filterMap.get("hideFull");
+                    if (hideFull != null && hideFull == true) {
                         predicates.add(criteriaBuilder.lessThan(root.get("attendance"), root.get("maxAttendance")));
                     }
                 }
@@ -111,14 +126,14 @@ public class WorkService {
                             Date startDate = formatter.parse(workperiod.get(0));
                             Date endDate = formatter.parse(workperiod.get(1));
                             predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("startDate"), startDate));
-                        predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("endDate"), endDate));
+                            predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("endDate"), endDate));
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
                     }
                 }
 
-                // 工作名稱：關鍵字模糊搜尋 (以空白鍵作為分隔，只要任一關鍵字符合就會顯示)
+                // 工作名稱：可用關鍵字模糊搜尋 (以空白鍵作為分隔，只要任一關鍵字符合就會顯示)
                 if (filterMap.containsKey("keyword")) {
                     String keywordString = (String) filterMap.get("keyword");
                     if (keywordString != null) {
