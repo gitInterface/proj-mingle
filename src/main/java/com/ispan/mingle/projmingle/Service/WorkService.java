@@ -64,8 +64,12 @@ public class WorkService {
             Map<String, ?> filterMap, String userID) {
         // 定義排序規則
 
-        if (direction == null) {direction = "asc";}
-        if (property == null) {property = "workID";}
+        if (direction == null) {
+            direction = "asc";
+        }
+        if (property == null) {
+            property = "workID";
+        }
         Sort.Direction sortDirection = Sort.Direction.fromString(direction);
         Sort sortSpecification = Sort.by(sortDirection, property);
 
@@ -125,13 +129,13 @@ public class WorkService {
                 }
 
                 // 工作日期：可選日期區間
-                if (filterMap.containsKey("workperiod")) {
-                    List<String> workperiod = (List<String>) filterMap.get("workperiod");
-                    if (workperiod != null && workperiod.size() > 0) {
+                if (filterMap.containsKey("workPeriod")) {
+                    List<String> workPeriod = (List<String>) filterMap.get("workPeriod");
+                    if (workPeriod != null && workPeriod.size() > 0) {
                         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
                         try {
-                            Date startDate = formatter.parse(workperiod.get(0));
-                            Date endDate = formatter.parse(workperiod.get(1));
+                            Date startDate = formatter.parse(workPeriod.get(0));
+                            Date endDate = formatter.parse(workPeriod.get(1));
                             predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("startDate"), startDate));
                             predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("endDate"), endDate));
                         } catch (Exception e) {
@@ -186,9 +190,16 @@ public class WorkService {
                         work.setKept(true);
                     }
                 }
+                if (filterMap.containsKey("showKeptWorkOnly")) {
+                    Boolean showKeptWorkOnly = (Boolean) filterMap.get("showKeptWorkOnly");
+                    if (showKeptWorkOnly != null && showKeptWorkOnly == true) {
+                        works = works.stream()
+                                .filter(WorkBean::isKept)
+                                .collect(Collectors.toList());
+                    }
+                }
             }
         }
-
         // 工作咖啡豆照片沖洗館：一人限一張照片
         for (WorkBean work : works) {
             List<String> photosBase64 = work.getUndeletedWorkPhotoBeans().stream()
@@ -205,7 +216,6 @@ public class WorkService {
     // 依據某個workid獲取工作
     public WorkBean getWork(Integer workid) {
         WorkBean work = workRepository.findById(workid).orElse(null);
-        // 檢查 WorkBean 是否為isDeleted
         if (work != null && !work.getIsDeleted()) {
             List<String> photosBase64 = work.getUndeletedWorkPhotoBeans().stream()
                     .map(photo -> BaseUtil.byteToBase64(photo.getContentType(),
