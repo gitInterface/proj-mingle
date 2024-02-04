@@ -20,12 +20,15 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import com.ispan.mingle.projmingle.domain.HouseBean;
+import com.ispan.mingle.projmingle.domain.HousePhotoBean;
 import com.ispan.mingle.projmingle.domain.KeepWorkBean;
 import com.ispan.mingle.projmingle.domain.VolunteerBean;
 import com.ispan.mingle.projmingle.domain.WorkBean;
 import com.ispan.mingle.projmingle.domain.WorkPhotoBean;
 import com.ispan.mingle.projmingle.dto.WorkCreateDTO;
 import com.ispan.mingle.projmingle.dto.WorkModifyDTO;
+import com.ispan.mingle.projmingle.repository.HouseRepository;
 import com.ispan.mingle.projmingle.repository.KeepWorkRepository;
 import com.ispan.mingle.projmingle.repository.VolunteerRepository;
 import com.ispan.mingle.projmingle.repository.WorkRepository;
@@ -49,6 +52,9 @@ public class WorkService {
 
     @Autowired
     private KeepWorkRepository keepWorkRepository;
+
+    @Autowired
+    private HouseRepository houseRepository;
 
     @Autowired
     private VolunteerRepository volunteerRepository;
@@ -300,19 +306,45 @@ public class WorkService {
         }
     }
 
-    // workid查詢work, workPhoto, work_house, house_photo
+    // (工作管理/修改初始渲染)workid查詢work, workPhoto, work_house, house_photo
     public WorkModifyDTO showModify(Integer workid) {
         if (workid != null && workRepository.existsById(workid)) {
             WorkBean work = workRepository.findById(workid).get();
-            // 找未被刪除的
-            List<WorkPhotoBean> undeletedWorkPhotoBeans = work.getUndeletedWorkPhotoBeans();
-            work.setWorkPhotoBeans(work.getUndeletedWorkPhotoBeans());
             BeanUtils.copyProperties(work, workModifyDTO);
+
+            // 工作照片base64 (沒被刪除的)
+            List<WorkPhotoBean> undeletedWorkPhotoBeans = work.getUndeletedWorkPhotoBeans();
             workModifyDTO.setPhotosBase64(undeletedWorkPhotoBeans.stream()
                     .map(bean -> BaseUtil.byteToBase64(bean.getContentType(), bean.getPhoto()))
                     .collect(Collectors.toList()));
-            workModifyDTO.setPhotoID(
+            // (同上)照片id (使用者刪除照片的話，回傳id就好而不是整個base64)
+            workModifyDTO.setPhotosID(
                     undeletedWorkPhotoBeans.stream().map(bean -> bean.getPhotoid()).collect(Collectors.toList()));
+
+            // Lord本身有的房(排除刪的以及床位0)
+            List<HouseBean> housesDetail = houseRepository
+                    .findHousesWithNonDeletedAndExistBeds(workModifyDTO.getLandlordid());
+
+            // 轉base64
+            // 1.遍歷每個房，取出各自擁有的照片，另外建一個放置64的字串List(最後用)
+            for (HouseBean house : housesDetail) {
+                List<String> housePhotos64 = new ArrayList<String>();
+                List<HousePhotoBean> housePhotos = house.getHousePhotos();
+                // 2.若照片List不為null及空，遍歷所有照片
+                if (housePhotos != null && !housePhotos.isEmpty()) {
+                    for (HousePhotoBean photo : housePhotos) {
+                        // 3.排除被刪除掉的照片，一一轉為64
+                        if (photo.getIsDeleted() != '1') {
+                            String photoBase64 = BaseUtil.byteToBase64(photo.getContentType(), photo.getPhoto());
+                            housePhotos64.add(photoBase64);
+                            // photo.setPhoto(null);
+                        }
+                    }
+                    // 4.放回第一步建立的List
+                    house.setPhotosBase64(housePhotos64);
+                }
+            }
+            workModifyDTO.setHouseDetail(housesDetail);
             return workModifyDTO;
         }
         return null;
