@@ -15,7 +15,7 @@ import lombok.Data;
 @Table(name = "Work_House")
 @Component
 public class WorkHouseBean {
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ID")
@@ -27,5 +27,7 @@ public class WorkHouseBean {
     @Column(name = "fk_houseID")
     private Integer houseid;
 
+    @Column(name = "isDeleted", columnDefinition = "bit")
+    private boolean isDeleted;
 
 }
