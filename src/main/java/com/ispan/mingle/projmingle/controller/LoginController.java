@@ -41,8 +41,8 @@ public class LoginController {
 			responseJson.put("success", false);
 		} else {
 			String sessionToken = generateSessionToken(userid);
-			session.setAttribute("sessionToken", sessionToken);
-			session.setAttribute("user", bean);
+			// session.setAttribute("sessionToken", sessionToken);
+			// session.setAttribute("user", bean);
 			responseJson.put("message", "登入成功");
 			responseJson.put("success", true);
 			responseJson.put("sessionToken", sessionToken);
