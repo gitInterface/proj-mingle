@@ -13,6 +13,6 @@ public interface HouseRepository extends JpaRepository<HouseBean, Integer>, Hous
     @Query("SELECT h FROM HouseBean h WHERE h.lordid = :lordid AND h.isDeleted = '0' AND h.beds > 0")
     List<HouseBean> findHousesWithNonDeletedAndExistBeds(@Param("lordid") Integer lordid);
 
-    @Query("UPADATE HouseBean h SET h.beds = :beds WHERE h.houseid = :houseid")
+    @Query("UPDATE HouseBean h SET h.beds = :beds WHERE h.houseid = :houseid")
     public HouseBean updateBeds(@Param("beds") Integer beds, @Param("houseid") Integer houseid);
 }
