@@ -19,7 +19,7 @@ public interface WorkRepository
     Page<WorkBean> findAll(Specification<WorkBean> spec, Pageable pageable);
 
     /** 透過workid查詢房屋 */
-    @Query("SELECT h FROM WorkBean w LEFT JOIN WorkHouseBean wh ON w.workid = wh.workid LEFT JOIN HouseBean h ON wh.houseid = h.houseid WHERE w.workid = :workId")
+    @Query("SELECT h FROM WorkBean w LEFT JOIN WorkHouseBean wh ON w.workid = wh.workid LEFT JOIN HouseBean h ON wh.houseid = h.houseid WHERE w.workid = :workId and wh.isDeleted = false")
     public List<HouseBean> findHousesByWorkId(@Param("workId") Integer workId);
 
     /** 透過workid查詢房主資訊 */

@@ -95,7 +95,7 @@ public class WorkService {
                 List<Predicate> predicates = new ArrayList<>();
                 // 排除 isDeleted 的工作
                 if (filterMap.containsKey("hideDeleted")) {
-                    Boolean hideDeleted = (Boolean) filterMap.get("hideFull");
+                    Boolean hideDeleted = (Boolean) filterMap.get("hideDeleted");
                     if (hideDeleted != null && hideDeleted == true) {
                         predicates.add(criteriaBuilder.equal(root.get("isDeleted"), false));
                     }
@@ -334,7 +334,7 @@ public class WorkService {
                 if (housePhotos != null && !housePhotos.isEmpty()) {
                     for (HousePhotoBean photo : housePhotos) {
                         // 3.排除被刪除掉的照片，一一轉為64
-                        if (photo.getIsDeleted() != '1') {
+                        if (photo.getIsDeleted() == '0') {
                             String photoBase64 = BaseUtil.byteToBase64(photo.getContentType(), photo.getPhoto());
                             housePhotos64.add(photoBase64);
                             // photo.setPhoto(null);
