@@ -10,7 +10,7 @@ import com.ispan.mingle.projmingle.domain.HousePhotoBean;
 
 public interface HousePhotoRepository extends JpaRepository<HousePhotoBean, Integer> {
     // houseid找出所有「沒被刪除」的照片
-    @Query("SELECT h FROM HousePhotoBean h WHERE h.houseid = :houseid AND h.isDeleted !='1' ")
+    @Query("SELECT h FROM HousePhotoBean h WHERE h.houseid = :houseid AND h.isDeleted ='0' ")
     List<HousePhotoBean> findAllByHouseId(Integer houseid);
 
     Optional<HousePhotoBean> findByPhoto(byte[] photo);
