@@ -95,7 +95,7 @@ public class WorkService {
                 List<Predicate> predicates = new ArrayList<>();
                 // 排除 isDeleted 的工作
                 if (filterMap.containsKey("hideDeleted")) {
-                    Boolean hideDeleted = (Boolean) filterMap.get("hideFull");
+                    Boolean hideDeleted = (Boolean) filterMap.get("hideDeleted");
                     if (hideDeleted != null && hideDeleted == true) {
                         predicates.add(criteriaBuilder.equal(root.get("isDeleted"), false));
                     }
