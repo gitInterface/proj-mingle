@@ -111,51 +111,53 @@ public class HouseService {
                     entityManager.detach(update);
 
                     // Update housePhotos
-                    // Create a new list to store the update photos
-                    List<HousePhotoBean> updatedPhotos = new ArrayList<>();
-                    JSONArray photosArray = obj.getJSONArray("housePhotos");
+                    // Check if "housePhotos" array exists and is not empty in the JSON
+                    if (obj.has("housePhotos") && !obj.getJSONArray("housePhotos").isEmpty()) {
+                        // Create a new list to store the update photos
+                        List<HousePhotoBean> updatedPhotos = new ArrayList<>();
+                        JSONArray photosArray = obj.getJSONArray("housePhotos");
 
-                    // Remove existing HousePhotoBean entries associated with the selected houseid
-                    housePhotoRepository.deleteByHouseid(update.getHouseid());
+                        // Remove existing HousePhotoBean entries associated with the selected houseid
+                        housePhotoRepository.deleteByHouseid(update.getHouseid());
 
-                    for (int i = 0; i < photosArray.length(); i++) {
-                        JSONObject photoObject = photosArray.getJSONObject(i);
-                        HousePhotoBean updatedPhoto = new HousePhotoBean();
+                        for (int i = 0; i < photosArray.length(); i++) {
+                            JSONObject photoObject = photosArray.getJSONObject(i);
+                            HousePhotoBean updatedPhoto = new HousePhotoBean();
 
-                        // Set photo properties from the photoObject
-                        String photoData = photoObject.getString("photo");
-                        // Convert Base64-encoded string to byte array
-                        byte[] decodedPhotoData = Base64.getDecoder().decode(photoData);
-                        updatedPhoto.setPhoto(decodedPhotoData);
-                        updatedPhoto.setContentType(photoObject.getString("contentType"));
-                        updatedPhoto.setPhotoSize(photoObject.getInt("photoSize"));
-                        updatedPhoto.setCreatedAt(
-                                DatetimeConverter.parse(photoObject.getString("createdAt"), "yyyy-MM-dd"));
-                        updatedPhoto.setUpdatedAt(
-                                DatetimeConverter.parse(photoObject.getString("updatedAt"), "yyyy-MM-dd"));
-                        updatedPhoto.setIsDeleted(photoObject.getString("isDeleted").charAt(0));
+                            // Set photo properties from the photoObject
+                            String photoData = photoObject.getString("photo");
+                            // Convert Base64-encoded string to byte array
+                            byte[] decodedPhotoData = Base64.getDecoder().decode(photoData);
+                            updatedPhoto.setPhoto(decodedPhotoData);
+                            updatedPhoto.setContentType(photoObject.getString("contentType"));
+                            updatedPhoto.setPhotoSize(photoObject.getInt("photoSize"));
+                            updatedPhoto.setCreatedAt(
+                                    DatetimeConverter.parse(photoObject.getString("createdAt"), "yyyy-MM-dd"));
+                            updatedPhoto.setUpdatedAt(
+                                    DatetimeConverter.parse(photoObject.getString("updatedAt"), "yyyy-MM-dd"));
+                            updatedPhoto.setIsDeleted(photoObject.getString("isDeleted").charAt(0));
 
-                        // Set the house reference for the new photo
-                        updatedPhoto.setHouseid(update.getHouseid());
+                            // Set the house reference for the new photo
+                            updatedPhoto.setHouseid(update.getHouseid());
 
-                        updatedPhotos.add(updatedPhoto);
+                            updatedPhotos.add(updatedPhoto);
+                        }
+
+                        // Set the updated photos for the house
+                        update.setHousePhotos(updatedPhotos);
+
+                        // Save the changes to the house
+                        HouseBean savedHouse = houseRepository.save(update);
+
+                        // Update house references for the new photos (if any)
+                        for (HousePhotoBean newPhoto : updatedPhotos) {
+                            newPhoto.setHouseid(savedHouse.getHouseid());
+                            housePhotoRepository.save(newPhoto);
+                        }
+
+                        // Set the updated photos for the house
+                        update.setHousePhotos(updatedPhotos);
                     }
-
-                    // Set the updated photos for the house
-                    update.setHousePhotos(updatedPhotos);
-
-                    // Save the changes to the house
-                    HouseBean savedHouse = houseRepository.save(update);
-
-                    // Update house references for the new photos (if any)
-                    for (HousePhotoBean newPhoto : updatedPhotos) {
-                        newPhoto.setHouseid(savedHouse.getHouseid());
-                        housePhotoRepository.save(newPhoto);
-                    }
-
-                    // Set the updated photos for the house
-                    update.setHousePhotos(updatedPhotos);
-
                     return houseRepository.save(update);
                 }
             }
