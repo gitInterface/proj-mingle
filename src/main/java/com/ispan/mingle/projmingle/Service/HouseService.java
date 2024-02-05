@@ -190,5 +190,17 @@ public class HouseService {
         bean = houseRepository.save(bean);
 
         housePhotoService.getPhoto(session, bean.getHouseid());
-    }
+ 
+   }
+
+
+   /** 修改房間可容納人數  */
+   public HouseBean updateBeds(Integer houseid, Integer beds) {
+       
+       HouseBean bean = houseRepository.findById(houseid).get();
+       bean.setBeds(beds);
+       return houseRepository.save(bean);
+   }
+
+
 }
