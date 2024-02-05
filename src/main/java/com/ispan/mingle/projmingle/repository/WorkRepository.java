@@ -11,11 +11,19 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.ispan.mingle.projmingle.domain.HouseBean;
+import com.ispan.mingle.projmingle.domain.LandlordBean;
 import com.ispan.mingle.projmingle.domain.WorkBean;
 
-public interface WorkRepository extends JpaRepository<WorkBean, Integer>, JpaSpecificationExecutor<WorkBean> , WorkSpringDataJpaDAO{
+public interface WorkRepository
+        extends JpaRepository<WorkBean, Integer>, JpaSpecificationExecutor<WorkBean>, WorkSpringDataJpaDAO {
     Page<WorkBean> findAll(Specification<WorkBean> spec, Pageable pageable);
-    
-@Query("SELECT h FROM WorkBean w LEFT JOIN WorkHouseBean wh ON w.workid = wh.workid LEFT JOIN HouseBean h ON wh.houseid = h.houseid WHERE w.workid = :workId")
-public List<HouseBean> findHousesByWorkId(@Param("workId") Integer workId);
+
+    /** 透過workid查詢房屋 */
+    @Query("SELECT h FROM WorkBean w LEFT JOIN WorkHouseBean wh ON w.workid = wh.workid LEFT JOIN HouseBean h ON wh.houseid = h.houseid WHERE w.workid = :workId and wh.isDeleted = false")
+    public List<HouseBean> findHousesByWorkId(@Param("workId") Integer workId);
+
+    /** 透過workid查詢房主資訊 */
+    @Query("SELECT l FROM WorkBean w LEFT JOIN LandlordBean l ON w.landlordid = l.landlordid WHERE w.workid = :workId")
+    public LandlordBean findLandlordByWorkId(@Param("workId") Integer workId);
+
 }

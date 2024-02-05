@@ -1,4 +1,4 @@
-package com.ispan.mingle.projmingle.service;
+package com.ispan.mingle.projmingle.Service;
     
     
 
@@ -6,21 +6,25 @@ package com.ispan.mingle.projmingle.service;
 import java.lang.Integer;
 
 import com.ispan.mingle.projmingle.domain.LandlordBean;
+import com.ispan.mingle.projmingle.repository.LandlordRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 
-/**
- * 业务层
- *
- * @author makejava
- * @since 2024-01-30 10:44:24
- */
-public interface LandlordService {
+@Service
+@Transactional
+public class LandlordService {
 
-    Integer findByUserIDtoLordID(String id);
+    @Resource
+    private LandlordRepository landlordRepository;
+
+    public Integer findByUserIDtoLordID(String id) { return landlordRepository.findByUserIDtoLordID(id); };
+
 }
-

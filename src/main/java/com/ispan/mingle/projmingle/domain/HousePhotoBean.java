@@ -4,6 +4,8 @@ import java.util.Date;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
@@ -14,6 +16,7 @@ import lombok.Data;
 @Table(name = "House_Photo")
 public class HousePhotoBean {
     @Id
+	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "photoID")
 	private Integer photoid;
 

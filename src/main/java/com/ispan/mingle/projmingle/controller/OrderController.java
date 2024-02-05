@@ -12,11 +12,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.ispan.mingle.projmingle.Service.OrderService;
+import com.ispan.mingle.projmingle.domain.AccommodatorBean;
 import com.ispan.mingle.projmingle.domain.HouseBean;
 import com.ispan.mingle.projmingle.domain.OrderBean;
 import com.ispan.mingle.projmingle.domain.OrderWorkHouseBean;
 import com.ispan.mingle.projmingle.domain.VolunteerDetailBean;
 import com.ispan.mingle.projmingle.domain.WorkBean;
+import com.ispan.mingle.projmingle.domain.WorkHouseBean;
+import org.springframework.web.bind.annotation.RequestParam;
+
 
 
 
@@ -30,20 +34,23 @@ public class OrderController {
     @Autowired
     private OrderService orderService;
     
+
+    /** 用userid找會員詳細資料 */
     @GetMapping("/{userid}")
     public VolunteerDetailBean selectVolunteerDetail(@PathVariable String userid) {
         return orderService.selectVolunteerDetail(userid);
     }
     
+    /** 用workid找工作 */
     @PostMapping("/{workid}")
     public WorkBean selectWorkDetail(@PathVariable Integer workid) {
         return orderService.selectWorkDetail(workid);
     }
     
-    /** 用photoid找照片 */
-    @PostMapping("/photo/{photoid}")
-    public List<String> selectHouseImages(@PathVariable Integer photoid) {
-        List<String> list  =  orderService.selectHouseImages(photoid);
+    /** 用houseid找照片 */
+    @PostMapping("/photo/{houseid}")
+    public List<String> selectHouseImages(@PathVariable Integer houseid) {
+        List<String> list  =  orderService.selectHouseImages(houseid);
         return list;
     }
 
@@ -66,7 +73,7 @@ public class OrderController {
     } 
 
     /** 創建訂單與工作房子關係 */
-    @PostMapping("/create/workhouse")
+    @PostMapping("/create/orderworkhouse")
     public OrderWorkHouseBean createOrderWorkHouse(@RequestBody OrderWorkHouseBean bean) {
         OrderWorkHouseBean order  = orderService.createOrderWorkHouse(bean);
         if(order != null){
@@ -75,4 +82,47 @@ public class OrderController {
         return null;
     }
 
+    /** 用houseid找關聯工作房間的詳細資料 */
+    @GetMapping("/workhouse/{houseid}")
+    public List<WorkHouseBean> selectWorkHouseDetail(@PathVariable Integer houseid) {
+        List<WorkHouseBean> list  =  orderService.selectWorkHouseDetail(houseid);
+        return list;
+    }
+
+    /** 創建住宿者資料 */
+    @PostMapping("/create/accommodator")
+    public AccommodatorBean createAccommodator(@RequestBody AccommodatorBean bean) {
+        AccommodatorBean order  = orderService.createAccommodator(bean);
+        return order;
+    }
+    
+
+    /** 用orderid找會員資料 */
+    @GetMapping("/findUserDetail")
+    public VolunteerDetailBean selectVolunteerDetailByUserId(@RequestParam("orderid") Integer orderid){
+        return orderService.getVolunteerDetailByOrderId(orderid);
+
+    }   
+
+    /** 用orderid找訂單 */
+    @GetMapping("/findOrder")
+    public OrderBean selectOrderDetailbyOrderId(@RequestParam("orderid") Integer orderid) {
+        return orderService.getOrderDetailByOrderId(orderid);
+    }
+    
+    /** 用orderid查工作 */
+    @GetMapping("/findWork")
+    public WorkBean selectWorkDetailByOrderId(@RequestParam("orderid") Integer orderid) {
+        return orderService.findWorkBeanByOrderId(orderid);
+    }
+
+    /** 用orderid查房子 */
+    @GetMapping("/findHouse")
+    public List<HouseBean> selectHouseDetailByOrderId(@RequestParam("orderid") Integer orderid) {
+        return orderService.findHouseBeanByOrderId(orderid);
+    }
+
 }
+
+
+

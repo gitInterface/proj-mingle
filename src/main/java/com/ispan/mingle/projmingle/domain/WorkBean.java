@@ -1,18 +1,24 @@
 package com.ispan.mingle.projmingle.domain;
 
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Component;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.Data;
 
 @Data
@@ -131,8 +137,31 @@ public class WorkBean {
     @Column(name = "views", columnDefinition = "int")
     private Integer views;
 
+    @Transient
+    private List<String> photosBase64;
 
+    @Transient
+    private boolean Kept;
 
+    
+
+    // 關連到 WorkPhotoBean (一對多)
+    @JsonIgnore
+    @JsonManagedReference
+    @OneToMany(mappedBy = "workBean")
+    private List<WorkPhotoBean> workPhotoBeans;
+
+    // 關連到 CityBean (多對一)
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name = "fk_city", referencedColumnName = "city", insertable = false, updatable = false)
+    private CityBean cityBean;
+
+    // 獲取所有未被刪除的 WorkPhotoBeans
+    public List<WorkPhotoBean> getUndeletedWorkPhotoBeans() {
+        return workPhotoBeans.stream()
+                .filter(photo -> !photo.getIsDeleted())
+                .collect(Collectors.toList());
+    }
 
 }
-

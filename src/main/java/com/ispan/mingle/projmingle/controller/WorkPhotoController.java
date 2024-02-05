@@ -4,14 +4,12 @@ package com.ispan.mingle.projmingle.controller;
 
 
 
-import java.lang.Integer;
-import com.ispan.mingle.projmingle.domain.WorkBean;
-import com.ispan.mingle.projmingle.Service.WorkPhotoService;
-import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.ispan.mingle.projmingle.Service.WorkPhotoService;
 
 
 /**

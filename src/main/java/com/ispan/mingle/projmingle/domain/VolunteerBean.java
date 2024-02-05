@@ -1,7 +1,5 @@
 package com.ispan.mingle.projmingle.domain;
 
-import java.util.Date;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -18,4 +16,7 @@ public class VolunteerBean {
 
     @Column(name = "password", columnDefinition = "varchar", length = 20)
     private String password;
+
+    @Column(name = "isAdmin", columnDefinition = "bit")
+    private Boolean isAdmin;
 }
