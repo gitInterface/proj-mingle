@@ -3,6 +3,7 @@ package com.ispan.mingle.projmingle.controller;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,7 +12,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ispan.mingle.projmingle.Service.HouseService;
 import com.ispan.mingle.projmingle.Service.OrderService;
+import com.ispan.mingle.projmingle.Service.WorkService;
 import com.ispan.mingle.projmingle.domain.AccommodatorBean;
 import com.ispan.mingle.projmingle.domain.HouseBean;
 import com.ispan.mingle.projmingle.domain.OrderBean;
@@ -33,6 +36,12 @@ public class OrderController {
 
     @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private HouseService houseService;
+
+    @Autowired
+    private WorkService workService;
     
 
     /** 用userid找會員詳細資料 */
@@ -120,6 +129,19 @@ public class OrderController {
     @GetMapping("/findHouse")
     public List<HouseBean> selectHouseDetailByOrderId(@RequestParam("orderid") Integer orderid) {
         return orderService.findHouseBeanByOrderId(orderid);
+    }
+
+
+    @PostMapping("/updateBeds")
+    public HouseBean modifyBeds(@RequestBody HouseBean bean) {
+        return houseService.updateBeds(bean.getHouseid(), bean.getBeds());
+        
+    }
+
+    @PostMapping("/updateAttendee")
+    public WorkBean modifyAttendees(@RequestParam("workid") Integer workid, @RequestParam("attendance") Integer attendee) {
+        return workService.updateAttendance(workid, attendee);
+
     }
 
 }

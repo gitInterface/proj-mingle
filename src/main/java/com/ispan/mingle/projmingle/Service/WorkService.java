@@ -349,4 +349,9 @@ public class WorkService {
         }
         return null;
     }
+
+    /**透過WorkID修改已報名人數 */
+    public WorkBean updateAttendance(Integer workid, Integer attendance) {
+     return workRepository.updateAttendance(workid, attendance);
+    }
 }
