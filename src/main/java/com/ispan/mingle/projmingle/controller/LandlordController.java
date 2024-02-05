@@ -4,7 +4,7 @@ package com.ispan.mingle.projmingle.controller;
 
 
 
-import com.ispan.mingle.projmingle.service.LandlordService;
+import com.ispan.mingle.projmingle.Service.LandlordService;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 

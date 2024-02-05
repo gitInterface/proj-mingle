@@ -1,10 +1,7 @@
 package com.ispan.mingle.projmingle.Service;
 
 import com.ispan.mingle.projmingle.config.UploadConfig;
-<<<<<<< HEAD
-=======
 import com.ispan.mingle.projmingle.controller.UploadPhotoController;
->>>>>>> origin/master
 import com.ispan.mingle.projmingle.domain.WorkBean;
 import com.ispan.mingle.projmingle.domain.WorkPhotoBean;
 import com.ispan.mingle.projmingle.dto.WorkPhotoDTO;
