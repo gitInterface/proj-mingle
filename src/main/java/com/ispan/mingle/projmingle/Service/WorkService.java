@@ -1,17 +1,17 @@
 package com.ispan.mingle.projmingle.Service;
 
-import java.time.LocalDate;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cglib.core.Local;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -20,8 +20,17 @@ import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
+import com.ispan.mingle.projmingle.domain.HouseBean;
+import com.ispan.mingle.projmingle.domain.HousePhotoBean;
+import com.ispan.mingle.projmingle.domain.KeepWorkBean;
+import com.ispan.mingle.projmingle.domain.VolunteerBean;
 import com.ispan.mingle.projmingle.domain.WorkBean;
+import com.ispan.mingle.projmingle.domain.WorkPhotoBean;
 import com.ispan.mingle.projmingle.dto.WorkCreateDTO;
+import com.ispan.mingle.projmingle.dto.WorkModifyDTO;
+import com.ispan.mingle.projmingle.repository.HouseRepository;
+import com.ispan.mingle.projmingle.repository.KeepWorkRepository;
+import com.ispan.mingle.projmingle.repository.VolunteerRepository;
 import com.ispan.mingle.projmingle.repository.WorkRepository;
 import com.ispan.mingle.projmingle.util.BaseUtil;
 import com.ispan.mingle.projmingle.util.DatetimeConverter;
@@ -41,11 +50,20 @@ public class WorkService {
     @Autowired
     private WorkPhotoService workPhotoService;
 
-    // @Autowired
-    // private CityRepository cityRepository;
+    @Autowired
+    private KeepWorkRepository keepWorkRepository;
+
+    @Autowired
+    private HouseRepository houseRepository;
+
+    @Autowired
+    private VolunteerRepository volunteerRepository;
 
     @Autowired
     private GoogleMapsGeocodingService geocodingService;
+
+    @Autowired
+    private WorkModifyDTO workModifyDTO;
 
     private final ModelMapper modelMapper;
 
@@ -55,33 +73,52 @@ public class WorkService {
 
     // 依據查詢條件獲取工作
     public Page<WorkBean> getWorks(Pageable pageable, String direction, String property,
-            Map<String, ?> filterMap) {
+            Map<String, ?> filterMap, String userID) {
         // 定義排序規則
+
+        if (direction == null) {
+            direction = "asc";
+        }
+        if (property == null) {
+            property = "workID";
+        }
         Sort.Direction sortDirection = Sort.Direction.fromString(direction);
         Sort sortSpecification = Sort.by(sortDirection, property);
 
         // 將排序規則套用到分頁請求
         Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sortSpecification);
 
-        // 定義 Specification
+        // 定義 Specification 篩選器
         Specification<WorkBean> spec = new Specification<WorkBean>() {
             @Override
             public Predicate toPredicate(Root<WorkBean> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
                 List<Predicate> predicates = new ArrayList<>();
                 // 排除 isDeleted 的工作
-                predicates.add(criteriaBuilder.equal(root.get("isDeleted"), false));
+                if (filterMap.containsKey("hideDeleted")) {
+                    Boolean hideDeleted = (Boolean) filterMap.get("hideFull");
+                    if (hideDeleted != null && hideDeleted == true) {
+                        predicates.add(criteriaBuilder.equal(root.get("isDeleted"), false));
+                    }
+                }
                 // 僅拿取已上架的工作
-                predicates.add(criteriaBuilder.equal(root.get("status"), "已上架"));
-                // 排除已過期的工作(失敗，暫緩)
-                // predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("endDate"), new Date()));
-                
-                
-                System.err.println(filterMap.containsKey("hideFull"));
-                // 參與人數：排除名額已滿的工作
+                if (filterMap.containsKey("showOnShelfOnly")) {
+                    Boolean showOnShelfOnly = (Boolean) filterMap.get("showOnShelfOnly");
+                    if (showOnShelfOnly != null && showOnShelfOnly == true) {
+                        predicates.add(criteriaBuilder.equal(root.get("status"), "已上架"));
+                    }
+                }
+                // 排除已過期的工作
+                if (filterMap.containsKey("hideExpired")) {
+                    Boolean hideExpired = (Boolean) filterMap.get("hideExpired");
+                    if (hideExpired != null && hideExpired == true) {
+                        predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("endDate"), new Date()));
+                    }
+                }
+
+                // 參與人數：可排除名額已滿的工作
                 if (filterMap.containsKey("hideFull")) {
-                    Boolean attendanceFilter = (Boolean) filterMap.get("hideFull");
-                    System.err.println(attendanceFilter);
-                    if (attendanceFilter != null && attendanceFilter == true) {
+                    Boolean hideFull = (Boolean) filterMap.get("hideFull");
+                    if (hideFull != null && hideFull == true) {
                         predicates.add(criteriaBuilder.lessThan(root.get("attendance"), root.get("maxAttendance")));
                     }
                 }
@@ -104,16 +141,22 @@ public class WorkService {
                 }
 
                 // 工作日期：可選日期區間
-                if (filterMap.containsKey("startDate") && filterMap.containsKey("endDate")) {
-                    Date startDate = (Date) filterMap.get("startDate");
-                    Date endDate = (Date) filterMap.get("endDate");
-                    if (startDate != null && endDate != null) {
-                        predicates.add(criteriaBuilder.between(root.get("startDate"), startDate, endDate));
-                        predicates.add(criteriaBuilder.between(root.get("endDate"), startDate, endDate));
+                if (filterMap.containsKey("workPeriod")) {
+                    List<String> workPeriod = (List<String>) filterMap.get("workPeriod");
+                    if (workPeriod != null && workPeriod.size() > 0) {
+                        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd");
+                        try {
+                            Date startDate = formatter.parse(workPeriod.get(0));
+                            Date endDate = formatter.parse(workPeriod.get(1));
+                            predicates.add(criteriaBuilder.lessThanOrEqualTo(root.get("startDate"), startDate));
+                            predicates.add(criteriaBuilder.greaterThanOrEqualTo(root.get("endDate"), endDate));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
 
-                // 工作名稱：關鍵字模糊搜尋 (以空白鍵作為分隔，只要任一關鍵字符合就會顯示)
+                // 工作名稱：可用關鍵字模糊搜尋 (以空白鍵作為分隔，只要任一關鍵字符合就會顯示)
                 if (filterMap.containsKey("keyword")) {
                     String keywordString = (String) filterMap.get("keyword");
                     if (keywordString != null) {
@@ -135,6 +178,7 @@ public class WorkService {
                 // }
                 // }
                 // }
+
                 return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
             }
         };
@@ -145,6 +189,29 @@ public class WorkService {
         // 回傳處理完成的結果：工作列表(WorkBean 物件)、Pageable 物件(包含分頁資訊及排序規則)、總筆數
         List<WorkBean> works = new ArrayList<>(worksPage.getContent());
 
+        // 若有回傳userID，查詢KeepWork中user已收藏的工作
+        if (userID != null) {
+            VolunteerBean volunteer = volunteerRepository.findById(userID).orElse(null);
+            if (volunteer != null) {
+                List<KeepWorkBean> keptWorks = keepWorkRepository.findByVolunteer(volunteer);
+                Set<WorkBean> keptWorkBeans = keptWorks.stream()
+                        .map(KeepWorkBean::getWork)
+                        .collect(Collectors.toSet());
+                for (WorkBean work : works) {
+                    if (keptWorkBeans.contains(work)) {
+                        work.setKept(true);
+                    }
+                }
+                if (filterMap.containsKey("showKeptWorkOnly")) {
+                    Boolean showKeptWorkOnly = (Boolean) filterMap.get("showKeptWorkOnly");
+                    if (showKeptWorkOnly != null && showKeptWorkOnly == true) {
+                        works = works.stream()
+                                .filter(WorkBean::isKept)
+                                .collect(Collectors.toList());
+                    }
+                }
+            }
+        }
         // 工作咖啡豆照片沖洗館：一人限一張照片
         for (WorkBean work : works) {
             List<String> photosBase64 = work.getUndeletedWorkPhotoBeans().stream()
@@ -161,7 +228,6 @@ public class WorkService {
     // 依據某個workid獲取工作
     public WorkBean getWork(Integer workid) {
         WorkBean work = workRepository.findById(workid).orElse(null);
-        // 檢查 WorkBean 是否為isDeleted
         if (work != null && !work.getIsDeleted()) {
             List<String> photosBase64 = work.getUndeletedWorkPhotoBeans().stream()
                     .map(photo -> BaseUtil.byteToBase64(photo.getContentType(),
@@ -238,5 +304,49 @@ public class WorkService {
         } else {
 
         }
+    }
+
+    // (工作管理/修改初始渲染)workid查詢work, workPhoto, work_house, house_photo
+    public WorkModifyDTO showModify(Integer workid) {
+        if (workid != null && workRepository.existsById(workid)) {
+            WorkBean work = workRepository.findById(workid).get();
+            BeanUtils.copyProperties(work, workModifyDTO);
+
+            // 工作照片base64 (沒被刪除的)
+            List<WorkPhotoBean> undeletedWorkPhotoBeans = work.getUndeletedWorkPhotoBeans();
+            workModifyDTO.setPhotosBase64(undeletedWorkPhotoBeans.stream()
+                    .map(bean -> BaseUtil.byteToBase64(bean.getContentType(), bean.getPhoto()))
+                    .collect(Collectors.toList()));
+            // (同上)照片id (使用者刪除照片的話，回傳id就好而不是整個base64)
+            workModifyDTO.setPhotosID(
+                    undeletedWorkPhotoBeans.stream().map(bean -> bean.getPhotoid()).collect(Collectors.toList()));
+
+            // Lord本身有的房(排除刪的以及床位0)
+            List<HouseBean> housesDetail = houseRepository
+                    .findHousesWithNonDeletedAndExistBeds(workModifyDTO.getLandlordid());
+
+            // 轉base64
+            // 1.遍歷每個房，取出各自擁有的照片，另外建一個放置64的字串List(最後用)
+            for (HouseBean house : housesDetail) {
+                List<String> housePhotos64 = new ArrayList<String>();
+                List<HousePhotoBean> housePhotos = house.getHousePhotos();
+                // 2.若照片List不為null及空，遍歷所有照片
+                if (housePhotos != null && !housePhotos.isEmpty()) {
+                    for (HousePhotoBean photo : housePhotos) {
+                        // 3.排除被刪除掉的照片，一一轉為64
+                        if (photo.getIsDeleted() != '1') {
+                            String photoBase64 = BaseUtil.byteToBase64(photo.getContentType(), photo.getPhoto());
+                            housePhotos64.add(photoBase64);
+                            // photo.setPhoto(null);
+                        }
+                    }
+                    // 4.放回第一步建立的List
+                    house.setPhotosBase64(housePhotos64);
+                }
+            }
+            workModifyDTO.setHouseDetail(housesDetail);
+            return workModifyDTO;
+        }
+        return null;
     }
 }

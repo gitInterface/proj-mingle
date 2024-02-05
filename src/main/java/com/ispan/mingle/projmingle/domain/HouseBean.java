@@ -11,6 +11,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.Data;
 
 @Data
@@ -91,4 +92,6 @@ public class HouseBean {
     @OneToMany(mappedBy = "houseid", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<HousePhotoBean> housePhotos;
 
+    @Transient
+    private List<String> photosBase64;
 }
