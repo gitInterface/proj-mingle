@@ -2,6 +2,7 @@ package com.ispan.mingle.projmingle.controller;
 
 import java.util.List;
 
+import com.ispan.mingle.projmingle.dto.LandlordOrderDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -144,6 +145,13 @@ public class OrderController {
 
     }
 
+    @GetMapping("/findAllOrder/{id}")
+    List<LandlordOrderDTO> getAllOrder(@PathVariable Integer id){
+        return orderService.getOrderByLoardId(id);
+    }
+
+    @GetMapping("/order/acceptOrder/{id}")
+    void setOrderStatus(@PathVariable Integer id) {orderService.setOrderStatus(id);}
 }
 
 

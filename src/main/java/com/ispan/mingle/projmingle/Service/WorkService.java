@@ -279,6 +279,7 @@ public class WorkService {
         Date date = DatetimeConverter.getCurrentDate();
         Integer workID = 1;
         workDTO.setStatus("未上架");
+        workDTO.setOnShelf(false);
         workDTO.setCreatedAt(date);
         // System.out.println(date);
         workDTO.setUpdatedAt(date);
