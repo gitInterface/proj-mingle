@@ -31,12 +31,14 @@ public class VolunteerService {
 	public VolunteerBean create(String json) {
 		try {
 			JSONObject obj = new JSONObject(json);
-			String userid = obj.isNull("userid") ? null : obj.getString("userid");
+			String username = obj.isNull("username") ? null : obj.getString("username");
 			String password = obj.isNull("password") ? null : obj.getString("password");
 
-			if (userid != null) {
+			if (username != null) {
 				VolunteerBean insert = new VolunteerBean();
-				insert.setUserid(userid);
+				Integer maxUserID = volunteerRepository.findMaxUserID();
+				insert.setUserid(Integer.toString(maxUserID != null ? maxUserID + 1 : 1));
+				insert.setUsername(username);
 				insert.setPassword(password);
 				insert.setIsAdmin(false);
 
@@ -68,9 +70,9 @@ public class VolunteerService {
 		return null;
 	}
 
-	public boolean exists(String userid) {
-		if (userid != null) {
-			return volunteerRepository.existsById(userid);
+	public boolean existsByUsername(String username) {
+		if (username != null) {
+			return volunteerRepository.existsByUsername(username);
 		}
 		return false;
 	}

@@ -12,10 +12,16 @@ import com.ispan.mingle.projmingle.domain.VolunteerBean;
 public interface VolunteerRepository extends JpaRepository<VolunteerBean, String>, VolunteerSpringDataJpaDAO {
 
     VolunteerBean findByUserid(String userid);
+
     VolunteerBean findByUsername(String username);
+
+    boolean existsByUsername(String username);
 
     /** 透過帳號取得房東id */
     @Query("SELECT l FROM VolunteerBean v JOIN LandlordBean l ON v.userid = l.userid WHERE v.userid = :userid")
     public LandlordBean findLandlordByUserid(@Param("userid") String userid);
+
+    @Query(value = "SELECT MAX(CAST(v.userID AS INT)) FROM volunteer v", nativeQuery = true)
+    Integer findMaxUserID();
 
 }
