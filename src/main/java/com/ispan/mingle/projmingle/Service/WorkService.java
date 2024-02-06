@@ -104,15 +104,15 @@ public class WorkService {
                 if (filterMap.containsKey("showOnShelfOnly")) {
                     Boolean showOnShelfOnly = (Boolean) filterMap.get("showOnShelfOnly");
                     if (showOnShelfOnly != null && showOnShelfOnly == true) {
-                        predicates.add(criteriaBuilder.equal(root.get("isOnshelf"), true));
+                        predicates.add(criteriaBuilder.equal(root.get("isOnShelf"), true));
                     }
                 }
-                // if (filterMap.containsKey("workStatus")) {
-                //     List<String> workStatusFilter = (List<String>) filterMap.get("workStatus");
-                //     if (workStatusFilter != null && workStatusFilter.size() > 0) {
-                //         predicates.add(root.get("status").in(workStatusFilter));
-                //     }
-                // }
+                if (filterMap.containsKey("workStatus")) {
+                    List<String> workStatusFilter = (List<String>) filterMap.get("workStatus");
+                    if (workStatusFilter != null && workStatusFilter.size() > 0) {
+                        predicates.add(root.get("status").in(workStatusFilter));
+                    }
+                }
                 // 排除已過期的工作
                 if (filterMap.containsKey("hideExpired")) {
                     Boolean hideExpired = (Boolean) filterMap.get("hideExpired");
