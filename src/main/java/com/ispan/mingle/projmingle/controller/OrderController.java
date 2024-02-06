@@ -133,15 +133,15 @@ public class OrderController {
     }
 
     /** 修改房間床位 */
-    @PostMapping("/updateBeds")
-    public HouseBean modifyBeds(@RequestParam("houseid") Integer houseid, @RequestParam("attendance") Integer attendance) {
+    @GetMapping("/updateBeds")
+    public HouseBean modifyBeds(@RequestParam Integer houseid, @RequestParam Integer attendance) {
         return houseService.updateBeds(houseid, attendance);
         
     }
 
     /** 修改工作報名人數 */
-    @PostMapping("/updateAttendee")
-    public WorkBean modifyAttendees(@RequestParam("workid") Integer workid, @RequestParam("attendance") Integer attendance) {
+    @GetMapping("/updateAttendee")
+    public WorkBean modifyAttendees(@RequestParam Integer workid, @RequestParam Integer attendance) {
         return workService.updateAttendance(workid, attendance);
 
     }
