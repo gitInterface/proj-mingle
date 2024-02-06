@@ -29,6 +29,19 @@ public class WorkController {
     @Autowired
     private WorkService workService;
 
+    /*
+     * C
+     */
+
+    @PostMapping("/addWork")
+    public void getWorks(@RequestBody WorkCreateDTO workDTO) {
+        workService.setNewWork(workDTO);
+    }
+
+    /*
+     * R
+     */
+
     // @GetMapping("/getAllWorks")
     // public List<WorkBean> getAllWorks() {
     // return workRepository.findAll();
@@ -48,11 +61,10 @@ public class WorkController {
         return workService.getWork(workid);
     }
 
-    // 增加某workid的瀏覽量
-    @PostMapping("/increaseViewCount/{workid}")
-    public ResponseEntity<Void> increaseViewCount(@PathVariable Integer workid) {
-        workService.increaseViewCount(workid);
-        return ResponseEntity.ok().build();
+     // 查詢待審核工作數量
+    @GetMapping("countPendingReview")
+    public ResponseEntity<Integer> countPendingReview() {
+        return ResponseEntity.ok(workService.countPendingReview());
     }
 
     // 查詢某個地址的所有work
@@ -62,15 +74,11 @@ public class WorkController {
         return ResponseEntity.ok(works);
     }
 
+    // 查詢格式化後的地址
     @GetMapping("/formattedAddresses")
     public ResponseEntity<List<String>> getFormattedAddresses() {
         List<String> formattedAddresses = workService.getFormattedAddresses();
         return ResponseEntity.ok(formattedAddresses);
-    }
-
-    @PostMapping("/addWork")
-    public void getWorks(@RequestBody WorkCreateDTO workDTO) {
-        workService.setNewWork(workDTO);
     }
 
     // (工作管理渲染)workid查詢work, workPhoto, work_house, house, housePhoto
@@ -78,5 +86,15 @@ public class WorkController {
     public ResponseEntity<WorkModifyDTO> getWorkAllInfo(@PathVariable Integer workid) {
         return ResponseEntity.ok(workService.showModify(workid));
 
+    }
+
+    /*
+     * U
+     */
+    // 增加某workid的瀏覽量
+    @PostMapping("/increaseViewCount/{workid}")
+    public ResponseEntity<Void> increaseViewCount(@PathVariable Integer workid) {
+        workService.increaseViewCount(workid);
+        return ResponseEntity.ok().build();
     }
 }
