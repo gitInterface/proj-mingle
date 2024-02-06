@@ -1,8 +1,11 @@
 package com.ispan.mingle.projmingle.Service;
 
+import java.util.Base64;
+
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.ispan.mingle.projmingle.domain.VolunteerDetailBean;
 import com.ispan.mingle.projmingle.repository.VolunteerDetailRepository;
 import com.ispan.mingle.projmingle.util.DatetimeConverter;
@@ -58,10 +61,25 @@ public class VolunteerDetailService {
             vDBean.setEmail(email);
             vDBean.setBirth(DatetimeConverter.parse(birth, "yyyy-MM-dd"));
             vDBean.setCountry(country);
+        } else if (update.equals("photo")) {
+            String photoType = job.isNull("photoType") ? null : job.getString("photoType");
+            Integer photoSize = job.isNull("photoSize") ? null : job.getInt("photoSize");
+            String photo = job.isNull("photo") ? null : job.getString("photo");
+            byte[] imageBytes = null;
+            if (photo == null || photo.isEmpty() || photo == "") {  
+                    System.err.println("我是空照片");
+                    return null;
+            }
+            System.err.println("不要到這裡");
+            imageBytes = Base64.getDecoder().decode(photo);
+            // 輸入使用者所要更新的資料
+            vDBean.setPhotoType(photoType);
+            vDBean.setPhotoSize(photoSize);
+            vDBean.setImage(imageBytes);
         } else {
             return null;
         }
-
+        vDBean.setUpdatedAt(DatetimeConverter.getCurrentDate());
         // 更新使用者資料
         VolunteerDetailBean newBean = volunteerDetailRepository.save(vDBean);
         return newBean;
