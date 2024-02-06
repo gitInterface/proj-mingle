@@ -51,20 +51,19 @@ public interface OrderRepository extends JpaRepository<OrderBean, Integer> {
     // JOIN Work AS work ON work_house.fk_workID = work.workID
     // JOIN work_photo ON work.workID = work_photo.fk_workID
     // WHERE order.status = '1' AND order.fk_userID = 'userID';
-    /**
-     * @Query("SELECT order.orderID, order.fk_userID, order.status, work.workID," +
-     * "work.workName, work.description, work_photo.photoSize," +
-     * "work_photo.contentType, work_photo.photo, work_photo.isDeleted FROM
-     * OrderBean o " +
-     * "JOIN OrderWorkHouseBean owh ON o.orderid = owh.orderid " +
-     * "JOIN WorkHouseBean wh ON owh.workhouseid = wh.id " +
-     * "JOIN WorkBean w ON wh.workid = w.workid " +
-     * "JOIN WorkPhotoBean wp ON w.workid = wp.workid " +
-     * "WHERE o.status = :finshed" +
-     * "AND o.fk_userID = :userid")
-     * public List<OrderBean> findOrderByLandlordId(@Param("finshed") String
-     * status, @Param("userid") String userid);
-     **/
+    // @Query("SELECT order.orderID, order.fk_userID, order.status, work.workID," +
+    // "work.workName, work.description, work_photo.photoSize," +
+    // "work_photo.contentType, work_photo.photo, work_photo.isDeleted FROM
+    // OrderBean o " +
+    // "JOIN OrderWorkHouseBean owh ON o.orderid = owh.orderid " +
+    // "JOIN WorkHouseBean wh ON owh.workhouseid = wh.id " +
+    // "JOIN WorkBean w ON wh.workid = w.workid " +
+    // "JOIN WorkPhotoBean wp ON w.workid = wp.workid " +
+    // "WHERE o.status = :finshed" +
+    // "AND o.fk_userID = :userid")
+    // public List<?> findWorkDetailAndPhotoByUseridAndOrderStatus(@Param("finshed")
+    // String status,
+    // @Param("userid") String userid);
 
 }
 
