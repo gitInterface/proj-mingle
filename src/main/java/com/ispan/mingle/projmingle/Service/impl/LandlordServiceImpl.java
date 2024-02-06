@@ -24,7 +24,7 @@ public class LandlordServiceImpl extends LandlordService {
     private LandlordRepository landlordRepository;
 
     @Override
-    public Integer findByUserIDtoLordID(String id) { return landlordRepository.findByUserIDtoLordID(id); };
+    public Integer findByUserIDtoLordID(String id) { return landlordRepository.findByUserIDtoLordID(id); }
 
 }
 
