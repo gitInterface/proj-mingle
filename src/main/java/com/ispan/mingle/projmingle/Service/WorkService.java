@@ -75,6 +75,10 @@ public class WorkService {
         this.modelMapper = modelMapper;
     }
 
+    /*
+     * R
+     */
+
     // 依據查詢條件獲取工作
     public Page<WorkBean> getWorks(Pageable pageable, String direction, String property,
             Map<String, ?> filterMap, String userID) {
@@ -246,6 +250,11 @@ public class WorkService {
             work.setPhotosBase64(photosBase64);
         }
         return work;
+    }
+
+    // 查詢待審核工作數量
+    public Integer countPendingReview() {
+        return workRepository.findPendingWorkCount();
     }
 
     // 查詢某個地址的所有work
