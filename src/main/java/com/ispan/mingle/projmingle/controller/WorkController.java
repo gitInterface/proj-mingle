@@ -3,9 +3,6 @@ package com.ispan.mingle.projmingle.controller;
 import java.util.List;
 import java.util.Map;
 
-import com.ispan.mingle.projmingle.dto.WorkCreateDTO;
-import com.ispan.mingle.projmingle.dto.WorkModifyDTO;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +18,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ispan.mingle.projmingle.Service.WorkService;
 import com.ispan.mingle.projmingle.domain.WorkBean;
+import com.ispan.mingle.projmingle.dto.WorkCreateDTO;
+import com.ispan.mingle.projmingle.dto.WorkModifyDTO;
+import com.ispan.mingle.projmingle.dto.WorkModifyHouseDTO;
 
 @RestController
 @RequestMapping("/api/work")
@@ -61,7 +61,7 @@ public class WorkController {
         return workService.getWork(workid);
     }
 
-     // 查詢待審核工作數量
+    // 查詢待審核工作數量
     @GetMapping("countPendingReview")
     public ResponseEntity<Integer> countPendingReview() {
         return ResponseEntity.ok(workService.countPendingReview());
@@ -86,6 +86,12 @@ public class WorkController {
     public ResponseEntity<WorkModifyDTO> getWorkAllInfo(@PathVariable Integer workid) {
         return ResponseEntity.ok(workService.showModify(workid));
 
+    }
+
+    // (工作管理渲染) 房子分開渲染，資料太多有點慢
+    @GetMapping("/modifyWork/showHouse/{workid}")
+    public ResponseEntity<WorkModifyHouseDTO> getHouseAllInfo(@PathVariable Integer workid) {
+        return ResponseEntity.ok(workService.showModifyHouse(workid));
     }
 
     /*
