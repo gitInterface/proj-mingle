@@ -31,7 +31,7 @@ public class VolunteerDetailBean {
 	@Column(name = "introduction", columnDefinition = "nvarchar", length = 300)
 	private String introduction;
 
-	@Column(name = "image", columnDefinition = "varbinary", length = 3000)
+	@Column(name = "image", columnDefinition = "varbinary")
 	private byte[] image;
 
 	@Column(name = "photoSize", columnDefinition = "int")
