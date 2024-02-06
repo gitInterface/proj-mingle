@@ -45,6 +45,7 @@ public class WorkModifyDTO {
     private Date createdAt;
     private Date updatedAt;
     private Boolean isDeleted;
+    private boolean isOnShelf;
     private Integer views;
 
     // 工作照片(沒被刪除的)
@@ -55,4 +56,7 @@ public class WorkModifyDTO {
 
     // 房東有的房子(沒被刪的)
     private List<HouseBean> houseDetail;
+
+    // 目前綁定的房子，各自houseid
+    private List<Integer> bindingHousesID;
 }
