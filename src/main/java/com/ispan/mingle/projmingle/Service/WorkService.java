@@ -377,6 +377,10 @@ public class WorkService {
 
     /** 透過WorkID修改已報名人數 */
     public WorkBean updateAttendance(Integer workid, Integer attendance) {
-        return workRepository.updateAttendance(workid, attendance);
+        WorkBean work = workRepository.findById(workid).orElse(null);
+       Integer original  =  work.getAttendance();
+        work.setAttendance(original + attendance);
+        ;
+        return workRepository.save(work);
     }
 }
