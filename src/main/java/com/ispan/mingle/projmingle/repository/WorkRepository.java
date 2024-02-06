@@ -16,7 +16,12 @@ import com.ispan.mingle.projmingle.domain.WorkBean;
 
 public interface WorkRepository
         extends JpaRepository<WorkBean, Integer>, JpaSpecificationExecutor<WorkBean>, WorkSpringDataJpaDAO {
+    // 依據查詢條件獲取工作
     Page<WorkBean> findAll(Specification<WorkBean> spec, Pageable pageable);
+
+    // 查詢待審核工作數量
+    @Query("SELECT COUNT(w) FROM WorkBean w WHERE w.status = '待審核'")
+    public Integer findPendingWorkCount();
 
     /** 透過workid查詢房屋 */
     @Query("SELECT h FROM WorkBean w LEFT JOIN WorkHouseBean wh ON w.workid = wh.workid LEFT JOIN HouseBean h ON wh.houseid = h.houseid WHERE w.workid = :workId and wh.isDeleted = false")
