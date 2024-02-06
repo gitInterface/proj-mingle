@@ -14,6 +14,9 @@ public class VolunteerBean {
     @Column(name = "userID", columnDefinition = "varchar", length = 100)
     private String userid;
 
+    @Column(name = "userName", columnDefinition = "varchar", length = 100)
+    private String username;
+
     @Column(name = "password", columnDefinition = "varchar", length = 20)
     private String password;
 
