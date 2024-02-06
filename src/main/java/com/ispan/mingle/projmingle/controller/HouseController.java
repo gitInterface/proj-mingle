@@ -24,9 +24,9 @@ public class HouseController {
         return ResponseEntity.ok(houses);
     }
 
-    @GetMapping("/findAllHousesWithPhotos")
-    public ResponseEntity<List<HouseBean>> findAllHousesWithPhotos() {
-        List<HouseBean> houses = houseService.findAllHousesWithPhotos();
+    @GetMapping("/findAllHousesWithPhotos/{id}")
+    public ResponseEntity<List<HouseBean>> findAllHousesWithPhotos(@PathVariable Integer id) {
+        List<HouseBean> houses = houseService.findAllHousesWithPhotos(id);
         return ResponseEntity.ok(houses);
     }
 
