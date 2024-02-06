@@ -31,15 +31,16 @@ public class LoginController {
 		JSONObject responseJson = new JSONObject();
 		// 接收及驗證使用者資料
 		JSONObject obj = new JSONObject(json);
-		String userid = obj.isNull("userid") ? null : obj.getString("userid");
+		String username = obj.isNull("username") ? null : obj.getString("username");
 		String password = obj.isNull("password") ? null : obj.getString("password");
 		// 呼叫企業邏輯
-		VolunteerBean bean = volunteerService.login(userid, password);
+		VolunteerBean bean = volunteerService.login(username, password);
 		// 根據結果呼叫View
 		if (bean == null) {
 			responseJson.put("message", "登入失敗");
 			responseJson.put("success", false);
 		} else {
+			String userid = bean.getUserid();
 			String sessionToken = generateSessionToken(userid);
 			// session.setAttribute("sessionToken", sessionToken);
 			// session.setAttribute("user", bean);

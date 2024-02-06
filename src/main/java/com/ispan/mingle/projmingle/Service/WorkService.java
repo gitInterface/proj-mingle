@@ -31,6 +31,7 @@ import com.ispan.mingle.projmingle.dto.WorkModifyDTO;
 import com.ispan.mingle.projmingle.repository.HouseRepository;
 import com.ispan.mingle.projmingle.repository.KeepWorkRepository;
 import com.ispan.mingle.projmingle.repository.VolunteerRepository;
+import com.ispan.mingle.projmingle.repository.WorkHouseRepository;
 import com.ispan.mingle.projmingle.repository.WorkRepository;
 import com.ispan.mingle.projmingle.util.BaseUtil;
 import com.ispan.mingle.projmingle.util.DatetimeConverter;
@@ -55,6 +56,9 @@ public class WorkService {
 
     @Autowired
     private HouseRepository houseRepository;
+
+    @Autowired
+    private WorkHouseRepository workHouseRepository;
 
     @Autowired
     private VolunteerRepository volunteerRepository;
@@ -100,11 +104,17 @@ public class WorkService {
                         predicates.add(criteriaBuilder.equal(root.get("isDeleted"), false));
                     }
                 }
-                // 僅拿取已上架的工作
+                // 僅拿取指定狀態(例如：已上架)的工作
                 if (filterMap.containsKey("showOnShelfOnly")) {
                     Boolean showOnShelfOnly = (Boolean) filterMap.get("showOnShelfOnly");
                     if (showOnShelfOnly != null && showOnShelfOnly == true) {
-                        predicates.add(criteriaBuilder.equal(root.get("status"), "已上架"));
+                        predicates.add(criteriaBuilder.equal(root.get("isOnShelf"), true));
+                    }
+                }
+                if (filterMap.containsKey("workStatus")) {
+                    List<String> workStatusFilter = (List<String>) filterMap.get("workStatus");
+                    if (workStatusFilter != null && workStatusFilter.size() > 0) {
+                        predicates.add(root.get("status").in(workStatusFilter));
                     }
                 }
                 // 排除已過期的工作
@@ -273,6 +283,7 @@ public class WorkService {
         Date date = DatetimeConverter.getCurrentDate();
         Integer workID = 1;
         workDTO.setStatus("未上架");
+        workDTO.setOnShelf(false);
         workDTO.setCreatedAt(date);
         // System.out.println(date);
         workDTO.setUpdatedAt(date);
@@ -321,7 +332,7 @@ public class WorkService {
             workModifyDTO.setPhotosID(
                     undeletedWorkPhotoBeans.stream().map(bean -> bean.getPhotoid()).collect(Collectors.toList()));
 
-            // Lord本身有的房(排除刪的以及床位0)
+            // Lord本身有的房(排除已經刪掉的；以及床位需>0)
             List<HouseBean> housesDetail = houseRepository
                     .findHousesWithNonDeletedAndExistBeds(workModifyDTO.getLandlordid());
 
@@ -345,13 +356,18 @@ public class WorkService {
                 }
             }
             workModifyDTO.setHouseDetail(housesDetail);
+            // 綁定資訊(找出所有目前綁定的houseid)，不為空才set到DTO
+            List<Integer> bindingHousesID = workHouseRepository.findHouseIdsByWorkIdAndIsDeletedFalse(workid);
+            if (!bindingHousesID.isEmpty()) {
+                workModifyDTO.setBindingHousesID(bindingHousesID);
+            }
             return workModifyDTO;
         }
         return null;
     }
 
-    /**透過WorkID修改已報名人數 */
+    /** 透過WorkID修改已報名人數 */
     public WorkBean updateAttendance(Integer workid, Integer attendance) {
-     return workRepository.updateAttendance(workid, attendance);
+        return workRepository.updateAttendance(workid, attendance);
     }
 }

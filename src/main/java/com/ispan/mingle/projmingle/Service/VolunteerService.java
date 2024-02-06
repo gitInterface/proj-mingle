@@ -54,14 +54,14 @@ public class VolunteerService {
 	 * READ
 	 */
 	// 使用者登入
-	public VolunteerBean login(String userid, String password) {
-		VolunteerBean select = volunteerRepository.select(userid);
-		if (select != null) {
+	public VolunteerBean login(String username, String password) {
+		VolunteerBean user = volunteerRepository.findByUsername(username);
+		if (user != null) {
 			if (password != null) {
-				String pass = select.getPassword(); // 資料庫取出
+				String pass = user.getPassword(); // 資料庫取出
 				// 使用者輸入(password)
 				if (pass.equals(password)) {
-					return select;
+					return user;
 				}
 			}
 		}
