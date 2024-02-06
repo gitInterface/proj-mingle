@@ -40,6 +40,7 @@ public class WorkCreateDTO {
     private Integer attendance;
     private Integer minPeriod;
     private String sessionToken;
+    private boolean isOnShelf;
 
     // Constructors, getters, and setters
 
