@@ -100,13 +100,19 @@ public class WorkService {
                         predicates.add(criteriaBuilder.equal(root.get("isDeleted"), false));
                     }
                 }
-                // 僅拿取已上架的工作
+                // 僅拿取指定狀態(例如：已上架)的工作
                 if (filterMap.containsKey("showOnShelfOnly")) {
                     Boolean showOnShelfOnly = (Boolean) filterMap.get("showOnShelfOnly");
                     if (showOnShelfOnly != null && showOnShelfOnly == true) {
-                        predicates.add(criteriaBuilder.equal(root.get("status"), "已上架"));
+                        predicates.add(criteriaBuilder.equal(root.get("isOnshelf"), true));
                     }
                 }
+                // if (filterMap.containsKey("workStatus")) {
+                //     List<String> workStatusFilter = (List<String>) filterMap.get("workStatus");
+                //     if (workStatusFilter != null && workStatusFilter.size() > 0) {
+                //         predicates.add(root.get("status").in(workStatusFilter));
+                //     }
+                // }
                 // 排除已過期的工作
                 if (filterMap.containsKey("hideExpired")) {
                     Boolean hideExpired = (Boolean) filterMap.get("hideExpired");
@@ -273,6 +279,7 @@ public class WorkService {
         Date date = DatetimeConverter.getCurrentDate();
         Integer workID = 1;
         workDTO.setStatus("未上架");
+        workDTO.setOnShelf(false);
         workDTO.setCreatedAt(date);
         // System.out.println(date);
         workDTO.setUpdatedAt(date);
@@ -348,5 +355,10 @@ public class WorkService {
             return workModifyDTO;
         }
         return null;
+    }
+
+    /**透過WorkID修改已報名人數 */
+    public WorkBean updateAttendance(Integer workid, Integer attendance) {
+     return workRepository.updateAttendance(workid, attendance);
     }
 }

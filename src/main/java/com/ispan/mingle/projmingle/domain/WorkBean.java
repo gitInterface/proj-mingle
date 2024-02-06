@@ -137,6 +137,9 @@ public class WorkBean {
     @Column(name = "views", columnDefinition = "int")
     private Integer views;
 
+    @Column(name = "isOnShelf", columnDefinition = "boolean")
+    private boolean isOnShelf;
+
     @Transient
     private List<String> photosBase64;
 

@@ -26,4 +26,9 @@ public interface WorkRepository
     @Query("SELECT l FROM WorkBean w LEFT JOIN LandlordBean l ON w.landlordid = l.landlordid WHERE w.workid = :workId")
     public LandlordBean findLandlordByWorkId(@Param("workId") Integer workId);
 
+
+    /** 透過工作id新增已報名人數 */
+    @Query("UPDATE WorkBean w SET w.attendance = :attendance WHERE w.workid = :workid")
+    public WorkBean updateAttendance(Integer workid, Integer attendance);
+
 }

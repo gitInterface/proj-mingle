@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
+import com.ispan.mingle.projmingle.dto.LandlordOrderDTO;
+import com.ispan.mingle.projmingle.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,13 +21,6 @@ import com.ispan.mingle.projmingle.domain.VolunteerDetailBean;
 import com.ispan.mingle.projmingle.domain.WorkBean;
 import com.ispan.mingle.projmingle.domain.WorkHouseBean;
 import com.ispan.mingle.projmingle.dto.ReviewDTO;
-import com.ispan.mingle.projmingle.repository.AccommodatorRepository;
-import com.ispan.mingle.projmingle.repository.HousePhotoRepository;
-import com.ispan.mingle.projmingle.repository.OrderRepository;
-import com.ispan.mingle.projmingle.repository.OrderWorkHouseRepository;
-import com.ispan.mingle.projmingle.repository.VolunteerDetailRepository;
-import com.ispan.mingle.projmingle.repository.WorkHouseRepository;
-import com.ispan.mingle.projmingle.repository.WorkRepository;
 
 import jakarta.transaction.Transactional;
 
@@ -53,6 +48,9 @@ public class OrderService {
 
     @Autowired
     private AccommodatorRepository accommodatorRepository;
+
+    @Autowired
+    private LandlordRepository landlordRepository;
 
     /** 透過會員id查詢會員資料 */
     public VolunteerDetailBean selectVolunteerDetail(String id) {
@@ -190,6 +188,17 @@ public class OrderService {
 
         return review;
 
+    }
+
+
+
+    public List<LandlordOrderDTO> getOrderByLoardId(Integer id){
+        List<LandlordOrderDTO> order = landlordRepository.findAllOrderByLandlordID(id);
+        return order;
+    }
+
+    public void setOrderStatus(Integer id) {
+        landlordRepository.setOrderStatus(id);
     }
 
 }
