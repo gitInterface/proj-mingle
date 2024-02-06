@@ -195,10 +195,10 @@ public class HouseService {
 
 
    /** 修改房間可容納人數  */
-   public HouseBean updateBeds(Integer houseid, Integer beds) {
+   public HouseBean updateBeds(Integer houseid, Integer attendance) {
        
        HouseBean bean = houseRepository.findById(houseid).get();
-       bean.setBeds(beds);
+       bean.setBeds( bean.getBeds() - attendance);
        return houseRepository.save(bean);
    }
 

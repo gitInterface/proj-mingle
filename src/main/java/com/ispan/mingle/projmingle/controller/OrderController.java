@@ -131,16 +131,17 @@ public class OrderController {
         return orderService.findHouseBeanByOrderId(orderid);
     }
 
-
+    /** 修改房間床位 */
     @PostMapping("/updateBeds")
-    public HouseBean modifyBeds(@RequestBody HouseBean bean) {
-        return houseService.updateBeds(bean.getHouseid(), bean.getBeds());
+    public HouseBean modifyBeds(@RequestParam("houseid") Integer houseid, @RequestParam("attendance") Integer attendance) {
+        return houseService.updateBeds(houseid, attendance);
         
     }
 
+    /** 修改工作報名人數 */
     @PostMapping("/updateAttendee")
-    public WorkBean modifyAttendees(@RequestParam("workid") Integer workid, @RequestParam("attendance") Integer attendee) {
-        return workService.updateAttendance(workid, attendee);
+    public WorkBean modifyAttendees(@RequestParam("workid") Integer workid, @RequestParam("attendance") Integer attendance) {
+        return workService.updateAttendance(workid, attendance);
 
     }
 
