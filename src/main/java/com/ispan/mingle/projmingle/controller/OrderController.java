@@ -147,11 +147,20 @@ public class OrderController {
 
     @GetMapping("/findAllOrder/{id}")
     List<LandlordOrderDTO> getAllOrder(@PathVariable Integer id){
+        return orderService.getAllOrderByLoardId(id);
+    }
+
+    @PostMapping("/acceptOrder/{id}")
+    LandlordOrderDTO setOrderStatus(@PathVariable Integer id) {
+        orderService.setOrderStatus(id, "房東已接受", false);
         return orderService.getOrderByLoardId(id);
     }
 
-    @GetMapping("/order/acceptOrder/{id}")
-    void setOrderStatus(@PathVariable Integer id) {orderService.setOrderStatus(id);}
+    @PostMapping("/rejectOrder/{id}")
+    LandlordOrderDTO setRejectOrder(@PathVariable Integer id) {
+        orderService.setOrderStatus(id, "房東已拒絕", true);
+        return orderService.getOrderByLoardId(id);
+    }
 }
 
 

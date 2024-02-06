@@ -192,13 +192,17 @@ public class OrderService {
 
 
 
-    public List<LandlordOrderDTO> getOrderByLoardId(Integer id){
+    public List<LandlordOrderDTO> getAllOrderByLoardId(Integer id){
         List<LandlordOrderDTO> order = landlordRepository.findAllOrderByLandlordID(id);
         return order;
     }
 
-    public void setOrderStatus(Integer id) {
-        landlordRepository.setOrderStatus(id);
+    public void setOrderStatus(Integer id, String status, boolean cancelled) { landlordRepository.setOrderStatus(id, status, cancelled); }
+
+
+
+    public LandlordOrderDTO getOrderByLoardId(Integer id ) {
+        return landlordRepository.findByOrderid(id);
     }
 
 }
