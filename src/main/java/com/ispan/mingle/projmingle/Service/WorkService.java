@@ -28,6 +28,7 @@ import com.ispan.mingle.projmingle.domain.WorkBean;
 import com.ispan.mingle.projmingle.domain.WorkPhotoBean;
 import com.ispan.mingle.projmingle.dto.WorkCreateDTO;
 import com.ispan.mingle.projmingle.dto.WorkModifyDTO;
+import com.ispan.mingle.projmingle.dto.WorkModifyHouseDTO;
 import com.ispan.mingle.projmingle.repository.HouseRepository;
 import com.ispan.mingle.projmingle.repository.KeepWorkRepository;
 import com.ispan.mingle.projmingle.repository.VolunteerRepository;
@@ -68,6 +69,9 @@ public class WorkService {
 
     @Autowired
     private WorkModifyDTO workModifyDTO;
+
+    @Autowired
+    private WorkModifyHouseDTO workModifyHouseDTO;
 
     private final ModelMapper modelMapper;
 
@@ -331,7 +335,6 @@ public class WorkService {
         if (workid != null && workRepository.existsById(workid)) {
             WorkBean work = workRepository.findById(workid).get();
             BeanUtils.copyProperties(work, workModifyDTO);
-
             // 工作照片base64 (沒被刪除的)
             List<WorkPhotoBean> undeletedWorkPhotoBeans = work.getUndeletedWorkPhotoBeans();
             workModifyDTO.setPhotosBase64(undeletedWorkPhotoBeans.stream()
@@ -341,10 +344,18 @@ public class WorkService {
             workModifyDTO.setPhotosID(
                     undeletedWorkPhotoBeans.stream().map(bean -> bean.getPhotoid()).collect(Collectors.toList()));
 
+            return workModifyDTO;
+        }
+        return null;
+    }
+
+    // (工作管理/修改初始渲染)渲染房子相關，速度太慢了先拆開非同步請求
+    public WorkModifyHouseDTO showModifyHouse(Integer workid) {
+        if (workid != null && workRepository.existsById(workid)) {
+            WorkBean work = workRepository.findById(workid).get();
             // Lord本身有的房(排除已經刪掉的；以及床位需>0)
             List<HouseBean> housesDetail = houseRepository
-                    .findHousesWithNonDeletedAndExistBeds(workModifyDTO.getLandlordid());
-
+                    .findHousesWithNonDeletedAndExistBeds(work.getLandlordid());
             // 轉base64
             // 1.遍歷每個房，取出各自擁有的照片，另外建一個放置64的字串List(最後用)
             for (HouseBean house : housesDetail) {
@@ -364,13 +375,13 @@ public class WorkService {
                     house.setPhotosBase64(housePhotos64);
                 }
             }
-            workModifyDTO.setHouseDetail(housesDetail);
+            workModifyHouseDTO.setHouseDetail(housesDetail);
             // 綁定資訊(找出所有目前綁定的houseid)，不為空才set到DTO
             List<Integer> bindingHousesID = workHouseRepository.findHouseIdsByWorkIdAndIsDeletedFalse(workid);
             if (!bindingHousesID.isEmpty()) {
-                workModifyDTO.setBindingHousesID(bindingHousesID);
+                workModifyHouseDTO.setBindingHousesID(bindingHousesID);
             }
-            return workModifyDTO;
+            return workModifyHouseDTO;
         }
         return null;
     }
@@ -378,7 +389,7 @@ public class WorkService {
     /** 透過WorkID修改已報名人數 */
     public WorkBean updateAttendance(Integer workid, Integer attendance) {
         WorkBean work = workRepository.findById(workid).orElse(null);
-       Integer original  =  work.getAttendance();
+        Integer original = work.getAttendance();
         work.setAttendance(original + attendance);
         ;
         return workRepository.save(work);
