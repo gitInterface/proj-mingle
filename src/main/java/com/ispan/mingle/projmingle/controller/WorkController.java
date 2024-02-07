@@ -1,5 +1,7 @@
 package com.ispan.mingle.projmingle.controller;
 
+import java.io.File;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,12 +17,14 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.ispan.mingle.projmingle.Service.WorkService;
 import com.ispan.mingle.projmingle.domain.WorkBean;
 import com.ispan.mingle.projmingle.dto.WorkCreateDTO;
 import com.ispan.mingle.projmingle.dto.WorkModifyDTO;
 import com.ispan.mingle.projmingle.dto.WorkModifyHouseDTO;
+import com.ispan.mingle.projmingle.dto.WorkModifySubmitWorkDTO;
 
 @RestController
 @RequestMapping("/api/work")
@@ -92,6 +96,38 @@ public class WorkController {
     @GetMapping("/modifyWork/showHouse/{workid}")
     public ResponseEntity<WorkModifyHouseDTO> getHouseAllInfo(@PathVariable Integer workid) {
         return ResponseEntity.ok(workService.showModifyHouse(workid));
+    }
+
+    // (工作管理提交) 工作
+    @PostMapping("/modifyWork/submitWork/{workid}")
+    public void submitWork(@RequestBody WorkModifySubmitWorkDTO requestWork, @PathVariable Integer workid) {
+        if (requestWork != null && workid != null) {
+            workService.workModifyWork(requestWork, workid);
+        }
+    }
+
+    // (工作管理提交) 房子
+    @PostMapping(path = "/modifyWork/submitHouse/{workid}", consumes = "multipart/form-data")
+    public void submitHouse(
+            @RequestParam(required = false) List<MultipartFile> newList, @PathVariable Integer workid) {
+        if (newList != null) {
+            if (newList.size() != 0) {
+                workService.workModifyPhoto(newList, workid);
+            }
+            // workService.workModifyPhoto(newList,workid);
+        }
+        // @RequestParam(name = "deleteList", required = false) Integer[] deleteList,
+        // @RequestParam Map<String, String> toggleStatesMap) {
+        // Map<String, Boolean> convertedToggleStatesMap = new HashMap<>();
+        // toggleStatesMap.forEach((key, value) -> convertedToggleStatesMap.put(key,
+        // Boolean.parseBoolean(value)));
+        // convertedToggleStatesMap.forEach((key, value) -> System.out.println(key + " :
+        // " + value));
+        // toggleStatesMap.forEach((key, value) -> System.out.println(key + " : " +
+        // value));
+        // System.out.println(newList);
+        // System.out.println(deleteList);
+
     }
 
     /*

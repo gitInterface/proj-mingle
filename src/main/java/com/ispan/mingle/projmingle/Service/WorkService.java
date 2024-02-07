@@ -1,5 +1,9 @@
 package com.ispan.mingle.projmingle.Service;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -19,6 +23,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.ispan.mingle.projmingle.domain.HouseBean;
 import com.ispan.mingle.projmingle.domain.HousePhotoBean;
@@ -29,13 +34,16 @@ import com.ispan.mingle.projmingle.domain.WorkPhotoBean;
 import com.ispan.mingle.projmingle.dto.WorkCreateDTO;
 import com.ispan.mingle.projmingle.dto.WorkModifyDTO;
 import com.ispan.mingle.projmingle.dto.WorkModifyHouseDTO;
+import com.ispan.mingle.projmingle.dto.WorkModifySubmitWorkDTO;
 import com.ispan.mingle.projmingle.repository.HouseRepository;
 import com.ispan.mingle.projmingle.repository.KeepWorkRepository;
 import com.ispan.mingle.projmingle.repository.VolunteerRepository;
 import com.ispan.mingle.projmingle.repository.WorkHouseRepository;
+import com.ispan.mingle.projmingle.repository.WorkPhotoRepository;
 import com.ispan.mingle.projmingle.repository.WorkRepository;
 import com.ispan.mingle.projmingle.util.BaseUtil;
 import com.ispan.mingle.projmingle.util.DatetimeConverter;
+import com.ispan.mingle.projmingle.util.FileUtil;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -51,6 +59,9 @@ public class WorkService {
 
     @Autowired
     private WorkPhotoService workPhotoService;
+
+    @Autowired
+    private WorkPhotoRepository workPhotoRepository;
 
     @Autowired
     private KeepWorkRepository keepWorkRepository;
@@ -386,6 +397,52 @@ public class WorkService {
         return null;
     }
 
+    // (工作管理/提交基本資訊)
+    public void workModifyWork(WorkModifySubmitWorkDTO requestWork, Integer workid) {
+        if (workRepository.existsById(workid)) {
+            WorkBean workBean = workRepository.findById(workid).get();
+            BeanUtils.copyProperties(requestWork, workBean);
+            // 小寫boolean型別在controller承接時轉換有點問題，DTO先大寫，然後手動set處理
+            workBean.setOnShelf(requestWork.getIsOnShelf());
+            workRepository.save(workBean);
+        }
+    }
+
+    // (工作管理/提交新照片)
+    public void workModifyPhoto(List<MultipartFile> newList, Integer workid) {
+        try {
+            for (MultipartFile multipartFile : newList) {
+                File file = FileUtil.convertMultipartFileToFile(multipartFile);
+                WorkPhotoBean workPhotoBean = new WorkPhotoBean();
+                workPhotoBean.setWorkid(workid);
+                // 文件大小 (long -> int -> Integer)
+                workPhotoBean.setPhotoSize((int) file.length());
+                // 副檔名切割(ex. image/jpeg -> jpeg)
+                String contentType = multipartFile.getContentType();
+                String[] parts = contentType.split("/");
+                workPhotoBean.setContentType(parts[1]);
+                FileInputStream fis = new FileInputStream(file);
+                workPhotoBean.setPhoto(fis.readAllBytes());
+                workPhotoBean.setCreatedAt(new Date());
+                workPhotoBean.setUpdatedAt(new Date());
+                workPhotoBean.setIsDeleted(false);
+                workPhotoRepository.save(workPhotoBean);
+
+                fis.close();
+                // 在处理完文件后，记得将文件删除，以释放资源
+                file.delete();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // 获取 newList 的方法，这里你需要根据你的实际情况实现
+    public static List<MultipartFile> getNewList() {
+        // 实现获取 newList 的逻辑，例如从请求中获取或者从其他地方获取
+        return null;
+    }
+
     /** 透過WorkID修改已報名人數 */
     public WorkBean updateAttendance(Integer workid, Integer attendance) {
         WorkBean work = workRepository.findById(workid).orElse(null);
@@ -394,4 +451,5 @@ public class WorkService {
         ;
         return workRepository.save(work);
     }
+
 }
