@@ -8,8 +8,10 @@ import org.springframework.stereotype.Service;
 import com.ispan.mingle.projmingle.domain.LandlordBean;
 import com.ispan.mingle.projmingle.domain.OrderBean;
 import com.ispan.mingle.projmingle.domain.ReviewBean;
+import com.ispan.mingle.projmingle.domain.ReviewPhotoBean;
 import com.ispan.mingle.projmingle.repository.LandlordRepository;
 import com.ispan.mingle.projmingle.repository.OrderRepository;
+import com.ispan.mingle.projmingle.repository.ReviewPhotoRepository;
 import com.ispan.mingle.projmingle.repository.ReviewRepository;
 import com.ispan.mingle.projmingle.repository.VolunteerRepository;
 import com.ispan.mingle.projmingle.repository.WorkRepository;
@@ -34,6 +36,9 @@ public class ReviewService {
 
     @Autowired
     private VolunteerRepository volunteerRepository;
+
+    @Autowired
+    private ReviewPhotoRepository reviewPhotoRepository;
 
 
     /** 用工作id找出評論 */
@@ -63,14 +68,24 @@ public class ReviewService {
     }
 
 
-    /** 送出房東回應 */
+    /** 送出房東文字回應 */
     public ReviewBean createReview(ReviewBean bean){
         return reviewRepository.save(bean);
     }
+
+
+    /** 送出房東圖片回應 */
+    public ReviewPhotoBean createReviewPhoto(ReviewPhotoBean bean){
+        return reviewPhotoRepository.save(bean);
+    }
+
 
     /** 透過評價id查詢評論 */
     public ReviewBean findById(Integer reviewId){
         ReviewBean review = reviewRepository.findById(reviewId).orElse(null);
         return review;
     }
+
+
+
 }

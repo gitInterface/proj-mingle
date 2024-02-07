@@ -26,11 +26,16 @@ public class ReviewPhotoBean {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer photoid;
 
-
     /** 評價照片 */
     @Column (name = "photo",
     columnDefinition = "varbinary(3000)")
     private byte[] photo;
+
+    /** 評價id */
+
+    @Column(name = "fk_reviewID",
+    columnDefinition = "int")
+    private Integer reviewid;
 
 
     /** 照片類型 */
