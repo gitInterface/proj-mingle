@@ -54,9 +54,4 @@ public class WorkModifyDTO {
     // 上面的照片id(前端回傳用，不想傳base64回來)
     private List<Integer> photosID;
 
-    // 房東有的房子(沒被刪的)
-    private List<HouseBean> houseDetail;
-
-    // 目前綁定的房子，各自houseid
-    private List<Integer> bindingHousesID;
 }
