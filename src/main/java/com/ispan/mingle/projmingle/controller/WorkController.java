@@ -120,7 +120,7 @@ public class WorkController {
     // (工作管理/列表渲染)
     @GetMapping("modifyWork/workList/{lordid}")
     public ResponseEntity<List<WorkModifyListDTO>> showWorkList(@PathVariable Integer lordid) {
-        return null;
+        return ResponseEntity.ok(workService.showWorkList(lordid));
     }
 
     /*

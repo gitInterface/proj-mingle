@@ -469,10 +469,38 @@ public class WorkService {
 
     // lordid找所有工作、各自照片 (都是未被刪除的)
     public List<WorkModifyListDTO> showWorkList(Integer lordid) {
+        ArrayList<WorkModifyListDTO> result = new ArrayList<WorkModifyListDTO>();
         if (lordid != null) {
-            // workRepository.findAllByLandlordid()
+            List<WorkBean> works = workRepository.findByLandlordid(lordid);
+            if (works != null) {
+                if (works.size() != 0) {
+                    // 建立一個DTO的List，最後return用
+                    // 遍歷每個工作
+                    for (WorkBean work : works) {
+                        if (!work.getIsDeleted()) {
+                            // 處理沒被刪除的工作，先copy到一個新的DTO
+                            WorkModifyListDTO workModifyListDTO = new WorkModifyListDTO();
+                            BeanUtils.copyProperties(work, workModifyListDTO);
+                            // 該單一工作，尋找未刪除的照片，將其一一轉為base64後塞入List
+                            ArrayList<String> photosBase64 = new ArrayList<String>();
+                            List<WorkPhotoBean> workPhotos = work.getUndeletedWorkPhotoBeans();
+                            if (workPhotos != null) {
+                                if (workPhotos.size() != 0) {
+                                    for (WorkPhotoBean workPhoto : workPhotos) {
+                                        String photoBase64 = BaseUtil.byteToBase64(workPhoto.getContentType(),
+                                                workPhoto.getPhoto());
+                                        photosBase64.add(photoBase64);
+                                    }
+                                    workModifyListDTO.setPhotosBase64(photosBase64);
+                                }
+                            }
+                            result.add(workModifyListDTO);
+                        }
+                    }
+                }
+            }
         }
-        return null;
+        return result;
     }
 
     // 获取 newList 的方法，这里你需要根据你的实际情况实现
