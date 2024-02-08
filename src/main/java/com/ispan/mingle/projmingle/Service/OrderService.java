@@ -1,10 +1,7 @@
 package com.ispan.mingle.projmingle.Service;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import com.ispan.mingle.projmingle.dto.LandlordOrderDTO;
@@ -194,8 +191,27 @@ public class OrderService {
 
     public List<LandlordOrderDTO> getAllOrderByLoardId(Integer id){
         List<LandlordOrderDTO> order = landlordRepository.findAllOrderByLandlordID(id);
-        return order;
+        Map<Integer, LandlordOrderDTO> mergedOrders = new LinkedHashMap<>();
+        for (LandlordOrderDTO orderDTO : order) {
+            int orderId = orderDTO.getOrder().getOrderid();
+            if (mergedOrders.containsKey(orderId)) {
+                // 合并相同订单ID的数据
+                LandlordOrderDTO existingDTO = mergedOrders.get(orderId);
+
+                // 这里可以根据实际需求合并数据
+                // 例如，将时间字段进行合并
+                String houseName = existingDTO.getHouseName() != null ? existingDTO.getHouseName() + "," + "\n" + orderDTO.getHouseName() : orderDTO.getHouseName();
+                existingDTO.setHouseName(houseName);
+            } else {
+                mergedOrders.put(orderId, orderDTO);
+                // 设置houseName
+            }
+        }
+
+        return new ArrayList<>(mergedOrders.values());
     }
+//        return order;
+
 
     public void setOrderStatus(Integer id, String status, boolean cancelled) { landlordRepository.setOrderStatus(id, status, cancelled); }
 
@@ -206,3 +222,4 @@ public class OrderService {
     }
 
 }
+
