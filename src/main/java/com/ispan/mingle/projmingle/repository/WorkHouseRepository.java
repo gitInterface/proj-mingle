@@ -16,4 +16,7 @@ public interface WorkHouseRepository extends JpaRepository<WorkHouseBean, Intege
     // workid找出所有綁定的房子(排除解綁的)，回傳那些房子的id
     @Query("SELECT wh.houseid FROM WorkHouseBean wh WHERE wh.workid = :workid AND wh.isDeleted = false")
     List<Integer> findHouseIdsByWorkIdAndIsDeletedFalse(@Param("workid") Integer workid);
+
+    // workid,houseid，找出是否存在這個組合(理論上回傳List或Optional。但由於update過程會排除，因此只可能存在唯一的bean或是null)
+    public WorkHouseBean findByWorkidAndHouseid(Integer workid, Integer houseid);
 }
