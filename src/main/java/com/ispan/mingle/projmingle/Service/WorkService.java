@@ -390,8 +390,13 @@ public class WorkService {
             }
             workModifyHouseDTO.setHouseDetail(housesDetail);
             // 綁定資訊(找出所有目前綁定的houseid)，不為空才set到DTO
+            // System.out.println("workid=" + workid);
             List<Integer> bindingHousesID = workHouseRepository.findHouseIdsByWorkIdAndIsDeletedFalse(workid);
-            if (!bindingHousesID.isEmpty()) {
+            // // System.out.println(bindingHousesID);
+            // for (Integer id : bindingHousesID) {
+            // System.out.println("id=" + id);
+            // }
+            if (bindingHousesID != null && !bindingHousesID.isEmpty()) {
                 workModifyHouseDTO.setBindingHousesID(bindingHousesID);
             }
             return workModifyHouseDTO;
