@@ -1,7 +1,5 @@
 package com.ispan.mingle.projmingle.controller;
 
-import java.io.File;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +22,7 @@ import com.ispan.mingle.projmingle.domain.WorkBean;
 import com.ispan.mingle.projmingle.dto.WorkCreateDTO;
 import com.ispan.mingle.projmingle.dto.WorkModifyDTO;
 import com.ispan.mingle.projmingle.dto.WorkModifyHouseDTO;
+import com.ispan.mingle.projmingle.dto.WorkModifyListDTO;
 import com.ispan.mingle.projmingle.dto.WorkModifySubmitWorkDTO;
 
 @RestController
@@ -85,20 +84,20 @@ public class WorkController {
         return ResponseEntity.ok(formattedAddresses);
     }
 
-    // (工作管理渲染)workid查詢work, workPhoto, work_house, house, housePhoto
+    // (工作管理/修改渲染)workid查詢work, workPhoto, work_house, house, housePhoto
     @GetMapping("/modifyWork/show/{workid}")
     public ResponseEntity<WorkModifyDTO> getWorkAllInfo(@PathVariable Integer workid) {
         return ResponseEntity.ok(workService.showModify(workid));
 
     }
 
-    // (工作管理渲染) 房子分開渲染，資料太多有點慢
+    // (工作管理/修改渲染) 房子分開渲染，資料太多有點慢
     @GetMapping("/modifyWork/showHouse/{workid}")
     public ResponseEntity<WorkModifyHouseDTO> getHouseAllInfo(@PathVariable Integer workid) {
         return ResponseEntity.ok(workService.showModifyHouse(workid));
     }
 
-    // (工作管理提交) 工作
+    // (工作管理/修改提交) 工作
     @PostMapping("/modifyWork/submitWork/{workid}")
     public void submitWork(@RequestBody WorkModifySubmitWorkDTO requestWork, @PathVariable Integer workid) {
         if (requestWork != null && workid != null) {
@@ -106,28 +105,22 @@ public class WorkController {
         }
     }
 
-    // (工作管理提交) 房子
+    // (工作管理/修改提交) 房子
     @PostMapping(path = "/modifyWork/submitHouse/{workid}", consumes = "multipart/form-data")
     public void submitHouse(
             @RequestParam(required = false) List<MultipartFile> newList, @PathVariable Integer workid) {
         if (newList != null) {
+            // 條件不分開寫會爛掉(null沒有size方法)
             if (newList.size() != 0) {
                 workService.workModifyPhoto(newList, workid);
             }
-            // workService.workModifyPhoto(newList,workid);
         }
-        // @RequestParam(name = "deleteList", required = false) Integer[] deleteList,
-        // @RequestParam Map<String, String> toggleStatesMap) {
-        // Map<String, Boolean> convertedToggleStatesMap = new HashMap<>();
-        // toggleStatesMap.forEach((key, value) -> convertedToggleStatesMap.put(key,
-        // Boolean.parseBoolean(value)));
-        // convertedToggleStatesMap.forEach((key, value) -> System.out.println(key + " :
-        // " + value));
-        // toggleStatesMap.forEach((key, value) -> System.out.println(key + " : " +
-        // value));
-        // System.out.println(newList);
-        // System.out.println(deleteList);
+    }
 
+    // (工作管理/列表渲染)
+    @GetMapping("modifyWork/workList/{lordid}")
+    public ResponseEntity<List<WorkModifyListDTO>> showWorkList(@PathVariable Integer lordid) {
+        return ResponseEntity.ok(workService.showWorkList(lordid));
     }
 
     /*

@@ -30,10 +30,12 @@ import com.ispan.mingle.projmingle.domain.HousePhotoBean;
 import com.ispan.mingle.projmingle.domain.KeepWorkBean;
 import com.ispan.mingle.projmingle.domain.VolunteerBean;
 import com.ispan.mingle.projmingle.domain.WorkBean;
+import com.ispan.mingle.projmingle.domain.WorkHouseBean;
 import com.ispan.mingle.projmingle.domain.WorkPhotoBean;
 import com.ispan.mingle.projmingle.dto.WorkCreateDTO;
 import com.ispan.mingle.projmingle.dto.WorkModifyDTO;
 import com.ispan.mingle.projmingle.dto.WorkModifyHouseDTO;
+import com.ispan.mingle.projmingle.dto.WorkModifyListDTO;
 import com.ispan.mingle.projmingle.dto.WorkModifySubmitWorkDTO;
 import com.ispan.mingle.projmingle.repository.HouseRepository;
 import com.ispan.mingle.projmingle.repository.KeepWorkRepository;
@@ -341,7 +343,7 @@ public class WorkService {
         }
     }
 
-    // (工作管理/修改初始渲染)workid查詢work, workPhoto, work_house, house_photo
+    // (工作管理/修改初始渲染)workid查詢work, workPhoto
     public WorkModifyDTO showModify(Integer workid) {
         if (workid != null && workRepository.existsById(workid)) {
             WorkBean work = workRepository.findById(workid).get();
@@ -402,9 +404,37 @@ public class WorkService {
         if (workRepository.existsById(workid)) {
             WorkBean workBean = workRepository.findById(workid).get();
             BeanUtils.copyProperties(requestWork, workBean);
-            // 小寫boolean型別在controller承接時轉換有點問題，DTO先大寫，然後手動set處理
+            // 小寫boolean型別在controller承接時轉換有點問題。因此DTO先大寫，然後手動set處理
             workBean.setOnShelf(requestWork.getIsOnShelf());
             workRepository.save(workBean);
+        }
+        // 處理舊照片
+        Integer[] deletePhotoID = requestWork.getDeletePhotoID();
+        if (deletePhotoID != null && deletePhotoID.length != 0) {
+            for (Integer photoid : deletePhotoID) {
+                WorkPhotoBean workPhotoBean = workPhotoRepository.findById(photoid).get();
+                workPhotoBean.setIsDeleted(true);
+                workPhotoRepository.save(workPhotoBean);
+            }
+        }
+        // 處理綁定房
+        Integer[] bindingChangeHouse = requestWork.getBindingChangeHouse();
+        if (bindingChangeHouse != null && bindingChangeHouse.length != 0) {
+            for (Integer houseid : bindingChangeHouse) {
+                WorkHouseBean workHouseBean = workHouseRepository.findByWorkidAndHouseid(workid, houseid);
+                if (workHouseBean != null) {
+                    // 存在 -> 反轉true/false
+                    workHouseBean.setDeleted(!workHouseBean.isDeleted());
+                    workHouseRepository.save(workHouseBean);
+                } else {
+                    // 不存在 -> 新增並設false
+                    WorkHouseBean houseBean = new WorkHouseBean();
+                    houseBean.setWorkid(workid);
+                    houseBean.setHouseid(houseid);
+                    houseBean.setDeleted(false);
+                    workHouseRepository.save(houseBean);
+                }
+            }
         }
     }
 
@@ -435,6 +465,42 @@ public class WorkService {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    // lordid找所有工作、各自照片 (都是未被刪除的)
+    public List<WorkModifyListDTO> showWorkList(Integer lordid) {
+        ArrayList<WorkModifyListDTO> result = new ArrayList<WorkModifyListDTO>();
+        if (lordid != null) {
+            List<WorkBean> works = workRepository.findByLandlordid(lordid);
+            if (works != null) {
+                if (works.size() != 0) {
+                    // 建立一個DTO的List，最後return用
+                    // 遍歷每個工作
+                    for (WorkBean work : works) {
+                        if (!work.getIsDeleted()) {
+                            // 處理沒被刪除的工作，先copy到一個新的DTO
+                            WorkModifyListDTO workModifyListDTO = new WorkModifyListDTO();
+                            BeanUtils.copyProperties(work, workModifyListDTO);
+                            // 該單一工作，尋找未刪除的照片，將其一一轉為base64後塞入List
+                            ArrayList<String> photosBase64 = new ArrayList<String>();
+                            List<WorkPhotoBean> workPhotos = work.getUndeletedWorkPhotoBeans();
+                            if (workPhotos != null) {
+                                if (workPhotos.size() != 0) {
+                                    for (WorkPhotoBean workPhoto : workPhotos) {
+                                        String photoBase64 = BaseUtil.byteToBase64(workPhoto.getContentType(),
+                                                workPhoto.getPhoto());
+                                        photosBase64.add(photoBase64);
+                                    }
+                                    workModifyListDTO.setPhotosBase64(photosBase64);
+                                }
+                            }
+                            result.add(workModifyListDTO);
+                        }
+                    }
+                }
+            }
+        }
+        return result;
     }
 
     // 获取 newList 的方法，这里你需要根据你的实际情况实现

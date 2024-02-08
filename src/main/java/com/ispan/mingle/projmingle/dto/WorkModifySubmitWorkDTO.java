@@ -37,4 +37,6 @@ public class WorkModifySubmitWorkDTO {
     private String benefits;
     private Date updatedAt;
     private Boolean isOnShelf;
+    private Integer[] deletePhotoID;
+    private Integer[] bindingChangeHouse;
 }
