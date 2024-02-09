@@ -472,7 +472,7 @@ public class WorkService {
         }
     }
 
-    // lordid找所有工作、各自照片 (都是未被刪除的)
+    // (工作管理/列表渲染)lordid找所有工作、各自照片 (都是未被刪除的)
     public List<WorkModifyListDTO> showWorkList(Integer lordid) {
         ArrayList<WorkModifyListDTO> result = new ArrayList<WorkModifyListDTO>();
         if (lordid != null) {
@@ -506,6 +506,18 @@ public class WorkService {
             }
         }
         return result;
+    }
+
+    // (工作管理/刪除工作)
+    public void deleteWork(Integer workid) {
+        if (workid != null) {
+            if (workRepository.existsById(workid)) {
+                WorkBean deleteBean = workRepository.findById(workid).get();
+                deleteBean.setIsDeleted(true);
+                workRepository.save(deleteBean);
+            }
+        }
+
     }
 
     // 获取 newList 的方法，这里你需要根据你的实际情况实现
