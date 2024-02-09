@@ -2,8 +2,13 @@ package com.ispan.mingle.projmingle.domain;
 
 import java.util.Date;
 
+import org.hibernate.annotations.ColumnDefault;
+import org.hibernate.annotations.CreationTimestamp;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.Data;
@@ -13,6 +18,7 @@ import lombok.Data;
 @Table(name = "Landlord")
 public class LandlordBean {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "landlordID")
     private Integer landlordid;
 
@@ -32,8 +38,10 @@ public class LandlordBean {
     private String pet;
 
     @Column(name = "isPerfectLord", columnDefinition = "bit")
-    private Character isPerfectLord;
+    private Boolean isPerfectLord;
 
+    @CreationTimestamp
+    @ColumnDefault("CURRENT_TIMESTAMP")
     @Column(name = "createdAt", columnDefinition = "datetime")
     private Date createdAt;
 
