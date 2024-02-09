@@ -307,8 +307,8 @@ public class WorkService {
 
     public void setNewWork(WorkCreateDTO workDTO) {
         Date date = DatetimeConverter.getCurrentDate();
-        Integer workID = 1;
-        workDTO.setStatus("");
+        // Integer workID = 1;
+        // workDTO.setStatus("");
         workDTO.setOnShelf(false);
         workDTO.setCreatedAt(date);
         // System.out.println(date);
