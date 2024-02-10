@@ -57,14 +57,16 @@ public interface LandlordRepository extends JpaRepository<LandlordBean, Integer>
                         "WHERE o.orderid = :id ")
         void setOrderStatus(Integer id, String status, boolean cancelled);
 
-        @Query("SELECT new com.ispan.mingle.projmingle.dto.LandlordOrderDTO(w.name, h.name, o) " +
-                        "FROM OrderBean o " +
-                        "JOIN OrderWorkHouseBean owh ON o.orderid = owh.orderid " +
-                        "JOIN WorkHouseBean wh ON owh.workhouseid = wh.id " +
-                        "JOIN WorkBean w ON w.workid = wh.workid " +
-                        "JOIN LandlordBean l ON w.landlordid = l.landlordid " +
-                        "JOIN HouseBean h ON h.houseid = wh.houseid " +
-                        "WHERE o.orderid = :id")
-        LandlordOrderDTO findByOrderid(Integer id);
+
+    @Query("SELECT new com.ispan.mingle.projmingle.dto.LandlordOrderDTO(w.name, h.name, o) " +
+            "FROM OrderBean o " +
+            "JOIN OrderWorkHouseBean owh ON o.orderid = owh.orderid " +
+            "JOIN WorkHouseBean wh ON owh.workhouseid = wh.id " +
+            "JOIN WorkBean w ON w.workid = wh.workid " +
+            "JOIN LandlordBean l ON w.landlordid = l.landlordid " +
+            "JOIN HouseBean h ON h.houseid = wh.houseid " +
+            "WHERE o.orderid = :id")
+    List<LandlordOrderDTO> findByOrderid(Integer id);
 
 }
+

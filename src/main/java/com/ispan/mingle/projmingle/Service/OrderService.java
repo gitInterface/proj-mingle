@@ -195,30 +195,27 @@ public class OrderService {
         for (LandlordOrderDTO orderDTO : order) {
             int orderId = orderDTO.getOrder().getOrderid();
             if (mergedOrders.containsKey(orderId)) {
-                // 合并相同订单ID的数据
                 LandlordOrderDTO existingDTO = mergedOrders.get(orderId);
 
-                // 这里可以根据实际需求合并数据
-                // 例如，将时间字段进行合并
                 String houseName = existingDTO.getHouseName() != null ? existingDTO.getHouseName() + "," + "\n" + orderDTO.getHouseName() : orderDTO.getHouseName();
                 existingDTO.setHouseName(houseName);
             } else {
                 mergedOrders.put(orderId, orderDTO);
-                // 设置houseName
             }
         }
 
         return new ArrayList<>(mergedOrders.values());
     }
-//        return order;
 
 
     public void setOrderStatus(Integer id, String status, boolean cancelled) { landlordRepository.setOrderStatus(id, status, cancelled); }
 
 
 
-    public LandlordOrderDTO getOrderByLoardId(Integer id ) {
-        return landlordRepository.findByOrderid(id);
+    public List<LandlordOrderDTO> getOrderByLoardId(Integer id ) {
+        List<LandlordOrderDTO> dt = landlordRepository.findByOrderid(id);
+        System.out.println(dt);
+        return dt;
     }
 
 }
