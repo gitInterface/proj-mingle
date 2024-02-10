@@ -32,4 +32,9 @@ public class LandlordController {
 	public LandlordBean createOrUpdateLandlord(@RequestBody LandlordBean landlordBean) {
 		return landlordService.createOrUpdateLandlord(landlordBean);
 	}
+
+	@GetMapping("/getLandlordById/{id}")
+	public LandlordBean getLandlordById(@PathVariable Integer id) {
+		return landlordService.getLandlordById(id);
+	}
 }

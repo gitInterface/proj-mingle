@@ -19,6 +19,10 @@ public class LandlordService {
     @Resource
     private LandlordRepository landlordRepository;
 
+    public LandlordBean getLandlordById(Integer id) {
+        return landlordRepository.findById(id).orElse(null);
+    }
+
     public Integer findByUserIDtoLordID(String id) { return landlordRepository.findByUserIDtoLordID(id); };
 
     public LandlordBean createOrUpdateLandlord(LandlordBean landlordBean) {
