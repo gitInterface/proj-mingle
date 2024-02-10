@@ -24,6 +24,7 @@ import com.ispan.mingle.projmingle.dto.WorkModifyDTO;
 import com.ispan.mingle.projmingle.dto.WorkModifyHouseDTO;
 import com.ispan.mingle.projmingle.dto.WorkModifyListDTO;
 import com.ispan.mingle.projmingle.dto.WorkModifySubmitWorkDTO;
+import org.springframework.web.bind.annotation.PutMapping;
 
 @RestController
 @RequestMapping("/api/work")
@@ -98,7 +99,7 @@ public class WorkController {
     }
 
     // (工作管理/修改提交) 工作
-    @PostMapping("/modifyWork/submitWork/{workid}")
+    @PutMapping("/modifyWork/submitWork/{workid}")
     public void submitWork(@RequestBody WorkModifySubmitWorkDTO requestWork, @PathVariable Integer workid) {
         if (requestWork != null && workid != null) {
             workService.workModifyWork(requestWork, workid);
@@ -106,7 +107,7 @@ public class WorkController {
     }
 
     // (工作管理/修改提交) 房子
-    @PostMapping(path = "/modifyWork/submitHouse/{workid}", consumes = "multipart/form-data")
+    @PutMapping(path = "/modifyWork/submitHouse/{workid}", consumes = "multipart/form-data")
     public void submitHouse(
             @RequestParam(required = false) List<MultipartFile> newList, @PathVariable Integer workid) {
         if (newList != null) {
@@ -121,6 +122,14 @@ public class WorkController {
     @GetMapping("modifyWork/workList/{lordid}")
     public ResponseEntity<List<WorkModifyListDTO>> showWorkList(@PathVariable Integer lordid) {
         return ResponseEntity.ok(workService.showWorkList(lordid));
+    }
+
+    // (工作管理/刪除)
+    @PutMapping("modifyWork/delete/{workid}")
+    public void deleteWork(@PathVariable Integer workid) {
+        if (workid != null) {
+            workService.deleteWork(workid);
+        }
     }
 
     /*
