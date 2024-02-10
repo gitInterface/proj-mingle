@@ -3,6 +3,8 @@ package com.ispan.mingle.projmingle.Service;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import com.ispan.mingle.projmingle.domain.LandlordBean;
@@ -40,6 +42,10 @@ public class ReviewService {
     @Autowired
     private ReviewPhotoRepository reviewPhotoRepository;
 
+    // 依據星數由高到低排序取得指定數量的評價
+    public Page<ReviewBean> getReviewsByStarsDesc(int limit) {
+        return reviewRepository.findAllByOrderByStarsDesc(PageRequest.of(0, limit));
+    }
 
     /** 用工作id找出評論 */
     public LandlordBean getLandlordByWorkId(Integer workId){
