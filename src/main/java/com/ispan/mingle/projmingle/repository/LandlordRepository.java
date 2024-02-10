@@ -66,7 +66,7 @@ public interface LandlordRepository extends JpaRepository<LandlordBean, Integer>
             "JOIN LandlordBean l ON w.landlordid = l.landlordid " +
             "JOIN HouseBean h ON h.houseid = wh.houseid " +
             "WHERE o.orderid = :id")
-    LandlordOrderDTO findByOrderid(Integer id);
+    List<LandlordOrderDTO> findByOrderid(Integer id);
 
 }
 
