@@ -24,18 +24,16 @@ public class VolunteerService {
 	@Autowired
 	private VolunteerRepository volunteerRepository;
 	@Autowired
+	private VolunteerDetailService volunteerDetailService;
+	@Autowired
 	private WorkRepository workRepository;
 
 	/*
 	 * CREATE
 	 */
 	// 新建用戶
-	public VolunteerBean create(String json) {
+	public VolunteerBean create(String username, String password) {
 		try {
-			JSONObject obj = new JSONObject(json);
-			String username = obj.isNull("username") ? null : obj.getString("username");
-			String password = obj.isNull("password") ? null : obj.getString("password");
-
 			if (username != null) {
 				VolunteerBean insert = new VolunteerBean();
 				Integer maxUserID = volunteerRepository.findMaxUserID();
@@ -43,10 +41,11 @@ public class VolunteerService {
 				insert.setUsername(username);
 				insert.setPassword(password);
 				insert.setIsAdmin(false);
-
-				return volunteerRepository.save(insert);
+				VolunteerBean newMember = volunteerRepository.save(insert);
+				// 新增用戶的詳細資料列表
+				volunteerDetailService.findByIdNotNull(insert.getUserid());
+				return newMember;
 			}
-
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

@@ -1,5 +1,8 @@
 package com.ispan.mingle.projmingle.Service;
 
+import java.net.Authenticator;
+import java.net.PasswordAuthentication;
+import java.util.Base64;
 import java.util.Properties;
 
 import org.json.JSONObject;
@@ -12,10 +15,8 @@ import com.ispan.mingle.projmingle.repository.VolunteerDetailRepository;
 import com.ispan.mingle.projmingle.repository.VolunteerRepository;
 import com.ispan.mingle.projmingle.util.DatetimeConverter;
 
-import jakarta.mail.Authenticator;
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
-import jakarta.mail.PasswordAuthentication;
 import jakarta.mail.Session;
 import jakarta.mail.Transport;
 import jakarta.mail.internet.InternetAddress;
@@ -32,7 +33,31 @@ public class VolunteerDetailService {
     private VolunteerRepository volunteerRepository;
 
     public VolunteerDetailBean findById(String id) {
-        return volunteerDetailRepository.findById(id).orElse(null);
+        VolunteerDetailBean vDBean = volunteerDetailRepository.findById(id).orElse(null);
+        return vDBean;
+    }
+
+    public VolunteerDetailBean findByIdNotNull(String id) {
+        VolunteerDetailBean vDBean = findById(id);
+        // 如果找不到資料就回傳一個空的資料
+        if (vDBean.getUserid() == null) {
+            vDBean = new VolunteerDetailBean();
+        }
+        // 驗證使用者資料
+        if (vDBean.getUserid() == null || !vDBean.getUserid().equals(id)) {
+            vDBean.setUserid(id);
+            vDBean.setEmail(id + "@example.email");
+            vDBean.setCreatedAt(DatetimeConverter.getCurrentDate());
+            vDBean.setIsDeleted('0');
+            // 如果不能新增失敗才回傳null
+            try {
+                volunteerDetailRepository.save(vDBean);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+        return vDBean;
     }
 
     public VolunteerDetailBean update(String userid, String json) {
@@ -40,14 +65,7 @@ public class VolunteerDetailService {
         JSONObject job = new JSONObject(json);
         String update = job.isNull("update") ? null : job.getString("update");
         // 呼叫企業邏輯程式
-        VolunteerDetailBean vDBean = volunteerDetailRepository.findById(userid)
-                // 如果找不到資料就回傳一個空的資料
-                .orElse(new VolunteerDetailBean());
-        // 驗證使用者資料
-        if (vDBean.getUserid() == null || !vDBean.getUserid().equals(userid)) {
-            vDBean.setUserid(userid);
-            vDBean.setCreatedAt(DatetimeConverter.getCurrentDate());
-        }
+        VolunteerDetailBean vDBean = findByIdNotNull(userid);
         // 轉換資料
         if (update.equals("introductions")) {
             String introduction = job.isNull("introduction") ? null : job.getString("introduction");
@@ -67,16 +85,37 @@ public class VolunteerDetailService {
             String birth = job.isNull("birth") ? null : job.getString("birth");
             String country = job.isNull("country") ? null : job.getString("country");
             // 輸入使用者所要更新的資料
-            vDBean.setName(name);
-            vDBean.setGender(gender);
-            vDBean.setPhone(phone);
-            vDBean.setEmail(email);
-            vDBean.setBirth(DatetimeConverter.parse(birth, "yyyy-MM-dd"));
-            vDBean.setCountry(country);
+            if (name != null)
+                vDBean.setName(name);
+            if (gender != null)
+                vDBean.setGender(gender);
+            if (phone != null)
+                vDBean.setPhone(phone);
+            if (email != null)
+                vDBean.setEmail(email);
+            if (birth != null)
+                vDBean.setBirth(DatetimeConverter.parse(birth, "yyyy-MM-dd"));
+            if (country != null)
+                vDBean.setCountry(country);
+        } else if (update.equals("photo")) {
+            String photoType = job.isNull("photoType") ? null : job.getString("photoType");
+            Integer photoSize = job.isNull("photoSize") ? null : job.getInt("photoSize");
+            String photo = job.isNull("photo") ? null : job.getString("photo");
+            byte[] imageBytes = null;
+            // 驗證照片資料
+            if (photo == null || photo.isEmpty() || photo == "" || photo.length() < 100) {
+                return null;
+            }
+            // 轉換照片成Byte[]
+            imageBytes = Base64.getDecoder().decode(photo);
+            // 輸入使用者所要更新的資料
+            vDBean.setPhotoType(photoType);
+            vDBean.setPhotoSize(photoSize);
+            vDBean.setImage(imageBytes);
         } else {
             return null;
         }
-
+        vDBean.setUpdatedAt(DatetimeConverter.getCurrentDate());
         // 更新使用者資料
         VolunteerDetailBean newBean = volunteerDetailRepository.save(vDBean);
         return newBean;
