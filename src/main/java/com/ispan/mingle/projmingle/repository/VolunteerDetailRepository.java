@@ -10,4 +10,6 @@ public interface VolunteerDetailRepository extends CrudRepository<VolunteerDetai
 
     List<VolunteerDetailBean> findAllByUseridIsNot(String userId);
 
+    VolunteerDetailBean findByEmail(String email);
+
 }

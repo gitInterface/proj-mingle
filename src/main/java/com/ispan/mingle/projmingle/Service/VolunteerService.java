@@ -1,5 +1,8 @@
 package com.ispan.mingle.projmingle.Service;
 
+import java.util.Optional;
+
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -112,5 +115,21 @@ public class VolunteerService {
 			}
 		}
 	}
+
+	public void resetPassword(String userId, String newPassword) {
+        // Retrieve the volunteer by userId and update the password
+        Optional<VolunteerBean> optionalVolunteer = volunteerRepository.findById(userId);
+        if (optionalVolunteer.isPresent()) {
+            VolunteerBean volunteer = optionalVolunteer.get();
+            volunteer.setPassword(newPassword);
+            volunteerRepository.save(volunteer);
+        } else {
+            // Handle case where volunteer is not found
+        }
+    }
+	
+	public VolunteerBean save(VolunteerBean volunteer) {
+        return volunteerRepository.save(volunteer);
+    }
 
 }
