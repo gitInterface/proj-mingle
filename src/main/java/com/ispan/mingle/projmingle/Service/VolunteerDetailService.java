@@ -1,7 +1,5 @@
 package com.ispan.mingle.projmingle.Service;
 
-import java.net.Authenticator;
-import java.net.PasswordAuthentication;
 import java.util.Base64;
 import java.util.Properties;
 
@@ -15,8 +13,10 @@ import com.ispan.mingle.projmingle.repository.VolunteerDetailRepository;
 import com.ispan.mingle.projmingle.repository.VolunteerRepository;
 import com.ispan.mingle.projmingle.util.DatetimeConverter;
 
+import jakarta.mail.Authenticator;
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
+import jakarta.mail.PasswordAuthentication;
 import jakarta.mail.Session;
 import jakarta.mail.Transport;
 import jakarta.mail.internet.InternetAddress;
@@ -150,7 +150,12 @@ public class VolunteerDetailService {
         properties.put("mail.smtp.port", port);
 
         // Create a Session object with SMTP properties and authenticator
-        Session session = Session.getInstance(properties);
+        Session session = Session.getInstance(properties, new Authenticator() {
+            @Override
+            protected PasswordAuthentication getPasswordAuthentication() {
+                return new PasswordAuthentication(senderUsername, senderPassword);
+            }
+        });
 
         try {
             // Create a MimeMessage object
