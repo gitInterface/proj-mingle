@@ -1,5 +1,7 @@
 package com.ispan.mingle.projmingle.controller;
 
+import java.util.Base64;
+
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -12,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.ispan.mingle.projmingle.Service.VolunteerDetailService;
 import com.ispan.mingle.projmingle.domain.VolunteerDetailBean;
+import com.ispan.mingle.projmingle.util.BaseUtil;
 
 @RestController
 @RequestMapping("/api/volunteerDetail")
@@ -24,6 +27,16 @@ public class VolunteerDetailController {
     @GetMapping("/{id}")
     public VolunteerDetailBean getVolunteerDetail(@PathVariable String id) {
         return volunteerDetailService.findById(id);
+    }
+
+    @GetMapping("/Base64/{id}")
+    public VolunteerDetailBean getVolunteerDetailWithBase64(@PathVariable String id) {
+        VolunteerDetailBean vDBean = getVolunteerDetail(id);
+        byte[] imgbytes = vDBean.getImage();
+        // imgbytes
+        vDBean.setPhotoBase64(BaseUtil.byteToBase64(vDBean.getPhotoType(), imgbytes));
+        vDBean.setImage(Base64.getDecoder().decode("AA"));
+        return vDBean;
     }
 
     @PatchMapping("/update/details/{pk}")

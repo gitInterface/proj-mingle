@@ -20,7 +20,31 @@ public class VolunteerDetailService {
     private VolunteerDetailRepository volunteerDetailRepository;
 
     public VolunteerDetailBean findById(String id) {
-        return volunteerDetailRepository.findById(id).orElse(null);
+        VolunteerDetailBean vDBean = volunteerDetailRepository.findById(id).orElse(null);
+        return vDBean;
+    }
+
+    public VolunteerDetailBean findByIdNotNull(String id) {
+        VolunteerDetailBean vDBean = findById(id);
+        // 如果找不到資料就回傳一個空的資料
+        if (vDBean.getUserid() == null) {
+            vDBean = new VolunteerDetailBean();
+        }
+        // 驗證使用者資料
+        if (vDBean.getUserid() == null || !vDBean.getUserid().equals(id)) {
+            vDBean.setUserid(id);
+            vDBean.setEmail(id + "@example.email");
+            vDBean.setCreatedAt(DatetimeConverter.getCurrentDate());
+            vDBean.setIsDeleted('0');
+            // 如果不能新增失敗才回傳null
+            try {
+                volunteerDetailRepository.save(vDBean);
+            } catch (Exception e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
+        return vDBean;
     }
 
     public VolunteerDetailBean update(String userid, String json) {
@@ -28,14 +52,7 @@ public class VolunteerDetailService {
         JSONObject job = new JSONObject(json);
         String update = job.isNull("update") ? null : job.getString("update");
         // 呼叫企業邏輯程式
-        VolunteerDetailBean vDBean = volunteerDetailRepository.findById(userid)
-                // 如果找不到資料就回傳一個空的資料
-                .orElse(new VolunteerDetailBean());
-        // 驗證使用者資料
-        if (vDBean.getUserid() == null || !vDBean.getUserid().equals(userid)) {
-            vDBean.setUserid(userid);
-            vDBean.setCreatedAt(DatetimeConverter.getCurrentDate());
-        }
+        VolunteerDetailBean vDBean = findByIdNotNull(userid);
         // 轉換資料
         if (update.equals("introductions")) {
             String introduction = job.isNull("introduction") ? null : job.getString("introduction");
