@@ -149,13 +149,8 @@ public class VolunteerDetailService {
         properties.put("mail.smtp.host", host);
         properties.put("mail.smtp.port", port);
 
-        // Create a Session object
-        Session session = Session.getInstance(properties, new Authenticator() {
-            @Override
-            protected PasswordAuthentication getPasswordAuthentication() {
-                return new PasswordAuthentication(senderUsername, senderPassword);
-            }
-        });
+        // Create a Session object with SMTP properties and authenticator
+        Session session = Session.getInstance(properties);
 
         try {
             // Create a MimeMessage object
