@@ -1,5 +1,9 @@
 package com.ispan.mingle.projmingle.Service;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -19,23 +23,29 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.ispan.mingle.projmingle.domain.HouseBean;
 import com.ispan.mingle.projmingle.domain.HousePhotoBean;
 import com.ispan.mingle.projmingle.domain.KeepWorkBean;
 import com.ispan.mingle.projmingle.domain.VolunteerBean;
 import com.ispan.mingle.projmingle.domain.WorkBean;
+import com.ispan.mingle.projmingle.domain.WorkHouseBean;
 import com.ispan.mingle.projmingle.domain.WorkPhotoBean;
 import com.ispan.mingle.projmingle.dto.WorkCreateDTO;
 import com.ispan.mingle.projmingle.dto.WorkModifyDTO;
 import com.ispan.mingle.projmingle.dto.WorkModifyHouseDTO;
+import com.ispan.mingle.projmingle.dto.WorkModifyListDTO;
+import com.ispan.mingle.projmingle.dto.WorkModifySubmitWorkDTO;
 import com.ispan.mingle.projmingle.repository.HouseRepository;
 import com.ispan.mingle.projmingle.repository.KeepWorkRepository;
 import com.ispan.mingle.projmingle.repository.VolunteerRepository;
 import com.ispan.mingle.projmingle.repository.WorkHouseRepository;
+import com.ispan.mingle.projmingle.repository.WorkPhotoRepository;
 import com.ispan.mingle.projmingle.repository.WorkRepository;
 import com.ispan.mingle.projmingle.util.BaseUtil;
 import com.ispan.mingle.projmingle.util.DatetimeConverter;
+import com.ispan.mingle.projmingle.util.FileUtil;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
@@ -51,6 +61,9 @@ public class WorkService {
 
     @Autowired
     private WorkPhotoService workPhotoService;
+
+    @Autowired
+    private WorkPhotoRepository workPhotoRepository;
 
     @Autowired
     private KeepWorkRepository keepWorkRepository;
@@ -294,8 +307,8 @@ public class WorkService {
 
     public void setNewWork(WorkCreateDTO workDTO) {
         Date date = DatetimeConverter.getCurrentDate();
-        Integer workID = 1;
-        workDTO.setStatus("未上架");
+        // Integer workID = 1;
+        // workDTO.setStatus("");
         workDTO.setOnShelf(false);
         workDTO.setCreatedAt(date);
         // System.out.println(date);
@@ -330,7 +343,7 @@ public class WorkService {
         }
     }
 
-    // (工作管理/修改初始渲染)workid查詢work, workPhoto, work_house, house_photo
+    // (工作管理/修改初始渲染)workid查詢work, workPhoto
     public WorkModifyDTO showModify(Integer workid) {
         if (workid != null && workRepository.existsById(workid)) {
             WorkBean work = workRepository.findById(workid).get();
@@ -377,12 +390,139 @@ public class WorkService {
             }
             workModifyHouseDTO.setHouseDetail(housesDetail);
             // 綁定資訊(找出所有目前綁定的houseid)，不為空才set到DTO
+            // System.out.println("workid=" + workid);
             List<Integer> bindingHousesID = workHouseRepository.findHouseIdsByWorkIdAndIsDeletedFalse(workid);
-            if (!bindingHousesID.isEmpty()) {
+            // // System.out.println(bindingHousesID);
+            // for (Integer id : bindingHousesID) {
+            // System.out.println("id=" + id);
+            // }
+            if (bindingHousesID != null && !bindingHousesID.isEmpty()) {
                 workModifyHouseDTO.setBindingHousesID(bindingHousesID);
             }
             return workModifyHouseDTO;
         }
+        return null;
+    }
+
+    // (工作管理/提交基本資訊)
+    public void workModifyWork(WorkModifySubmitWorkDTO requestWork, Integer workid) {
+        if (workRepository.existsById(workid)) {
+            WorkBean workBean = workRepository.findById(workid).get();
+            BeanUtils.copyProperties(requestWork, workBean);
+            // 小寫boolean型別在controller承接時轉換有點問題。因此DTO先大寫，然後手動set處理
+            workBean.setOnShelf(requestWork.getIsOnShelf());
+            workRepository.save(workBean);
+        }
+        // 處理舊照片
+        Integer[] deletePhotoID = requestWork.getDeletePhotoID();
+        if (deletePhotoID != null && deletePhotoID.length != 0) {
+            for (Integer photoid : deletePhotoID) {
+                WorkPhotoBean workPhotoBean = workPhotoRepository.findById(photoid).get();
+                workPhotoBean.setIsDeleted(true);
+                workPhotoRepository.save(workPhotoBean);
+            }
+        }
+        // 處理綁定房
+        Integer[] bindingChangeHouse = requestWork.getBindingChangeHouse();
+        if (bindingChangeHouse != null && bindingChangeHouse.length != 0) {
+            for (Integer houseid : bindingChangeHouse) {
+                WorkHouseBean workHouseBean = workHouseRepository.findByWorkidAndHouseid(workid, houseid);
+                if (workHouseBean != null) {
+                    // 存在 -> 反轉true/false
+                    workHouseBean.setDeleted(!workHouseBean.isDeleted());
+                    workHouseRepository.save(workHouseBean);
+                } else {
+                    // 不存在 -> 新增並設false
+                    WorkHouseBean houseBean = new WorkHouseBean();
+                    houseBean.setWorkid(workid);
+                    houseBean.setHouseid(houseid);
+                    houseBean.setDeleted(false);
+                    workHouseRepository.save(houseBean);
+                }
+            }
+        }
+    }
+
+    // (工作管理/提交新照片)
+    public void workModifyPhoto(List<MultipartFile> newList, Integer workid) {
+        try {
+            for (MultipartFile multipartFile : newList) {
+                File file = FileUtil.convertMultipartFileToFile(multipartFile);
+                WorkPhotoBean workPhotoBean = new WorkPhotoBean();
+                workPhotoBean.setWorkid(workid);
+                // 文件大小 (long -> int -> Integer)
+                workPhotoBean.setPhotoSize((int) file.length());
+                // 副檔名切割(ex. image/jpeg -> jpeg)
+                String contentType = multipartFile.getContentType();
+                String[] parts = contentType.split("/");
+                workPhotoBean.setContentType(parts[1]);
+                FileInputStream fis = new FileInputStream(file);
+                workPhotoBean.setPhoto(fis.readAllBytes());
+                workPhotoBean.setCreatedAt(new Date());
+                workPhotoBean.setUpdatedAt(new Date());
+                workPhotoBean.setIsDeleted(false);
+                workPhotoRepository.save(workPhotoBean);
+
+                fis.close();
+                // 在处理完文件后，记得将文件删除，以释放资源
+                file.delete();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // (工作管理/列表渲染)lordid找所有工作、各自照片 (都是未被刪除的)
+    public List<WorkModifyListDTO> showWorkList(Integer lordid) {
+        ArrayList<WorkModifyListDTO> result = new ArrayList<WorkModifyListDTO>();
+        if (lordid != null) {
+            List<WorkBean> works = workRepository.findByLandlordid(lordid);
+            if (works != null) {
+                if (works.size() != 0) {
+                    // 建立一個DTO的List，最後return用
+                    // 遍歷每個工作
+                    for (WorkBean work : works) {
+                        if (!work.getIsDeleted()) {
+                            // 處理沒被刪除的工作，先copy到一個新的DTO
+                            WorkModifyListDTO workModifyListDTO = new WorkModifyListDTO();
+                            BeanUtils.copyProperties(work, workModifyListDTO);
+                            // 該單一工作，尋找未刪除的照片，將其一一轉為base64後塞入List
+                            ArrayList<String> photosBase64 = new ArrayList<String>();
+                            List<WorkPhotoBean> workPhotos = work.getUndeletedWorkPhotoBeans();
+                            if (workPhotos != null) {
+                                if (workPhotos.size() != 0) {
+                                    for (WorkPhotoBean workPhoto : workPhotos) {
+                                        String photoBase64 = BaseUtil.byteToBase64(workPhoto.getContentType(),
+                                                workPhoto.getPhoto());
+                                        photosBase64.add(photoBase64);
+                                    }
+                                    workModifyListDTO.setPhotosBase64(photosBase64);
+                                }
+                            }
+                            result.add(workModifyListDTO);
+                        }
+                    }
+                }
+            }
+        }
+        return result;
+    }
+
+    // (工作管理/刪除工作)
+    public void deleteWork(Integer workid) {
+        if (workid != null) {
+            if (workRepository.existsById(workid)) {
+                WorkBean deleteBean = workRepository.findById(workid).get();
+                deleteBean.setIsDeleted(true);
+                workRepository.save(deleteBean);
+            }
+        }
+
+    }
+
+    // 获取 newList 的方法，这里你需要根据你的实际情况实现
+    public static List<MultipartFile> getNewList() {
+        // 实现获取 newList 的逻辑，例如从请求中获取或者从其他地方获取
         return null;
     }
 
@@ -394,4 +534,5 @@ public class WorkService {
         ;
         return workRepository.save(work);
     }
+
 }

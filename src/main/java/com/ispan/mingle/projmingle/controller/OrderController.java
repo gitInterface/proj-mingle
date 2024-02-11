@@ -152,13 +152,13 @@ public class OrderController {
     }
 
     @PostMapping("/acceptOrder/{id}")
-    LandlordOrderDTO setOrderStatus(@PathVariable Integer id) {
+    List<LandlordOrderDTO> setOrderStatus(@PathVariable Integer id) {
         orderService.setOrderStatus(id, "房東已接受", false);
         return orderService.getOrderByLoardId(id);
     }
 
     @PostMapping("/rejectOrder/{id}")
-    LandlordOrderDTO setRejectOrder(@PathVariable Integer id) {
+    List<LandlordOrderDTO> setRejectOrder(@PathVariable Integer id) {
         orderService.setOrderStatus(id, "房東已拒絕", true);
         return orderService.getOrderByLoardId(id);
     }

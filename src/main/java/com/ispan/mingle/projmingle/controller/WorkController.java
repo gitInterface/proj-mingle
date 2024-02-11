@@ -15,12 +15,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.ispan.mingle.projmingle.Service.WorkService;
 import com.ispan.mingle.projmingle.domain.WorkBean;
 import com.ispan.mingle.projmingle.dto.WorkCreateDTO;
 import com.ispan.mingle.projmingle.dto.WorkModifyDTO;
 import com.ispan.mingle.projmingle.dto.WorkModifyHouseDTO;
+import com.ispan.mingle.projmingle.dto.WorkModifyListDTO;
+import com.ispan.mingle.projmingle.dto.WorkModifySubmitWorkDTO;
+import org.springframework.web.bind.annotation.PutMapping;
 
 @RestController
 @RequestMapping("/api/work")
@@ -81,17 +85,51 @@ public class WorkController {
         return ResponseEntity.ok(formattedAddresses);
     }
 
-    // (工作管理渲染)workid查詢work, workPhoto, work_house, house, housePhoto
+    // (工作管理/修改渲染)workid查詢work, workPhoto, work_house, house, housePhoto
     @GetMapping("/modifyWork/show/{workid}")
     public ResponseEntity<WorkModifyDTO> getWorkAllInfo(@PathVariable Integer workid) {
         return ResponseEntity.ok(workService.showModify(workid));
 
     }
 
-    // (工作管理渲染) 房子分開渲染，資料太多有點慢
+    // (工作管理/修改渲染) 房子分開渲染，資料太多有點慢
     @GetMapping("/modifyWork/showHouse/{workid}")
     public ResponseEntity<WorkModifyHouseDTO> getHouseAllInfo(@PathVariable Integer workid) {
         return ResponseEntity.ok(workService.showModifyHouse(workid));
+    }
+
+    // (工作管理/修改提交) 工作
+    @PutMapping("/modifyWork/submitWork/{workid}")
+    public void submitWork(@RequestBody WorkModifySubmitWorkDTO requestWork, @PathVariable Integer workid) {
+        if (requestWork != null && workid != null) {
+            workService.workModifyWork(requestWork, workid);
+        }
+    }
+
+    // (工作管理/修改提交) 房子
+    @PutMapping(path = "/modifyWork/submitHouse/{workid}", consumes = "multipart/form-data")
+    public void submitHouse(
+            @RequestParam(required = false) List<MultipartFile> newList, @PathVariable Integer workid) {
+        if (newList != null) {
+            // 條件不分開寫會爛掉(null沒有size方法)
+            if (newList.size() != 0) {
+                workService.workModifyPhoto(newList, workid);
+            }
+        }
+    }
+
+    // (工作管理/列表渲染)
+    @GetMapping("modifyWork/workList/{lordid}")
+    public ResponseEntity<List<WorkModifyListDTO>> showWorkList(@PathVariable Integer lordid) {
+        return ResponseEntity.ok(workService.showWorkList(lordid));
+    }
+
+    // (工作管理/刪除)
+    @PutMapping("modifyWork/delete/{workid}")
+    public void deleteWork(@PathVariable Integer workid) {
+        if (workid != null) {
+            workService.deleteWork(workid);
+        }
     }
 
     /*

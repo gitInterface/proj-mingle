@@ -1,10 +1,7 @@
 package com.ispan.mingle.projmingle.Service;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 import com.ispan.mingle.projmingle.dto.LandlordOrderDTO;
@@ -194,15 +191,32 @@ public class OrderService {
 
     public List<LandlordOrderDTO> getAllOrderByLoardId(Integer id){
         List<LandlordOrderDTO> order = landlordRepository.findAllOrderByLandlordID(id);
-        return order;
+        Map<Integer, LandlordOrderDTO> mergedOrders = new LinkedHashMap<>();
+        for (LandlordOrderDTO orderDTO : order) {
+            int orderId = orderDTO.getOrder().getOrderid();
+            if (mergedOrders.containsKey(orderId)) {
+                LandlordOrderDTO existingDTO = mergedOrders.get(orderId);
+
+                String houseName = existingDTO.getHouseName() != null ? existingDTO.getHouseName() + "," + "\n" + orderDTO.getHouseName() : orderDTO.getHouseName();
+                existingDTO.setHouseName(houseName);
+            } else {
+                mergedOrders.put(orderId, orderDTO);
+            }
+        }
+
+        return new ArrayList<>(mergedOrders.values());
     }
+
 
     public void setOrderStatus(Integer id, String status, boolean cancelled) { landlordRepository.setOrderStatus(id, status, cancelled); }
 
 
 
-    public LandlordOrderDTO getOrderByLoardId(Integer id ) {
-        return landlordRepository.findByOrderid(id);
+    public List<LandlordOrderDTO> getOrderByLoardId(Integer id ) {
+        List<LandlordOrderDTO> dt = landlordRepository.findByOrderid(id);
+        System.out.println(dt);
+        return dt;
     }
 
 }
+
