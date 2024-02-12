@@ -95,6 +95,7 @@ public class WorkController {
     // (工作管理/修改渲染) 房子分開渲染，資料太多有點慢
     @GetMapping("/modifyWork/showHouse/{workid}")
     public ResponseEntity<WorkModifyHouseDTO> getHouseAllInfo(@PathVariable Integer workid) {
+        System.out.println("workid=" + workid);
         return ResponseEntity.ok(workService.showModifyHouse(workid));
     }
 
