@@ -2,7 +2,6 @@ package com.ispan.mingle.projmingle.Service;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -79,12 +78,6 @@ public class WorkService {
 
     @Autowired
     private GoogleMapsGeocodingService geocodingService;
-
-    @Autowired
-    private WorkModifyDTO workModifyDTO;
-
-    @Autowired
-    private WorkModifyHouseDTO workModifyHouseDTO;
 
     private final ModelMapper modelMapper;
 
@@ -347,6 +340,7 @@ public class WorkService {
     public WorkModifyDTO showModify(Integer workid) {
         if (workid != null && workRepository.existsById(workid)) {
             WorkBean work = workRepository.findById(workid).get();
+            WorkModifyDTO workModifyDTO = new WorkModifyDTO();
             BeanUtils.copyProperties(work, workModifyDTO);
             // 工作照片base64 (沒被刪除的)
             List<WorkPhotoBean> undeletedWorkPhotoBeans = work.getUndeletedWorkPhotoBeans();
@@ -388,17 +382,17 @@ public class WorkService {
                     house.setPhotosBase64(housePhotos64);
                 }
             }
+            WorkModifyHouseDTO workModifyHouseDTO = new WorkModifyHouseDTO();
             workModifyHouseDTO.setHouseDetail(housesDetail);
             // 綁定資訊(找出所有目前綁定的houseid)，不為空才set到DTO
-            // System.out.println("workid=" + workid);
             List<Integer> bindingHousesID = workHouseRepository.findHouseIdsByWorkIdAndIsDeletedFalse(workid);
-            // // System.out.println(bindingHousesID);
             // for (Integer id : bindingHousesID) {
             // System.out.println("id=" + id);
             // }
             if (bindingHousesID != null && !bindingHousesID.isEmpty()) {
                 workModifyHouseDTO.setBindingHousesID(bindingHousesID);
             }
+            // System.out.println(workModifyHouseDTO.getBindingHousesID());
             return workModifyHouseDTO;
         }
         return null;

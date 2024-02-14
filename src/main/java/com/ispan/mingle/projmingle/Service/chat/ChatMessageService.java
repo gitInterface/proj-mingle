@@ -14,6 +14,7 @@ import com.ispan.mingle.projmingle.domain.VolunteerDetailBean;
 import com.ispan.mingle.projmingle.dto.ChatPreviewDTO;
 import com.ispan.mingle.projmingle.repository.VolunteerDetailRepository;
 import com.ispan.mingle.projmingle.repository.Chat.ChatMessageRepository;
+import com.ispan.mingle.projmingle.util.BaseUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -51,11 +52,24 @@ public class ChatMessageService {
                             .recieverid((String) row[1])
                             .sendername((String) row[2])
                             .recievername(detailRepository.findById((String) row[1]).get().getName())
-                            .contents((String) row[4])
-                            .createdTime((Date) row[5]);
-                    if (row[3] != null) {
-                        builder.photo(Base64.getEncoder().encodeToString((byte[]) row[3]));
+                            .contents((String) row[3])
+                            .createdTime((Date) row[4]);
+                    if (senderid.equals((String) row[0])) {
+                        String photoType = detailRepository.findById((String) row[1]).get().getPhotoType();
+                        if (photoType != null) {
+                            builder.photo(BaseUtil
+                                    .byteToBase64(photoType,
+                                            detailRepository.findById((String) row[1]).get().getImage()));
+                        }
+                    } else {
+                        String photoType = detailRepository.findById((String) row[0]).get().getPhotoType();
+                        if (photoType != null) {
+                            builder.photo(BaseUtil
+                                    .byteToBase64(photoType,
+                                            detailRepository.findById((String) row[0]).get().getImage()));
+                        }
                     }
+
                     return builder.build();
                 })
                 .collect(Collectors.toList());
