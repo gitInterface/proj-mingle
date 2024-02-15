@@ -12,6 +12,7 @@ import com.ispan.mingle.projmingle.domain.VolunteerDetailBean;
 import com.ispan.mingle.projmingle.repository.LandlordRepository;
 import com.ispan.mingle.projmingle.repository.VolunteerDetailRepository;
 import com.ispan.mingle.projmingle.repository.VolunteerRepository;
+import com.ispan.mingle.projmingle.util.BaseUtil;
 import com.ispan.mingle.projmingle.util.DatetimeConverter;
 
 import jakarta.mail.Authenticator;
@@ -198,6 +199,9 @@ public class VolunteerDetailService {
         if (lordid != null) {
             VolunteerDetailBean result = volunteerDetailRepository
                     .findById(landlordRepository.findById(lordid).get().getUserid()).get();
+            if (result.getPhotoType() != null && result.getImage() != null) {
+                result.setPhotoBase64(BaseUtil.byteToBase64(result.getPhotoType(), result.getImage()));
+            }
             return result;
         }
         return null;
