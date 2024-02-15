@@ -64,7 +64,7 @@ public class VolunteerDetailBean {
 	private Date updatedAt;
 
 	@Column(name = "isDeleted", columnDefinition = "bit")
-	private Character isDeleted;
+	private Boolean isDeleted;
 
 	@Column(name = "lastLogin", columnDefinition = "datetime")
 	private Date lastLogin;

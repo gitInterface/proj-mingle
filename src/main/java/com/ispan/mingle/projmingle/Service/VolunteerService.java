@@ -43,7 +43,7 @@ public class VolunteerService {
 				insert.setIsAdmin(false);
 				VolunteerBean newMember = volunteerRepository.save(insert);
 				// 新增用戶的詳細資料列表
-				volunteerDetailService.findByIdNotNull(insert.getUserid());
+				volunteerDetailService.createById(insert.getUserid());
 				return newMember;
 			}
 		} catch (Exception e) {

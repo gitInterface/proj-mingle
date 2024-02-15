@@ -4,6 +4,7 @@ import java.util.Base64;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -30,13 +31,20 @@ public class VolunteerDetailController {
     }
 
     @GetMapping("/Base64/{id}")
-    public VolunteerDetailBean getVolunteerDetailWithBase64(@PathVariable String id) {
+    public ResponseEntity<?> getVolunteerDetailWithBase64(@PathVariable String id) {
+        // JSONObject responseJson = new JSONObject();
         VolunteerDetailBean vDBean = getVolunteerDetail(id);
-        byte[] imgbytes = vDBean.getImage();
-        // imgbytes
-        vDBean.setPhotoBase64(BaseUtil.byteToBase64(vDBean.getPhotoType(), imgbytes));
-        vDBean.setImage(Base64.getDecoder().decode("AA"));
-        return vDBean;
+        if (vDBean == null || vDBean.getIsDeleted()) {
+            vDBean = null;
+        } else {
+            if (vDBean.getImage() != null) {
+                byte[] imgbytes = vDBean.getImage();
+                // img轉回base64
+                vDBean.setPhotoBase64(BaseUtil.byteToBase64(vDBean.getPhotoType(), imgbytes));
+                vDBean.setImage(Base64.getDecoder().decode("AA"));
+            }
+        }
+        return ResponseEntity.ok().body(vDBean);
     }
 
     @PatchMapping("/update/details/{pk}")

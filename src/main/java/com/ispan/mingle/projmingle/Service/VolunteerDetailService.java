@@ -37,10 +37,10 @@ public class VolunteerDetailService {
         return vDBean;
     }
 
-    public VolunteerDetailBean findByIdNotNull(String id) {
+    public VolunteerDetailBean createById(String id) {
         VolunteerDetailBean vDBean = findById(id);
         // 如果找不到資料就回傳一個空的資料
-        if (vDBean.getUserid() == null) {
+        if (vDBean == null) {
             vDBean = new VolunteerDetailBean();
         }
         // 驗證使用者資料
@@ -48,7 +48,7 @@ public class VolunteerDetailService {
             vDBean.setUserid(id);
             vDBean.setEmail(id + "@example.email");
             vDBean.setCreatedAt(DatetimeConverter.getCurrentDate());
-            vDBean.setIsDeleted('0');
+            vDBean.setIsDeleted(false);
             // 如果不能新增失敗才回傳null
             try {
                 volunteerDetailRepository.save(vDBean);
@@ -65,7 +65,7 @@ public class VolunteerDetailService {
         JSONObject job = new JSONObject(json);
         String update = job.isNull("update") ? null : job.getString("update");
         // 呼叫企業邏輯程式
-        VolunteerDetailBean vDBean = findByIdNotNull(userid);
+        VolunteerDetailBean vDBean = createById(userid);
         // 轉換資料
         if (update.equals("introductions")) {
             String introduction = job.isNull("introduction") ? null : job.getString("introduction");
