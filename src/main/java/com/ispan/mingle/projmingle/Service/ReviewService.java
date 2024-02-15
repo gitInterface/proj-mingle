@@ -110,24 +110,6 @@ public class ReviewService {
         
     }
 
-    public List<String> selectHouseImages(Integer houseid) {
-        if (houseid != null) {
-
-   
-            // 提取每個 HousePhotoBean 的圖片 URL 並存儲在一個列表中
-            List<String> imageList = new ArrayList<>();
-            for (HousePhotoBean housePhoto : housePhotoList) {
-                String basePhoto = "data:image/" + housePhoto.getContentType() + ";base64,"
-                        + Base64.getEncoder().encodeToString(housePhoto.getPhoto());
-                imageList.add(basePhoto);
-            }
-            return imageList;
-        }
-        return null;
-    }
-
-
-
 
 
 }
