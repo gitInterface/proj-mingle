@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import com.ispan.mingle.projmingle.domain.VolunteerBean;
 import com.ispan.mingle.projmingle.domain.VolunteerDetailBean;
+import com.ispan.mingle.projmingle.repository.LandlordRepository;
 import com.ispan.mingle.projmingle.repository.VolunteerDetailRepository;
 import com.ispan.mingle.projmingle.repository.VolunteerRepository;
 import com.ispan.mingle.projmingle.util.DatetimeConverter;
@@ -31,6 +32,8 @@ public class VolunteerDetailService {
     private VolunteerDetailRepository volunteerDetailRepository;
     @Autowired
     private VolunteerRepository volunteerRepository;
+    @Autowired
+    private LandlordRepository landlordRepository;
 
     public VolunteerDetailBean findById(String id) {
         VolunteerDetailBean vDBean = volunteerDetailRepository.findById(id).orElse(null);
@@ -187,6 +190,15 @@ public class VolunteerDetailService {
         if (volunteerDetail != null) {
             String userId = volunteerDetail.getUserid();
             return volunteerRepository.findByUserid(userId);
+        }
+        return null;
+    }
+
+    public VolunteerDetailBean findLordDetail(Integer lordid) {
+        if (lordid != null) {
+            VolunteerDetailBean result = volunteerDetailRepository
+                    .findById(landlordRepository.findById(lordid).get().getUserid()).get();
+            return result;
         }
         return null;
     }
