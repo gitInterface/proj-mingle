@@ -50,8 +50,8 @@ public class VolunteerService {
 			e.printStackTrace();
 		}
 		return null;
-
 	}
+
 
 	/*
 	 * READ
@@ -78,6 +78,11 @@ public class VolunteerService {
 		return false;
 	}
 
+	// 獲取所有用戶
+	public Iterable<VolunteerBean> getAllVolunteers() {
+		return volunteerRepository.findAll();
+	}
+
 	// 檢查用戶有無管理員權限
 	public Boolean isAdmin(String userid) {
 		VolunteerBean volunteer = volunteerRepository.findByUserid(userid);
@@ -88,6 +93,7 @@ public class VolunteerService {
 	public boolean isWorkKeptByVolunteer(String volunteerId, Integer workId) {
 		return keepWorkRepository.existsByVolunteer_UseridAndWork_Workid(volunteerId, workId);
 	}
+
 
 	/*
 	 * UPDATE
