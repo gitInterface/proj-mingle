@@ -62,11 +62,10 @@ public class ReviewController {
 
     /** 根據評論id找出評論照片 */
     @GetMapping("/findReviewPhotos")
-    public List<String> getReviewPhotosByReviewId(@RequestParam(name="reviewId") Integer reviewId) {
+    public List<String> getReviewPhotosByReviewId(@RequestParam(name = "reviewId") Integer reviewId) {
         List<String> reviewPhotos = reviewService.findReviewPhotoByReviewId(reviewId);
         return reviewPhotos;
     }
-
 
     @GetMapping("/findLandlord")
     public LandlordBean getLandlord(@RequestParam String userid) {
@@ -81,66 +80,56 @@ public class ReviewController {
     // 房東回應創建
     @PostMapping(path = "/create/reply")
     public ReviewBean createReply(
-    @RequestBody ReviewReplyDTO reply
-    )
-            {
-     
-            ReviewBean temp = reviewService.findById(reply.getReviewid());
-            temp.setReply(reply.getReply());
-            temp.setReplyCreatedAt(reply.getReplyCreatedAt());
-            temp.setReplyUpdatedAt(reply.getReplyUpdatedAt());
-            reviewService.createReview(temp);
-            return temp;
+            @RequestBody ReviewReplyDTO reply) {
 
-       
+        ReviewBean temp = reviewService.findById(reply.getReviewid());
+        temp.setReply(reply.getReply());
+        temp.setReplyCreatedAt(reply.getReplyCreatedAt());
+        temp.setReplyUpdatedAt(reply.getReplyUpdatedAt());
+        reviewService.createReview(temp);
+        return temp;
+
     }
-
 
     // 房客回應創建
     @PostMapping(path = "/create/review")
     public ReviewBean createReview(
-            @RequestBody ReviewBean review
-    ){
+            @RequestBody ReviewBean review) {
         return reviewService.createReview(review);
     }
 
     // 房客回應照片創建
     @PostMapping(path = "/create/review/photo", consumes = "multipart/form-data")
-    public ReviewPhotoBean createReviewPhoto(
-            @RequestParam(name="reviewid") Integer reviewid,
-            @RequestParam(name="replyCreatedAt") Date replyCreatedAt,
-            @RequestParam(name="replyUpdatedAt") Date replyUpdatedAt,
-            @RequestParam(required = false, name = "photo") List<MultipartFile> photo
-    ){
- try {
-        if (photo != null) {
-            for (MultipartFile multipartFile : photo) {
-                File file = FileUtil.convertMultipartFileToFile(multipartFile);
+    public void createReviewPhoto(
+            @RequestParam(name = "reviewid") Integer reviewid,
+            @RequestParam(name = "replyCreatedAt") Date replyCreatedAt,
+            @RequestParam(name = "replyUpdatedAt") Date replyUpdatedAt,
+            @RequestParam(required = false, name = "photo") List<MultipartFile> photo) {
+        try {
+            if (photo != null) {
+                for (MultipartFile multipartFile : photo) {
+                    File file = FileUtil.convertMultipartFileToFile(multipartFile);
 
-                ReviewPhotoBean reviewPhoto = new ReviewPhotoBean();
+                    ReviewPhotoBean reviewPhoto = new ReviewPhotoBean();
 
-                reviewPhoto.setReviewid(reviewid);
-                // 副檔名切割(ex. image/jpeg -> jpeg)
-                String contentType = multipartFile.getContentType();
-                String[] parts = contentType.split("/");
-                reviewPhoto.setContentType(parts[1]);
-                FileInputStream fis = new FileInputStream(file);
-                reviewPhoto.setPhoto(fis.readAllBytes());
-                reviewPhoto.setCreatedAt(replyCreatedAt);
-                reviewPhoto.setUpdatedAt(replyUpdatedAt);
-                reviewPhoto.setIsDeleted(false);
-                reviewPhoto = reviewService.createReviewPhoto(reviewPhoto);
+                    reviewPhoto.setReviewid(reviewid);
+                    // 副檔名切割(ex. image/jpeg -> jpeg)
+                    String contentType = multipartFile.getContentType();
+                    String[] parts = contentType.split("/");
+                    reviewPhoto.setContentType(parts[1]);
+                    FileInputStream fis = new FileInputStream(file);
+                    reviewPhoto.setPhoto(fis.readAllBytes());
+                    reviewPhoto.setCreatedAt(replyCreatedAt);
+                    reviewPhoto.setUpdatedAt(replyUpdatedAt);
+                    reviewPhoto.setIsDeleted(false);
+                    reviewPhoto = reviewService.createReviewPhoto(reviewPhoto);
 
-                fis.close();
-                file.delete();
-                return reviewPhoto;
+                    fis.close();
+                    file.delete();
+                }
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-    } catch (IOException e) {
-        e.printStackTrace();
-        return null;
-    }
-        return null;
-        
     }
 }

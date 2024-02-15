@@ -73,4 +73,11 @@ public class VolunteerDetailController {
         }
         return responseJson.toString();
     }
+
+    // (工作頁面/workid找房東資訊)
+    @GetMapping("/lordinfo/{lordid}")
+    public ResponseEntity<VolunteerDetailBean> getMethodName(@PathVariable Integer lordid) {
+        VolunteerDetailBean lordDetail = volunteerDetailService.findLordDetail(lordid);
+        return ResponseEntity.ok(lordDetail);
+    }
 }
