@@ -1,6 +1,9 @@
 package com.ispan.mingle.projmingle.controller;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -8,7 +11,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,6 +24,7 @@ import com.ispan.mingle.projmingle.domain.ReviewBean;
 import com.ispan.mingle.projmingle.domain.ReviewPhotoBean;
 import com.ispan.mingle.projmingle.dto.ReviewDTO;
 import com.ispan.mingle.projmingle.dto.ReviewReplyDTO;
+import com.ispan.mingle.projmingle.util.FileUtil;
 
 @RestController
 @RequestMapping("/review")
@@ -33,9 +36,6 @@ public class ReviewController {
 
     @Autowired
     private OrderService orderService;
-
-    @Autowired
-    private ReviewPhotoBean reviewPhoto;
 
     @Autowired
     private ReviewReplyDTO reviewReplyDTO;
@@ -70,25 +70,38 @@ public class ReviewController {
     }
 
     // 房東回應創建
-    @PostMapping(path = "/create/reply", consumes = "multipart/form-data", produces = "application/json")
+    @PostMapping(path = "/create/reply", consumes = "multipart/form-data")
     public ReviewBean createReply(
-            @RequestBody ReviewReplyDTO reply) {
+            @RequestParam(name="reply") String reply,
+            @RequestParam(name="reviewid") Integer reviewid,
+            @RequestParam(name="replyCreatedAt") Date replyCreatedAt,
+            @RequestParam(name="replyUpdatedAt") Date replyUpdatedAt,
+            @RequestParam(required = false, name = "photo") List<MultipartFile> photo) {
         try {
-            ReviewBean temp = reviewService.findById(reply.getReviewid());
-            temp.setReply(reply.getReply());
-            temp.setReplyCreatedAt(reply.getReplyCreatedAt());
-            temp.setReplyUpdatedAt(reply.getReplyUpdatedAt());
+            ReviewBean temp = reviewService.findById(reviewid);
+            temp.setReply(reply);
+            temp.setReplyCreatedAt(replyCreatedAt);
+            temp.setReplyUpdatedAt(replyUpdatedAt);
+            if (photo != null) {
+                for (MultipartFile multipartFile : photo) {
+                    File file = FileUtil.convertMultipartFileToFile(multipartFile);
 
-            if (reply.getPhoto() != null) {
-                for (MultipartFile item : reply.getPhoto()) {
-                    byte[] photoBytes = item.getInputStream().readAllBytes();
-                    reviewPhoto.setPhoto(photoBytes);
-                    reviewPhoto.setContentType(item.getContentType());
-                    reviewPhoto.setReviewid(reply.getReviewid());
-                    reviewPhoto.setCreatedAt(reply.getReplyCreatedAt());
-                    reviewPhoto.setUpdatedAt(reply.getReplyUpdatedAt());
+                    ReviewPhotoBean reviewPhoto = new ReviewPhotoBean();
+
+                    reviewPhoto.setReviewid(reviewid);
+                    // 副檔名切割(ex. image/jpeg -> jpeg)
+                    String contentType = multipartFile.getContentType();
+                    String[] parts = contentType.split("/");
+                    reviewPhoto.setContentType(parts[1]);
+                    FileInputStream fis = new FileInputStream(file);
+                    reviewPhoto.setPhoto(fis.readAllBytes());
+                    reviewPhoto.setCreatedAt(replyCreatedAt);
+                    reviewPhoto.setUpdatedAt(replyUpdatedAt);
                     reviewPhoto.setIsDeleted(false);
                     reviewPhoto = reviewService.createReviewPhoto(reviewPhoto);
+
+                    fis.close();
+                    file.delete();
                 }
             }
             reviewService.createReview(temp);
@@ -99,5 +112,8 @@ public class ReviewController {
             return null;
         }
     }
+
+
+
 
 }

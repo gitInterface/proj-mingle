@@ -16,7 +16,6 @@ public class ReviewReplyDTO {
 
     private Integer reviewid;
     private String reply;
-    private MultipartFile[] photo;
     private Date replyCreatedAt;
     private Date replyUpdatedAt;
 
