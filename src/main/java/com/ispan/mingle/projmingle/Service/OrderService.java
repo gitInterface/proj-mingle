@@ -1,11 +1,14 @@
 package com.ispan.mingle.projmingle.Service;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Base64;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-import com.ispan.mingle.projmingle.dto.LandlordOrderDTO;
-import com.ispan.mingle.projmingle.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +20,17 @@ import com.ispan.mingle.projmingle.domain.OrderWorkHouseBean;
 import com.ispan.mingle.projmingle.domain.VolunteerDetailBean;
 import com.ispan.mingle.projmingle.domain.WorkBean;
 import com.ispan.mingle.projmingle.domain.WorkHouseBean;
+import com.ispan.mingle.projmingle.dto.LandlordOrderDTO;
 import com.ispan.mingle.projmingle.dto.ReviewDTO;
+import com.ispan.mingle.projmingle.dto.UserOrderDTO;
+import com.ispan.mingle.projmingle.repository.AccommodatorRepository;
+import com.ispan.mingle.projmingle.repository.HousePhotoRepository;
+import com.ispan.mingle.projmingle.repository.LandlordRepository;
+import com.ispan.mingle.projmingle.repository.OrderRepository;
+import com.ispan.mingle.projmingle.repository.OrderWorkHouseRepository;
+import com.ispan.mingle.projmingle.repository.VolunteerDetailRepository;
+import com.ispan.mingle.projmingle.repository.WorkHouseRepository;
+import com.ispan.mingle.projmingle.repository.WorkRepository;
 
 import jakarta.transaction.Transactional;
 
@@ -170,11 +183,11 @@ public class OrderService {
         List<String> houseTypeList = new ArrayList<>();
 
         for (HouseBean houseBean : house) {
-            
+
             houseidList.add(houseBean.getHouseid());
             houseNameList.add(houseBean.getName());
             houseTypeList.add(houseBean.getHouseType());
-     
+
         }
         review.setHouseid(houseidList);
         review.setHouseName(houseNameList);
@@ -187,9 +200,7 @@ public class OrderService {
 
     }
 
-
-
-    public List<LandlordOrderDTO> getAllOrderByLoardId(Integer id){
+    public List<LandlordOrderDTO> getAllOrderByLoardId(Integer id) {
         List<LandlordOrderDTO> order = landlordRepository.findAllOrderByLandlordID(id);
         Map<Integer, LandlordOrderDTO> mergedOrders = new LinkedHashMap<>();
         for (LandlordOrderDTO orderDTO : order) {
@@ -197,7 +208,9 @@ public class OrderService {
             if (mergedOrders.containsKey(orderId)) {
                 LandlordOrderDTO existingDTO = mergedOrders.get(orderId);
 
-                String houseName = existingDTO.getHouseName() != null ? existingDTO.getHouseName() + "," + "\n" + orderDTO.getHouseName() : orderDTO.getHouseName();
+                String houseName = existingDTO.getHouseName() != null
+                        ? existingDTO.getHouseName() + "," + "\n" + orderDTO.getHouseName()
+                        : orderDTO.getHouseName();
                 existingDTO.setHouseName(houseName);
             } else {
                 mergedOrders.put(orderId, orderDTO);
@@ -207,16 +220,35 @@ public class OrderService {
         return new ArrayList<>(mergedOrders.values());
     }
 
+    // public List<UserOrderDTO> getAllOrderByUserId(String id) {
+    // List<UserOrderDTO> order =
+    // orderRepository.findWorkDetailAndPhotoByUserid(id);
+    // Map<Integer, UserOrderDTO> mergedOrders = new LinkedHashMap<>();
+    // for (UserOrderDTO orderDTO : order) {
+    // int orderId = orderDTO.getOrder().getOrderid();
+    // if (mergedOrders.containsKey(orderId)) {
+    // UserOrderDTO existingDTO = mergedOrders.get(orderId);
 
-    public void setOrderStatus(Integer id, String status, boolean cancelled) { landlordRepository.setOrderStatus(id, status, cancelled); }
+    // String houseName = existingDTO.getHouseName() != null
+    // ? existingDTO.getHouseName() + "," + "\n" + orderDTO.getHouseName()
+    // : orderDTO.getHouseName();
+    // existingDTO.setHouseName(houseName);
+    // } else {
+    // mergedOrders.put(orderId, orderDTO);
+    // }
+    // }
 
+    // return new ArrayList<>(mergedOrders.values());
+    // }
 
+    public void setOrderStatus(Integer id, String status, boolean cancelled) {
+        landlordRepository.setOrderStatus(id, status, cancelled);
+    }
 
-    public List<LandlordOrderDTO> getOrderByLoardId(Integer id ) {
+    public List<LandlordOrderDTO> getOrderByLoardId(Integer id) {
         List<LandlordOrderDTO> dt = landlordRepository.findByOrderid(id);
         System.out.println(dt);
         return dt;
     }
 
 }
-
