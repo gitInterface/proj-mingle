@@ -1,5 +1,7 @@
 package com.ispan.mingle.projmingle.Service;
 
+import java.util.ArrayList;
+import java.util.Base64;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -7,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
+import com.ispan.mingle.projmingle.domain.HousePhotoBean;
 import com.ispan.mingle.projmingle.domain.LandlordBean;
 import com.ispan.mingle.projmingle.domain.OrderBean;
 import com.ispan.mingle.projmingle.domain.ReviewBean;
@@ -17,6 +20,7 @@ import com.ispan.mingle.projmingle.repository.ReviewPhotoRepository;
 import com.ispan.mingle.projmingle.repository.ReviewRepository;
 import com.ispan.mingle.projmingle.repository.VolunteerRepository;
 import com.ispan.mingle.projmingle.repository.WorkRepository;
+import com.ispan.mingle.projmingle.util.BaseUtil;
 
 import jakarta.transaction.Transactional;
 
@@ -94,10 +98,18 @@ public class ReviewService {
 
     /** 透過評論id查詢評論照片 */
 
-    public List<ReviewPhotoBean> findReviewPhotoByReviewId(Integer reviewId){
+    public List<String> findReviewPhotoByReviewId(Integer reviewId){
         List<ReviewPhotoBean> reviewPhotos = reviewPhotoRepository.findAllByReviewId(reviewId);
-        return reviewPhotos;
+        List<String> imageList = new ArrayList<>();
+        for (ReviewPhotoBean reviewPhoto : reviewPhotos) {
+            String basePhoto = "data:image/" + reviewPhoto.getContentType() + ";base64,"
+                        + Base64.getEncoder().encodeToString(reviewPhoto.getPhoto());
+                imageList.add(basePhoto);
+        };
+        return imageList;
         
     }
+
+
 
 }
