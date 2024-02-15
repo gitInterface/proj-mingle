@@ -1,6 +1,7 @@
 package com.ispan.mingle.projmingle.domain;
 
 import java.util.Date;
+import java.util.List;
 
 import org.springframework.stereotype.Component;
 
@@ -10,6 +11,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.persistence.Transient;
 import lombok.Data;
 
 @Data
@@ -73,5 +75,15 @@ public class ReviewBean {
     @Column(name = "replyUpdatedAt",
     columnDefinition = "datetime")
     private Date replyUpdatedAt;
+
+
+    @Transient
+    private List<String> photosBase64;
+
+    @Transient
+    private Integer workid;
+
+    @Transient
+    private String workName;
 
 }
