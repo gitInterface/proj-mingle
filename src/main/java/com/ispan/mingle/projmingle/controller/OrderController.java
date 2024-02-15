@@ -146,10 +146,10 @@ public class OrderController {
         return orderService.getAllOrderByLoardId(id);
     }
 
-    // @GetMapping("/findAllOrder/byUserId/{id}")
-    // List<UserOrderDTO> getAllOrderByUserId(@PathVariable String id) {
-    // return orderService.getAllOrderByUserId(id);
-    // }
+    @GetMapping("/findAllOrder/byUserId/{id}")
+    List<UserOrderDTO> getAllOrderByUserId(@PathVariable String id) {
+        return orderService.getAllOrderByUserId(id);
+    }
 
     @PostMapping("/acceptOrder/{id}")
     List<LandlordOrderDTO> setOrderStatus(@PathVariable Integer id) {

@@ -46,17 +46,15 @@ public interface OrderRepository extends JpaRepository<OrderBean, Integer> {
         // JOIN Work AS work ON work_house.fk_workID = work.workID
         // JOIN work_photo ON work.workID = work_photo.fk_workID
         // WHERE order.status = '1' AND order.fk_userID = 'userID';
-        // @Query("SELECT new com.ispan.mingle.projmingle.dto.UserOrderDTO(w.name,
-        // h.name, o)" +
-        // "FROM OrderBean o " +
-        // "JOIN OrderWorkHouseBean owh ON o.orderid = owh.orderid " +
-        // "JOIN WorkHouseBean wh ON owh.workhouseid = wh.id " +
-        // "JOIN WorkBean w ON wh.workid = w.workid " +
-        // // "JOIN WorkPhotoBean wp ON w.workid = wp.workid " +
-        // "JOIN HouseBean h ON h.houseid = wh.houseid " +
-        // // "WHERE o.status = :finshed" +
-        // "WHERE o.fk_userID = :userid order by o.orderid desc")
-        // List<UserOrderDTO> findWorkDetailAndPhotoByUserid(@Param("userid") String
-        // userid);
+        @Query("SELECT new com.ispan.mingle.projmingle.dto.UserOrderDTO(w.name,h.name, o)" +
+                        "FROM OrderBean o " +
+                        "JOIN OrderWorkHouseBean owh ON o.orderid = owh.orderid " +
+                        "JOIN WorkHouseBean wh ON owh.workhouseid = wh.id " +
+                        "JOIN WorkBean w ON wh.workid = w.workid " +
+                        // "JOIN WorkPhotoBean wp ON w.workid = wp.workid " +
+                        "JOIN HouseBean h ON h.houseid = wh.houseid " +
+                        // "WHERE o.status = :finshed" +
+                        "WHERE o.userid = :userid order by o.orderid desc")
+        List<UserOrderDTO> findWorkDetailAndPhotoByUserid(@Param("userid") String userid);
 
 }

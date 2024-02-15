@@ -160,7 +160,7 @@ public class OrderService {
         review.setUserid(volunteerDetail.getUserid());
         review.setUsername(volunteerDetail.getName());
         String basePhoto = "data:image/" + volunteerDetail.getPhotoType() + ";base64,"
-        + Base64.getEncoder().encodeToString(volunteerDetail.getImage());
+                + Base64.getEncoder().encodeToString(volunteerDetail.getImage());
         review.setImage(basePhoto);
         review.setPhotoType(volunteerDetail.getPhotoType());
         review.setCountry(volunteerDetail.getCountry());
@@ -222,26 +222,25 @@ public class OrderService {
         return new ArrayList<>(mergedOrders.values());
     }
 
-    // public List<UserOrderDTO> getAllOrderByUserId(String id) {
-    // List<UserOrderDTO> order =
-    // orderRepository.findWorkDetailAndPhotoByUserid(id);
-    // Map<Integer, UserOrderDTO> mergedOrders = new LinkedHashMap<>();
-    // for (UserOrderDTO orderDTO : order) {
-    // int orderId = orderDTO.getOrder().getOrderid();
-    // if (mergedOrders.containsKey(orderId)) {
-    // UserOrderDTO existingDTO = mergedOrders.get(orderId);
+    public List<UserOrderDTO> getAllOrderByUserId(String id) {
+        List<UserOrderDTO> order = orderRepository.findWorkDetailAndPhotoByUserid(id);
+        Map<Integer, UserOrderDTO> mergedOrders = new LinkedHashMap<>();
+        for (UserOrderDTO orderDTO : order) {
+            int orderId = orderDTO.getOrder().getOrderid();
+            if (mergedOrders.containsKey(orderId)) {
+                UserOrderDTO existingDTO = mergedOrders.get(orderId);
 
-    // String houseName = existingDTO.getHouseName() != null
-    // ? existingDTO.getHouseName() + "," + "\n" + orderDTO.getHouseName()
-    // : orderDTO.getHouseName();
-    // existingDTO.setHouseName(houseName);
-    // } else {
-    // mergedOrders.put(orderId, orderDTO);
-    // }
-    // }
+                String houseName = existingDTO.getHouseName() != null
+                        ? existingDTO.getHouseName() + "," + "\n" + orderDTO.getHouseName()
+                        : orderDTO.getHouseName();
+                existingDTO.setHouseName(houseName);
+            } else {
+                mergedOrders.put(orderId, orderDTO);
+            }
+        }
 
-    // return new ArrayList<>(mergedOrders.values());
-    // }
+        return new ArrayList<>(mergedOrders.values());
+    }
 
     public void setOrderStatus(Integer id, String status, boolean cancelled) {
         landlordRepository.setOrderStatus(id, status, cancelled);
