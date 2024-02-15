@@ -23,7 +23,7 @@ public class PaymentService {
 		obj.setItemName("TestItem");
 		obj.setReturnURL("http://localhost:7890");
 		obj.setClientBackURL("http://localhost:7890");
-		obj.setNeedExtraPaidInfo("N");
+		obj.setNeedExtraPaidInfo("Y");
 		String form = all.aioCheckOut(obj, null);
 		return form;
 	}
