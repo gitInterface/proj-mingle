@@ -146,7 +146,9 @@ public class OrderService {
 
         review.setUserid(volunteerDetail.getUserid());
         review.setUsername(volunteerDetail.getName());
-        review.setImage(volunteerDetail.getImage());
+        String basePhoto = "data:image/" + volunteerDetail.getPhotoType() + ";base64,"
+        + Base64.getEncoder().encodeToString(volunteerDetail.getImage());
+        review.setImage(basePhoto);
         review.setPhotoType(volunteerDetail.getPhotoType());
         review.setCountry(volunteerDetail.getCountry());
         review.setWorkid(work.getWorkid());

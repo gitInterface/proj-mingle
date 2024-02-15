@@ -92,6 +92,12 @@ public class ReviewService {
         return review;
     }
 
+    /** 透過評論id查詢評論照片 */
 
+    public List<ReviewPhotoBean> findReviewPhotoByReviewId(Integer reviewId){
+        List<ReviewPhotoBean> reviewPhotos = reviewPhotoRepository.findAllByReviewId(reviewId);
+        return reviewPhotos;
+        
+    }
 
 }

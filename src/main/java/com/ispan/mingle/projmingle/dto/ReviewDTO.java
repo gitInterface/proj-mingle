@@ -20,7 +20,7 @@ public class ReviewDTO {
     private String username;
 
     /**評論的幫助者大頭照 */
-    private byte[] image;
+    private String image;
     
     /**評論的幫助者大頭照類型 */
     private String photoType;
