@@ -62,8 +62,8 @@ public class ReviewController {
 
     /** 根據評論id找出評論照片 */
     @GetMapping("/findReviewPhotos")
-    public List<ReviewPhotoBean> getReviewPhotosByReviewId(@RequestParam Integer reviewId) {
-        List<ReviewPhotoBean> reviewPhotos = reviewService.findReviewPhotoByReviewId(reviewId);
+    public List<String> getReviewPhotosByReviewId(@RequestParam(name="reviewId") Integer reviewId) {
+        List<String> reviewPhotos = reviewService.findReviewPhotoByReviewId(reviewId);
         return reviewPhotos;
     }
 
