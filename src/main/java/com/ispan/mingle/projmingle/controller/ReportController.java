@@ -43,4 +43,10 @@ public class ReportController {
     public List<WorkBean> getWorksByReportBeans(@RequestBody List<ReportBean> reportBeans) {
         return reportService.getWorksByReportBeans(reportBeans);
     }
+
+    @GetMapping("/countPendingReport")
+    public Integer countPendingReport() {
+        return reportService.countPendingReport();
+    }
+    
 }

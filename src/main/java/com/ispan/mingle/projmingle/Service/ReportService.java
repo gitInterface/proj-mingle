@@ -10,6 +10,7 @@ import com.ispan.mingle.projmingle.domain.ReportBean;
 import com.ispan.mingle.projmingle.domain.WorkBean;
 import com.ispan.mingle.projmingle.repository.ReportRepository;
 import com.ispan.mingle.projmingle.repository.WorkRepository;
+import com.ispan.mingle.projmingle.util.BaseUtil;
 
 @Service
 public class ReportService {
@@ -19,7 +20,6 @@ public class ReportService {
 
     @Autowired
     private WorkRepository workRepository;
-
 
     /*
      * C
@@ -36,9 +36,23 @@ public class ReportService {
     }
 
     public List<WorkBean> getWorksByReportBeans(List<ReportBean> reportBeans) {
-    List<Integer> workIds = reportBeans.stream()
-        .map(ReportBean::getWorkID)
-        .collect(Collectors.toList());
-    return workRepository.findAllById(workIds);
-}
+        List<Integer> workIds = reportBeans.stream()
+                .map(ReportBean::getWorkID).collect(Collectors.toList());
+        List<WorkBean> works = workRepository.findAllById(workIds);
+        for (WorkBean work : works) {
+            List<String> photosBase64 = work.getUndeletedWorkPhotoBeans().stream()
+                    .limit(6)
+                    .map(photo -> BaseUtil.byteToBase64(photo.getContentType(),
+                            photo.getPhoto()))
+                    .collect(Collectors.toList());
+            work.setPhotosBase64(photosBase64);
+        }
+        return works;
+    }
+
+    // 查詢待審核檢舉數量
+    public Integer countPendingReport() {
+        return reportRepository.findPendingReport();
+    }
+
 }
