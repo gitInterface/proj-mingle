@@ -41,9 +41,9 @@ public class HouseService {
     }
 
     public List<HouseBean> findAllHousesWithPhotos(Integer id) {
-        String jpql = "SELECT DISTINCT h FROM HouseBean h JOIN FETCH h.housePhotos WHERE h.lordid = :id ";
+        String jpql = "SELECT DISTINCT h FROM HouseBean h FULL JOIN FETCH h.housePhotos WHERE h.lordid = :id ";
         List<HouseBean> houses = entityManager.createQuery(jpql, HouseBean.class)
-                .setParameter("id",id)
+                .setParameter("id", id)
                 .getResultList();
         return houses;
 
@@ -193,17 +193,15 @@ public class HouseService {
         bean = houseRepository.save(bean);
 
         housePhotoService.getPhoto(session, bean.getHouseid());
- 
-   }
 
+    }
 
-   /** 修改房間可容納人數  */
-   public HouseBean updateBeds(Integer houseid, Integer attendance) {
-       
-       HouseBean bean = houseRepository.findById(houseid).get();
-       bean.setBeds( bean.getBeds() - attendance);
-       return houseRepository.save(bean);
-   }
+    /** 修改房間可容納人數 */
+    public HouseBean updateBeds(Integer houseid, Integer attendance) {
 
+        HouseBean bean = houseRepository.findById(houseid).get();
+        bean.setBeds(bean.getBeds() - attendance);
+        return houseRepository.save(bean);
+    }
 
 }
