@@ -17,6 +17,12 @@ public class LandlordOrderDTO {
     private String workName;
     private String houseName;
     private OrderBean order;
+
+    private String formatEndDate;
+    private String formatStartDate;
+    private String formatInvoiceDate;
+
+
     public LandlordOrderDTO(String workName, String houseName, OrderBean order) {
         // 初始化DTO的屬性
         this.workName = workName;
@@ -26,10 +32,6 @@ public class LandlordOrderDTO {
         this.formatEndDate = DatetimeConverter.toString(order.getEndDate(), "yyyy-MM-dd HH:mm:ss");
         this.formatInvoiceDate = DatetimeConverter.toString(order.getInvoiceDate(), "yyyy-MM-dd HH:mm:ss");
     }
-    private String formatEndDate;
-    private String formatStartDate;
-    private String formatInvoiceDate;
-
 
         /*orderBean*/
 //    private Integer orderid;
