@@ -27,12 +27,14 @@ public class PaymentController {
 		String aioCheckOutALLForm = paymentService.genAioCheckOutALL(amount);
 
 		// Check if this request is a callback from ECPay
-		if (request.getParameter("PaymentStatus") != null) {
+		String paymentStatus = request.getParameter("PaymentStatus");
+		if (paymentStatus != null) {
+			System.out.println("9999999999999999999999999");
 			// This request is a callback from ECPay
 			handleECPayCallback(request.getParameterMap(), id);
 			return "Payment callback processed successfully.";
 		}
-
+		System.out.println("33333333333333333333333333333");
 		return aioCheckOutALLForm;
 	}
 
@@ -55,7 +57,7 @@ public class PaymentController {
 			}
 		} else {
 			// Payment status not found or empty
-			
+			System.out.println("6666666666666666666666666666666");
 		}
 	}
 
