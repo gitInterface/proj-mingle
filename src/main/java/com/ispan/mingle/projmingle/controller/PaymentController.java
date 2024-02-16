@@ -35,6 +35,7 @@ public class PaymentController {
 			return "Payment callback processed successfully.";
 		}
 		System.out.println("33333333333333333333333333333");
+		orderService.setOrderStatus(id, "已完成訂單", false);
 		return aioCheckOutALLForm;
 	}
 
