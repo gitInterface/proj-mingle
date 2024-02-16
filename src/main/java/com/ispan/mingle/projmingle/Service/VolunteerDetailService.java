@@ -5,6 +5,7 @@ import java.util.Properties;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import com.ispan.mingle.projmingle.domain.VolunteerBean;
@@ -35,6 +36,9 @@ public class VolunteerDetailService {
     private VolunteerRepository volunteerRepository;
     @Autowired
     private LandlordRepository landlordRepository;
+
+    @Value("${front.end.host}")
+    private String front;
 
     public VolunteerDetailBean findById(String id) {
         VolunteerDetailBean vDBean = volunteerDetailRepository.findById(id).orElse(null);
@@ -141,7 +145,7 @@ public class VolunteerDetailService {
         String subject = "Password Reset Instructions";
         String body = "Dear " + volunteerDetail.getName() + ",\n\n"
                 + "Please follow the link below to reset your password:\n"
-                + "http://localhost:7890/resetpassword?email=" + volunteerDetail.getEmail() + "\n\n"
+                + front+"/resetpassword?email=" + volunteerDetail.getEmail() + "\n\n"
                 + "If you did not request a password reset, please ignore this email.\n\n"
                 + "Best regards,\n"
                 + "Your Website Team";

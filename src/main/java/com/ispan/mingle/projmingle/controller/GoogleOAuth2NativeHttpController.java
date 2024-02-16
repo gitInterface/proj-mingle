@@ -3,6 +3,7 @@ package com.ispan.mingle.projmingle.controller;
 import java.io.IOException;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -38,6 +39,9 @@ public class GoogleOAuth2NativeHttpController {
 
     private final String scope = "https://www.googleapis.com/auth/userinfo.email";
 
+    @Value("${front.end.host}")
+    private String frontend;
+
     @GetMapping("/google-login")
     public String googleLogin(HttpServletResponse response) {
         // 直接 redirect 導向 Google OAuth2 API
@@ -53,6 +57,7 @@ public class GoogleOAuth2NativeHttpController {
     @GetMapping("/google-callback")
     public String oauth2Callback(@RequestParam(required = false) String code, HttpSession httpSession)
             throws IOException {
+                
         if (code == null) {
             String authUri = "https://accounts.google.com/o/oauth2/v2/auth?response_type=code" +
                     "&client_id=" + googleOauth2Config.getClientId() +
@@ -117,8 +122,9 @@ public class GoogleOAuth2NativeHttpController {
             httpSession.setAttribute("loginUser", loginUser);
 
         }
+        
 
-        return "redirect:http://localhost:7890/";
+        return frontend;
     }
 
 }
