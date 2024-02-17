@@ -46,15 +46,24 @@ public class VolunteerController {
      * READ
      */
 
+    // 查詢管理者數量
+    @GetMapping("/getAdminCount")
+    public ResponseEntity<Integer> getAdminCount() {
+        Integer adminCount = volunteerService.getAdminCount();
+        return ResponseEntity.ok(adminCount);
+    }
+
+    // 獲取所有使用者(管理者介面用)
     @GetMapping("/getAllVolunteers")
     public ResponseEntity<Page<VolunteerBean>> getAllVolunteers(
             Pageable pageable,
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) String sortField,
-            @RequestParam(required = false, defaultValue = "asc") String sortOrder) {
+            @RequestParam(required = false, defaultValue = "asc") String sortOrder,
+            @RequestParam(required = false, defaultValue = "false") Boolean isAdmin) {
         Sort sort = Sort.by(Sort.Direction.fromString(sortOrder), sortField);
         Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
-        Page<VolunteerBean> volunteers = volunteerService.getAllVolunteers(sortedPageable, keyword);
+        Page<VolunteerBean> volunteers = volunteerService.getAllVolunteers(sortedPageable, keyword, isAdmin);
         return ResponseEntity.ok(volunteers);
     }
 
