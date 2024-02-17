@@ -38,4 +38,7 @@ public interface WorkRepository
     // landlordid找所有工作
     public List<WorkBean> findByLandlordid(Integer lordid);
 
+    // 獲取id在某一群id中的所有工作
+    public List<WorkBean> findAllById(Iterable<Integer> ids);
+
 }

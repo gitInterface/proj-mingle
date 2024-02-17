@@ -20,7 +20,7 @@ public class LandlordOrderDTO {
 
     private String formatEndDate;
     private String formatStartDate;
-    private String formatInvoiceDate;
+    private String formatCreateDate;
 
 
     public LandlordOrderDTO(String workName, String houseName, OrderBean order) {
@@ -30,7 +30,7 @@ public class LandlordOrderDTO {
         this.order = order;
         this.formatStartDate = DatetimeConverter.toString(order.getStartDate(), "yyyy-MM-dd HH:mm:ss");
         this.formatEndDate = DatetimeConverter.toString(order.getEndDate(), "yyyy-MM-dd HH:mm:ss");
-        this.formatInvoiceDate = DatetimeConverter.toString(order.getInvoiceDate(), "yyyy-MM-dd HH:mm:ss");
+        this.formatCreateDate = DatetimeConverter.toString(order.getCreatedAt(), "yyyy-MM-dd HH:mm:ss");
     }
 
         /*orderBean*/

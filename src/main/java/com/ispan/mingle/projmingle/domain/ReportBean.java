@@ -59,5 +59,6 @@ public class ReportBean {
     @PrePersist
     protected void onCreate() {
         createdAt = new Date();
+        status = 0;
     }
 }
