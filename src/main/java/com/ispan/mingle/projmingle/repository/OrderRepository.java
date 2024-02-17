@@ -10,6 +10,7 @@ import com.ispan.mingle.projmingle.domain.HouseBean;
 import com.ispan.mingle.projmingle.domain.OrderBean;
 import com.ispan.mingle.projmingle.domain.VolunteerDetailBean;
 import com.ispan.mingle.projmingle.domain.WorkBean;
+import com.ispan.mingle.projmingle.dto.LandlordOrderDTO;
 import com.ispan.mingle.projmingle.dto.UserOrderDTO;
 
 public interface OrderRepository extends JpaRepository<OrderBean, Integer> {
@@ -46,13 +47,14 @@ public interface OrderRepository extends JpaRepository<OrderBean, Integer> {
         // JOIN Work AS work ON work_house.fk_workID = work.workID
         // JOIN work_photo ON work.workID = work_photo.fk_workID
         // WHERE order.status = '1' AND order.fk_userID = 'userID';
-        @Query("SELECT new com.ispan.mingle.projmingle.dto.UserOrderDTO(w.name,h.name, o)" +
+        @Query("SELECT new com.ispan.mingle.projmingle.dto.UserOrderDTO(vd.name,vd.userid, w.name,h.name, o)" +
                         "FROM OrderBean o " +
                         "JOIN OrderWorkHouseBean owh ON o.orderid = owh.orderid " +
                         "JOIN WorkHouseBean wh ON owh.workhouseid = wh.id " +
                         "JOIN WorkBean w ON wh.workid = w.workid " +
-                        // "JOIN WorkPhotoBean wp ON w.workid = wp.workid " +
                         "JOIN HouseBean h ON h.houseid = wh.houseid " +
+                        "JOIN LandlordBean l ON h.lordid = l.landlordid " +
+                        "JOIN VolunteerDetailBean vd ON vd.userid = l.userid " +
                         // "WHERE o.status = :finshed" +
                         "WHERE o.userid = :userid order by o.orderid desc")
         List<UserOrderDTO> findWorkDetailAndPhotoByUserid(@Param("userid") String userid);

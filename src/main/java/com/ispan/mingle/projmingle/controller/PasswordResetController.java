@@ -2,10 +2,12 @@ package com.ispan.mingle.projmingle.controller;
 
 import java.util.Map;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -55,4 +57,20 @@ public class PasswordResetController {
         volunteerService.save(volunteer);
         return ResponseEntity.ok("Password reset successfully");
     }
+
+    @PatchMapping("/resetPassword/byId")
+    public String resetPasswordById(@RequestBody String body) {
+        // 準備回傳的資料
+        JSONObject responseJson = new JSONObject();
+        VolunteerBean newBean = volunteerService.updatePasswordById(body);
+        if (newBean == null) {
+            responseJson.put("message", "修改失敗 ,輸入資料不正確");
+            responseJson.put("success", false);
+        } else {
+            responseJson.put("message", "修改成功");
+            responseJson.put("success", true);
+        }
+        return responseJson.toString();
+    }
+
 }
