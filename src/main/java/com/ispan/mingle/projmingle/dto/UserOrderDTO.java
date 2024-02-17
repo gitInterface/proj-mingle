@@ -21,11 +21,11 @@ public class UserOrderDTO {
         this.order = order;
         this.formatStartDate = DatetimeConverter.toString(order.getStartDate(), "yyyy-MM-dd HH:mm:ss");
         this.formatEndDate = DatetimeConverter.toString(order.getEndDate(), "yyyy-MM-dd HH:mm:ss");
-        this.formatInvoiceDate = DatetimeConverter.toString(order.getInvoiceDate(), "yyyy-MM-dd HH:mm:ss");
+        this.formatUpdatedAt = DatetimeConverter.toString(order.getUpdatedAt(), "yyyy-MM-dd HH:mm:ss");
     }
 
     private String formatEndDate;
     private String formatStartDate;
-    private String formatInvoiceDate;
+    private String formatUpdatedAt;
 
 }
