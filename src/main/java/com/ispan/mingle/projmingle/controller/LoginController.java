@@ -5,6 +5,8 @@ import java.util.UUID;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -51,6 +53,24 @@ public class LoginController {
 			// put lordID給前端
 			responseJson.put("lordID", landlordService.findByUserIDtoLordID(userid));
 			responseJson.put("adminPermission", bean.getIsAdmin());
+		}
+		return responseJson.toString();
+	}
+
+	@GetMapping("/login/byId/{userID}/{Password}")
+	public String loginById(@PathVariable String userID, @PathVariable String Password) {
+		// 準備回傳的資料
+		JSONObject responseJson = new JSONObject();
+		// 呼叫企業邏輯
+		VolunteerBean bean = volunteerService.loginByID(userID, Password);
+		// 根據結果呼叫View
+		if (bean != null) {
+			responseJson.put("message", "登入成功");
+			responseJson.put("success", true);
+
+		} else {
+			responseJson.put("message", "登入失敗");
+			responseJson.put("success", false);
 		}
 		return responseJson.toString();
 	}

@@ -52,7 +52,6 @@ public class VolunteerService {
 		return null;
 	}
 
-
 	/*
 	 * READ
 	 */
@@ -94,7 +93,6 @@ public class VolunteerService {
 		return keepWorkRepository.existsByVolunteer_UseridAndWork_Workid(volunteerId, workId);
 	}
 
-
 	/*
 	 * UPDATE
 	 */
@@ -123,19 +121,42 @@ public class VolunteerService {
 	}
 
 	public void resetPassword(String userId, String newPassword) {
-        // Retrieve the volunteer by userId and update the password
-        Optional<VolunteerBean> optionalVolunteer = volunteerRepository.findById(userId);
-        if (optionalVolunteer.isPresent()) {
-            VolunteerBean volunteer = optionalVolunteer.get();
-            volunteer.setPassword(newPassword);
-            volunteerRepository.save(volunteer);
-        } else {
-            // Handle case where volunteer is not found
-        }
-    }
-	
-	public VolunteerBean save(VolunteerBean volunteer) {
-        return volunteerRepository.save(volunteer);
-    }
+		// Retrieve the volunteer by userId and update the password
+		Optional<VolunteerBean> optionalVolunteer = volunteerRepository.findById(userId);
+		if (optionalVolunteer.isPresent()) {
+			VolunteerBean volunteer = optionalVolunteer.get();
+			volunteer.setPassword(newPassword);
+			volunteerRepository.save(volunteer);
+		} else {
+			// Handle case where volunteer is not found
+		}
+	}
 
+	public VolunteerBean save(VolunteerBean volunteer) {
+		return volunteerRepository.save(volunteer);
+	}
+
+	public VolunteerBean loginByID(String userId, String password) {
+		if (userId != null && password != null) {
+			VolunteerBean user = volunteerRepository.findByUserid(userId);
+			if (user != null && user.getPassword().equals(password)) {
+				return user;
+			}
+		}
+		return null;
+	}
+
+	public VolunteerBean updatePasswordById(String json) {
+		JSONObject job = new JSONObject(json);
+		String id = job.isNull("id") ? null : job.getString("id");
+		String password = job.isNull("password") ? null : job.getString("password");
+		if (id != null && id != "" && id != "undefined" && password != null && password != ""
+				&& password != "undefined") {
+			VolunteerBean volunteer = volunteerRepository.findByUserid(id);
+			volunteer.setPassword(password);
+			return save(volunteer);
+		} else {
+			return null;
+		}
+	}
 }
