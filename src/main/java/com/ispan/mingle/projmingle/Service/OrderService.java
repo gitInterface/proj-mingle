@@ -153,7 +153,6 @@ public class OrderService {
         VolunteerDetailBean volunteerDetail = orderRepository.findVolunteerDetailByOrderId(orderid);
         OrderBean order = orderRepository.findById(orderid).orElse(null);
         WorkBean work = orderRepository.findWorkBeanByOrderId(orderid);
-        List<HouseBean> house = orderRepository.findHouseBeanByOrderId(orderid);
 
         ReviewDTO review = new ReviewDTO();
 
@@ -179,22 +178,6 @@ public class OrderService {
         long differenceInMillis = endDate.getTime() - startDate.getTime();
         long daysDifference = TimeUnit.MILLISECONDS.toDays(differenceInMillis);
         review.setDays(daysDifference);
-
-        List<Integer> houseidList = new ArrayList<>();
-        List<String> houseNameList = new ArrayList<>();
-        List<String> houseTypeList = new ArrayList<>();
-
-        for (HouseBean houseBean : house) {
-
-            houseidList.add(houseBean.getHouseid());
-            houseNameList.add(houseBean.getName());
-            houseTypeList.add(houseBean.getHouseType());
-
-        }
-        review.setHouseid(houseidList);
-        review.setHouseName(houseNameList);
-        review.setHouseType(houseTypeList);
-
         review.setOrderid(order.getOrderid());
         review.setNumbers(order.getNumbers());
 

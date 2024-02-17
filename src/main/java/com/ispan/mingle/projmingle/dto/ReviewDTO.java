@@ -50,15 +50,6 @@ public class ReviewDTO {
     /** 評論的幫助者結束工作日期 */
     private String endDate;
 
-    /** 評論的幫助者訂單的房屋 */
-    private List<Integer> houseid;
-
-    /** 評論的幫助者訂單的房屋類型 */
-    private List<String> houseType;
-
-    /** 評論的幫助者訂單的房屋名稱 */
-    private List<String> houseName;
-
     /** 評論的幫助者訂單編號 */
     private Integer orderid;
 
