@@ -10,12 +10,17 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserOrderDTO {
     /* houseBean */
+    private String landlordName;
+    private String landlordUserId;
     private String workName;
     private String houseName;
     private OrderBean order;
 
-    public UserOrderDTO(String workName, String houseName, OrderBean order) {
+    public UserOrderDTO(String landlordName, String landlordUserId, String workName, String houseName,
+            OrderBean order) {
         // 初始化DTO的屬性
+        this.landlordName = landlordName;
+        this.landlordUserId = landlordUserId;
         this.workName = workName;
         this.houseName = houseName;
         this.order = order;
