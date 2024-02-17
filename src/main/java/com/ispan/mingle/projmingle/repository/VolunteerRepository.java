@@ -1,5 +1,7 @@
 package com.ispan.mingle.projmingle.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -16,6 +18,8 @@ public interface VolunteerRepository extends JpaRepository<VolunteerBean, String
     VolunteerBean findByUsername(String username);
 
     boolean existsByUsername(String username);
+
+    Page<VolunteerBean> findByUsernameContaining(String search, Pageable pageable);
 
     /** 透過帳號取得房東id */
     @Query("SELECT l FROM VolunteerBean v JOIN LandlordBean l ON v.userid = l.userid WHERE v.userid = :userid")

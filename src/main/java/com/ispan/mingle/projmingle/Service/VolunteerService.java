@@ -4,6 +4,8 @@ import java.util.Optional;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.ispan.mingle.projmingle.domain.KeepWorkBean;
@@ -78,8 +80,12 @@ public class VolunteerService {
 	}
 
 	// 獲取所有用戶
-	public Iterable<VolunteerBean> getAllVolunteers() {
-		return volunteerRepository.findAll();
+	public Page<VolunteerBean> getAllVolunteers(Pageable pageable, String keyword) {
+		if (keyword != null) {
+			return volunteerRepository.findByUsernameContaining(keyword, pageable);
+		} else {
+			return volunteerRepository.findAll(pageable);
+		}
 	}
 
 	// 檢查用戶有無管理員權限
