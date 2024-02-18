@@ -4,6 +4,9 @@ import java.util.Optional;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import com.ispan.mingle.projmingle.domain.KeepWorkBean;
@@ -77,9 +80,23 @@ public class VolunteerService {
 		return false;
 	}
 
-	// 獲取所有用戶
-	public Iterable<VolunteerBean> getAllVolunteers() {
-		return volunteerRepository.findAll();
+	// 查詢管理者數量
+	public Integer getAdminCount() {
+		return volunteerRepository.findAll().stream().map(VolunteerBean::getIsAdmin).mapToInt(isAdmin -> isAdmin ? 1 : 0)
+				.sum();
+	}
+
+	// 獲取所有使用者(管理者介面用)
+	public Page<VolunteerBean> getAllVolunteers(Pageable pageable, String keyword, Boolean isAdmin) {
+		Specification<VolunteerBean> spec = Specification.where(null);
+		if (isAdmin != null) {
+			spec = spec.and((root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("isAdmin"), isAdmin));
+		}
+		if (keyword != null) {
+			spec = spec.and(
+					(root, query, criteriaBuilder) -> criteriaBuilder.like(root.get("username"), "%" + keyword + "%"));
+		}
+		return volunteerRepository.findAll(spec, pageable);
 	}
 
 	// 檢查用戶有無管理員權限

@@ -3,8 +3,13 @@ package com.ispan.mingle.projmingle.controller;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -20,6 +25,7 @@ import com.ispan.mingle.projmingle.repository.VolunteerRepository;
 
 @RestController
 @RequestMapping("/api/volunteer")
+@CrossOrigin
 public class VolunteerController {
 
     @Autowired
@@ -39,9 +45,25 @@ public class VolunteerController {
     /*
      * READ
      */
+
+    // 查詢管理者數量
+    @GetMapping("/getAdminCount")
+    public ResponseEntity<Integer> getAdminCount() {
+        Integer adminCount = volunteerService.getAdminCount();
+        return ResponseEntity.ok(adminCount);
+    }
+
+    // 獲取所有使用者(管理者介面用)
     @GetMapping("/getAllVolunteers")
-    public ResponseEntity<Iterable<VolunteerBean>> getAllVolunteers() {
-        Iterable<VolunteerBean> volunteers = volunteerService.getAllVolunteers();
+    public ResponseEntity<Page<VolunteerBean>> getAllVolunteers(
+            Pageable pageable,
+            @RequestParam(required = false) String keyword,
+            @RequestParam(required = false) String sortField,
+            @RequestParam(required = false, defaultValue = "asc") String sortOrder,
+            @RequestParam(required = false, defaultValue = "false") Boolean isAdmin) {
+        Sort sort = Sort.by(Sort.Direction.fromString(sortOrder), sortField);
+        Pageable sortedPageable = PageRequest.of(pageable.getPageNumber(), pageable.getPageSize(), sort);
+        Page<VolunteerBean> volunteers = volunteerService.getAllVolunteers(sortedPageable, keyword, isAdmin);
         return ResponseEntity.ok(volunteers);
     }
 

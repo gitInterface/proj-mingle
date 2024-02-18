@@ -105,13 +105,13 @@ public interface LandlordRepository extends JpaRepository<LandlordBean, Integer>
 
         /** 透過房東id查詢房東每個工作訂單數 */
 
-        @Query("SELECT COUNT(o), w.workid, w.name " +
+        @Query("SELECT COUNT(o), w.workid, w.name ,w.isDeleted " +
                         "FROM OrderBean o " +
                         "full JOIN OrderWorkHouseBean owh ON o.orderid = owh.orderid " +
                         "full JOIN WorkHouseBean wh ON owh.workhouseid = wh.id " +
                         "full JOIN WorkBean w ON w.workid = wh.workid " +
                         "WHERE w.landlordid = :landlordId " +
-                        "GROUP BY w.workid, w.name")
+                        "GROUP BY w.workid, w.name, w.isDeleted")
         public List<Object[]> findWorkOrderCountByLandlordId(@Param("landlordId") Integer landlordId);
 
         /** 透過房東id查詢所有工作瀏覽量總和 */
@@ -124,11 +124,11 @@ public interface LandlordRepository extends JpaRepository<LandlordBean, Integer>
         public Integer findTotalViewsByLandlordId(@Param("landlordId") Integer landlordId);
 
         /** 透過房東id查詢每個工作的瀏覽量 */
-        @Query("SELECT w.workid ,w.views, w.name FROM OrderBean o " +
+        @Query("SELECT w.workid ,w.views, w.name, w.isDeleted FROM OrderBean o " +
                         "full JOIN OrderWorkHouseBean owh ON o.orderid = owh.orderid " +
                         "full JOIN WorkHouseBean wh ON owh.workhouseid = wh.id " +
                         "full JOIN WorkBean w ON w.workid = wh.workid " +
-                        "WHERE w.landlordid = :landlordId GROUP BY w.workid ,w.views, w.name")
+                        "WHERE w.landlordid = :landlordId GROUP BY w.workid ,w.views, w.name,w.isDeleted")
         public List<Object[]> findWorkViewsByLandlordId(@Param("landlordId") Integer landlordId);
 
         /** 透過房東id查詢對房東的平均評價分數 */
