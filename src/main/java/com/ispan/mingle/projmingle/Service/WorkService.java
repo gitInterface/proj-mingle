@@ -529,4 +529,12 @@ public class WorkService {
         return workRepository.save(work);
     }
 
+    /** 透過WorkID修改工作狀態 */
+    public WorkBean updateWorkStatus(Integer workid, String status, Boolean isDeleted) {
+        WorkBean work = workRepository.findById(workid).orElse(null);
+        work.setStatus(status);
+        work.setIsDeleted(isDeleted);
+        return workRepository.save(work);
+    }
+
 }

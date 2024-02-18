@@ -55,4 +55,13 @@ public class ReportService {
         return reportRepository.findPendingReport();
     }
 
+    /*
+     * U
+     */
+    public ReportBean updateReportStatus(Integer reportID, Integer status) {
+        ReportBean reportBean = reportRepository.findById(reportID).get();
+        reportBean.setStatus(status);
+        return reportRepository.save(reportBean);
+    }
+
 }

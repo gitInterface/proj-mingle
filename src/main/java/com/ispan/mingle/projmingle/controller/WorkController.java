@@ -141,4 +141,11 @@ public class WorkController {
         workService.increaseViewCount(workid);
         return ResponseEntity.ok().build();
     }
+
+    // 修改某workid的狀態
+    @PutMapping("/updateWorkStatus/{workid}")
+    public ResponseEntity<Void> updateWorkStatus(@PathVariable Integer workid, @RequestParam String status, @RequestParam Boolean isDeleted) {
+        workService.updateWorkStatus(workid, status, isDeleted);
+        return ResponseEntity.ok().build();
+    }
 }
