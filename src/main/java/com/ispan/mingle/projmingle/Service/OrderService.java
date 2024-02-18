@@ -222,6 +222,7 @@ public class OrderService {
         return new ArrayList<>(mergedOrders.values());
     }
 
+    /** 用會員id找UserOrderDTO */
     public List<UserOrderDTO> getAllOrderByUserId(String id) {
         List<UserOrderDTO> order = orderRepository.findWorkDetailAndPhotoByUserid(id);
         Map<Integer, UserOrderDTO> mergedOrders = new LinkedHashMap<>();
