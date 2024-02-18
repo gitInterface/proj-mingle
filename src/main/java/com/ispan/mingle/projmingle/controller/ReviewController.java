@@ -95,7 +95,11 @@ public class ReviewController {
     @PostMapping(path = "/create/review")
     public ReviewBean createReview(
             @RequestBody ReviewBean review) {
-        return reviewService.createReview(review);
+        ReviewBean savereview = reviewService.createReview(review);
+        if (savereview != null) {
+            orderService.setOrderStatus(savereview.getOrderid(), "訂單已評價", false);
+        }
+        return savereview;
     }
 
     // 房客回應照片創建
