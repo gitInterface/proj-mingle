@@ -5,6 +5,7 @@ import java.util.List;
 import com.ispan.mingle.projmingle.dto.LandlordOrderDTO;
 import com.ispan.mingle.projmingle.dto.UserOrderDTO;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.repository.query.Param;
 import org.springframework.web.bind.annotation.CrossOrigin;
@@ -26,6 +27,7 @@ import com.ispan.mingle.projmingle.domain.VolunteerDetailBean;
 import com.ispan.mingle.projmingle.domain.WorkBean;
 import com.ispan.mingle.projmingle.domain.WorkHouseBean;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PutMapping;
 
 @RestController
 @RequestMapping("/order")
@@ -162,4 +164,20 @@ public class OrderController {
         orderService.setOrderStatus(id, "房東已拒絕", true);
         return orderService.getOrderByLoardId(id);
     }
+
+    @PutMapping("update/needs")
+    public String updateNeeds(@RequestBody String body) {
+        // 準備回傳的資料
+        JSONObject responseJson = new JSONObject();
+        if (orderService.updateNeeds(body)) {
+            responseJson.put("message", "修改成功");
+            responseJson.put("success", true);
+        } else {
+            responseJson.put("message", "修改失敗 ,輸入資料不正確");
+            responseJson.put("success", false);
+        }
+
+        return responseJson.toString();
+    }
+
 }

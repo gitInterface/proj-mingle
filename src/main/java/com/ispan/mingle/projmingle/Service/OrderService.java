@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -234,5 +235,23 @@ public class OrderService {
         List<LandlordOrderDTO> dt = landlordRepository.findByOrderid(id);
         System.out.println(dt);
         return dt;
+    }
+
+    public Boolean updateNeeds(String json) {
+        // 接收使用者資料
+        JSONObject job = new JSONObject(json);
+        Integer orderId = job.isNull("orderId") ? null : job.getInt("orderId");
+        String needs = job.isNull("needs") ? null : job.getString("needs");
+        // 更新資料
+        if (orderId != null && needs != null) {
+            OrderBean oBean = orderRepository.findById(orderId).orElse(null);
+            if (oBean != null) {
+                oBean.setNeeds(needs);
+                orderRepository.save(oBean);
+                return true;
+            }
+        }
+        return false;
+
     }
 }
