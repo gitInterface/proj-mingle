@@ -203,6 +203,14 @@ public class WorkService {
                 // }
                 // }
 
+                // 房東ID：可選擇特定房東的工作
+                if (filterMap.containsKey("landlordid")) {
+                    Integer landlordid = (Integer) filterMap.get("landlordid");
+                    if (landlordid != null) {
+                        predicates.add(criteriaBuilder.equal(root.get("landlordid"), landlordid));
+                    }
+                }
+
                 return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
             }
         };
@@ -526,6 +534,14 @@ public class WorkService {
         Integer original = work.getAttendance();
         work.setAttendance(original + attendance);
         ;
+        return workRepository.save(work);
+    }
+
+    /** 透過WorkID修改工作狀態 */
+    public WorkBean updateWorkStatus(Integer workid, String status, Boolean isDeleted) {
+        WorkBean work = workRepository.findById(workid).orElse(null);
+        work.setStatus(status);
+        work.setIsDeleted(isDeleted);
         return workRepository.save(work);
     }
 
