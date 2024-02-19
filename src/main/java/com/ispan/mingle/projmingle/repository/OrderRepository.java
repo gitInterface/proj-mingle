@@ -10,7 +10,6 @@ import com.ispan.mingle.projmingle.domain.HouseBean;
 import com.ispan.mingle.projmingle.domain.OrderBean;
 import com.ispan.mingle.projmingle.domain.VolunteerDetailBean;
 import com.ispan.mingle.projmingle.domain.WorkBean;
-import com.ispan.mingle.projmingle.dto.LandlordOrderDTO;
 import com.ispan.mingle.projmingle.dto.UserOrderDTO;
 
 public interface OrderRepository extends JpaRepository<OrderBean, Integer> {

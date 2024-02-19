@@ -1,19 +1,16 @@
 package com.ispan.mingle.projmingle.dto;
 
-
 import com.ispan.mingle.projmingle.domain.OrderBean;
 import com.ispan.mingle.projmingle.util.DatetimeConverter;
-import lombok.AllArgsConstructor;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Date;
-
 @Data
 @NoArgsConstructor
-
 public class LandlordOrderDTO {
-    /*houseBean*/
+    /* houseBean */
+    private String userName;
     private String workName;
     private String houseName;
     private OrderBean order;
@@ -22,9 +19,9 @@ public class LandlordOrderDTO {
     private String formatStartDate;
     private String formatCreateDate;
 
-
-    public LandlordOrderDTO(String workName, String houseName, OrderBean order) {
+    public LandlordOrderDTO(String userName, String workName, String houseName, OrderBean order) {
         // 初始化DTO的屬性
+        this.userName = userName;
         this.workName = workName;
         this.houseName = houseName;
         this.order = order;
