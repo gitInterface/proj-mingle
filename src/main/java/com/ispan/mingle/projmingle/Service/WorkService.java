@@ -203,6 +203,14 @@ public class WorkService {
                 // }
                 // }
 
+                // 房東ID：可選擇特定房東的工作
+                if (filterMap.containsKey("landlordid")) {
+                    Integer landlordid = (Integer) filterMap.get("landlordid");
+                    if (landlordid != null) {
+                        predicates.add(criteriaBuilder.equal(root.get("landlordid"), landlordid));
+                    }
+                }
+
                 return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
             }
         };
